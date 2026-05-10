@@ -1,6 +1,12 @@
+import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
-const db = new PrismaClient();
+const url = process.env.DATABASE_URL;
+if (!url) throw new Error("DATABASE_URL must be set in .env");
+
+const adapter = new PrismaMariaDb(url);
+const db = new PrismaClient({ adapter });
 
 function generateCarSlug(make: string, model: string, year: number, id: number): string {
   const base = `${make} ${model} ${year}`
