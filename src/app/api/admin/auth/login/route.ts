@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { verifyPassword, createAdminSession } from "@/lib/auth";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   let body: unknown;

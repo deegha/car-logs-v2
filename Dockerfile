@@ -13,7 +13,9 @@ COPY . .
 RUN npx prisma generate
 
 # 4) Build Next.js app
-RUN npm run build
+# DATABASE_URL is needed at build time so db.ts can be imported without throwing.
+# The real value is injected at runtime via .env — this dummy value is never used for queries.
+RUN DATABASE_URL=mysql://build:build@localhost/build npm run build
 
 EXPOSE 3000
 
