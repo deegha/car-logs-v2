@@ -7,69 +7,72 @@
 ### Models
 
 #### Seller
+
 The person who lists a car. Has their own account.
 
-| Field        | Type     | Notes                              |
-|--------------|----------|------------------------------------|
-| id           | Int PK   | Auto-increment                     |
-| firstName    | String   |                                    |
-| lastName     | String   |                                    |
-| email        | String   | Unique, used to log in             |
-| phone        | String   | Contact number                     |
-| passwordHash | String   | bcrypt hash                        |
-| status       | Enum     | ACTIVE \| SUSPENDED                |
-| cars         | Car[]    | Relation                           |
-| createdAt    | DateTime |                                    |
-| updatedAt    | DateTime |                                    |
+| Field        | Type     | Notes                  |
+| ------------ | -------- | ---------------------- |
+| id           | Int PK   | Auto-increment         |
+| firstName    | String   |                        |
+| lastName     | String   |                        |
+| email        | String   | Unique, used to log in |
+| phone        | String   | Contact number         |
+| passwordHash | String   | bcrypt hash            |
+| status       | Enum     | ACTIVE \| SUSPENDED    |
+| cars         | Car[]    | Relation               |
+| createdAt    | DateTime |                        |
+| updatedAt    | DateTime |                        |
 
 #### Car
+
 A vehicle listing submitted by a seller.
 
-| Field        | Type     | Notes                                            |
-|--------------|----------|--------------------------------------------------|
-| id           | Int PK   |                                                  |
-| title        | String   | Listing headline e.g. "2022 Camry XSE – 1 Owner"|
-| make         | String   | e.g. Toyota                                      |
-| model        | String   | e.g. Camry                                       |
-| year         | Int      | Manufacture year                                 |
-| price        | Decimal  | Asking price                                     |
-| mileage      | Int      | In kilometres                                    |
-| color        | String?  |                                                  |
-| fuelType     | Enum     | PETROL \| DIESEL \| HYBRID \| ELECTRIC \| PLUGIN_HYBRID |
-| transmission | Enum     | AUTOMATIC \| MANUAL \| CVT                       |
-| bodyType     | String?  | Sedan, SUV, Hatchback, Ute, etc.                 |
-| engineSize   | String?  | e.g. "2.5L"                                      |
-| description  | Text?    | Free text                                        |
-| status       | Enum     | PENDING \| AVAILABLE \| SOLD \| RESERVED \| REJECTED |
-| featured     | Boolean  | Admin can pin to homepage                        |
-| sellerId     | Int FK   | → Seller                                         |
-| images       | CarImage[]| Relation                                        |
-| createdAt    | DateTime |                                                  |
-| updatedAt    | DateTime |                                                  |
+| Field        | Type       | Notes                                                   |
+| ------------ | ---------- | ------------------------------------------------------- |
+| id           | Int PK     |                                                         |
+| title        | String     | Listing headline e.g. "2022 Camry XSE – 1 Owner"        |
+| make         | String     | e.g. Toyota                                             |
+| model        | String     | e.g. Camry                                              |
+| year         | Int        | Manufacture year                                        |
+| price        | Decimal    | Asking price                                            |
+| mileage      | Int        | In kilometres                                           |
+| color        | String?    |                                                         |
+| fuelType     | Enum       | PETROL \| DIESEL \| HYBRID \| ELECTRIC \| PLUGIN_HYBRID |
+| transmission | Enum       | AUTOMATIC \| MANUAL \| CVT                              |
+| bodyType     | String?    | Sedan, SUV, Hatchback, Ute, etc.                        |
+| engineSize   | String?    | e.g. "2.5L"                                             |
+| description  | Text?      | Free text                                               |
+| status       | Enum       | PENDING \| AVAILABLE \| SOLD \| RESERVED \| REJECTED    |
+| featured     | Boolean    | Admin can pin to homepage                               |
+| sellerId     | Int FK     | → Seller                                                |
+| images       | CarImage[] | Relation                                                |
+| createdAt    | DateTime   |                                                         |
+| updatedAt    | DateTime   |                                                         |
 
 Indexes: (make, model), year, price, status, sellerId
 
 #### CarImage
 
-| Field     | Type     | Notes                    |
-|-----------|----------|--------------------------|
-| id        | Int PK   |                          |
-| url       | String   | Uploaded image URL       |
-| alt       | String?  |                          |
-| isPrimary | Boolean  | First/cover image        |
-| order     | Int      | Display order            |
-| carId     | Int FK   | → Car (cascade delete)   |
-| createdAt | DateTime |                          |
+| Field     | Type     | Notes                  |
+| --------- | -------- | ---------------------- |
+| id        | Int PK   |                        |
+| url       | String   | Uploaded image URL     |
+| alt       | String?  |                        |
+| isPrimary | Boolean  | First/cover image      |
+| order     | Int      | Display order          |
+| carId     | Int FK   | → Car (cascade delete) |
+| createdAt | DateTime |                        |
 
 #### Admin
+
 Separate table for admin users. No overlap with sellers.
 
-| Field        | Type     | Notes          |
-|--------------|----------|----------------|
-| id           | Int PK   |                |
-| email        | String   | Unique         |
-| passwordHash | String   | bcrypt hash    |
-| createdAt    | DateTime |                |
+| Field        | Type     | Notes       |
+| ------------ | -------- | ----------- |
+| id           | Int PK   |             |
+| email        | String   | Unique      |
+| passwordHash | String   | bcrypt hash |
+| createdAt    | DateTime |             |
 
 ### Enums
 
@@ -81,6 +84,7 @@ Transmission: AUTOMATIC | MANUAL | CVT
 ```
 
 ### Migration Steps
+
 1. Update `prisma/schema.prisma` with all models above
 2. `docker compose up -d` — start MySQL
 3. `npm run db:migrate` — apply migration
@@ -91,106 +95,112 @@ Transmission: AUTOMATIC | MANUAL | CVT
 ## Phase 2 — API Routes
 
 ### Public (no auth)
-| Method | Path             | What it does                                              |
-|--------|------------------|-----------------------------------------------------------|
-| GET    | /api/cars        | List AVAILABLE cars. Query params: `search`, `make`, `model`, `minYear`, `maxYear`, `minPrice`, `maxPrice`, `page` |
-| GET    | /api/cars/[id]   | Single car detail (AVAILABLE only)                       |
+
+| Method | Path           | What it does                                                                                                       |
+| ------ | -------------- | ------------------------------------------------------------------------------------------------------------------ |
+| GET    | /api/cars      | List AVAILABLE cars. Query params: `search`, `make`, `model`, `minYear`, `maxYear`, `minPrice`, `maxPrice`, `page` |
+| GET    | /api/cars/[id] | Single car detail (AVAILABLE only)                                                                                 |
 
 ### Seller Auth
-| Method | Path                   | What it does               |
-|--------|------------------------|----------------------------|
-| POST   | /api/auth/register     | Create seller account      |
-| POST   | /api/auth/login        | Set session cookie         |
-| DELETE | /api/auth/logout       | Clear session cookie       |
-| GET    | /api/auth/me           | Return current seller info |
+
+| Method | Path               | What it does               |
+| ------ | ------------------ | -------------------------- |
+| POST   | /api/auth/register | Create seller account      |
+| POST   | /api/auth/login    | Set session cookie         |
+| DELETE | /api/auth/logout   | Clear session cookie       |
+| GET    | /api/auth/me       | Return current seller info |
 
 ### Seller (requires seller session)
-| Method | Path                      | What it does                        |
-|--------|---------------------------|-------------------------------------|
-| POST   | /api/cars                 | Submit a new listing (→ PENDING)    |
-| GET    | /api/seller/cars          | List own cars (all statuses)        |
-| PATCH  | /api/seller/cars/[id]     | Edit own listing (if still PENDING) |
-| DELETE | /api/seller/cars/[id]     | Delete own listing                  |
+
+| Method | Path                  | What it does                        |
+| ------ | --------------------- | ----------------------------------- |
+| POST   | /api/cars             | Submit a new listing (→ PENDING)    |
+| GET    | /api/seller/cars      | List own cars (all statuses)        |
+| PATCH  | /api/seller/cars/[id] | Edit own listing (if still PENDING) |
+| DELETE | /api/seller/cars/[id] | Delete own listing                  |
 
 ### Admin Auth
-| Method | Path                   | What it does         |
-|--------|------------------------|----------------------|
-| POST   | /api/admin/auth/login  | Set admin session    |
-| DELETE | /api/admin/auth/logout | Clear admin session  |
+
+| Method | Path                   | What it does        |
+| ------ | ---------------------- | ------------------- |
+| POST   | /api/admin/auth/login  | Set admin session   |
+| DELETE | /api/admin/auth/logout | Clear admin session |
 
 ### Admin (requires admin session)
-| Method | Path                        | What it does                             |
-|--------|-----------------------------|------------------------------------------|
-| GET    | /api/admin/cars             | All cars, all statuses, filterable       |
-| PATCH  | /api/admin/cars/[id]        | Approve / reject / feature / update status |
-| DELETE | /api/admin/cars/[id]        | Hard delete                              |
-| GET    | /api/admin/sellers          | All sellers                              |
-| PATCH  | /api/admin/sellers/[id]     | Suspend / re-activate seller             |
+
+| Method | Path                    | What it does                               |
+| ------ | ----------------------- | ------------------------------------------ |
+| GET    | /api/admin/cars         | All cars, all statuses, filterable         |
+| PATCH  | /api/admin/cars/[id]    | Approve / reject / feature / update status |
+| DELETE | /api/admin/cars/[id]    | Hard delete                                |
+| GET    | /api/admin/sellers      | All sellers                                |
+| PATCH  | /api/admin/sellers/[id] | Suspend / re-activate seller               |
 
 ---
 
 ## Phase 3 — Components
 
-### UI Primitives  (`src/components/ui/`)
+### UI Primitives (`src/components/ui/`)
+
 Small, fully theme-aware building blocks.
 
-| Component  | Purpose                                        |
-|------------|------------------------------------------------|
-| Button     | Primary / secondary / ghost / danger variants  |
-| Input      | Text input with label, helper text, error state|
-| Select     | Styled dropdown                                |
-| Textarea   | Multi-line input                               |
-| Badge      | Small coloured chip (status, fuel type, etc.)  |
-| Spinner    | Loading indicator                              |
-| FormField  | Wrapper: label + input + error message         |
+| Component | Purpose                                         |
+| --------- | ----------------------------------------------- |
+| Button    | Primary / secondary / ghost / danger variants   |
+| Input     | Text input with label, helper text, error state |
+| Select    | Styled dropdown                                 |
+| Textarea  | Multi-line input                                |
+| Badge     | Small coloured chip (status, fuel type, etc.)   |
+| Spinner   | Loading indicator                               |
+| FormField | Wrapper: label + input + error message          |
 
-### Layout Components  (`src/components/layout/`)
+### Layout Components (`src/components/layout/`)
 
-| Component | Purpose                                                    |
-|-----------|------------------------------------------------------------|
-| Header    | Logo, main nav, search bar, Login / "My Listings" button   |
-| Footer    | Links, copyright                                           |
+| Component | Purpose                                                  |
+| --------- | -------------------------------------------------------- |
+| Header    | Logo, main nav, search bar, Login / "My Listings" button |
+| Footer    | Links, copyright                                         |
 
-### Car Components  (`src/components/cars/`)
+### Car Components (`src/components/cars/`)
 
-| Component        | Purpose                                                    |
-|------------------|------------------------------------------------------------|
-| CarCard          | Grid card — cover image, title, price, make/year/km badges |
-| CarGrid          | Responsive grid wrapper, handles empty & loading states    |
-| CarImageGallery  | Large main image + scrollable thumbnail strip              |
-| CarSpecsTable    | Key specs in a two-column table (fuel, trans, engine, etc.)|
-| StatusBadge      | Colour-coded pill per CarStatus                            |
+| Component       | Purpose                                                     |
+| --------------- | ----------------------------------------------------------- |
+| CarCard         | Grid card — cover image, title, price, make/year/km badges  |
+| CarGrid         | Responsive grid wrapper, handles empty & loading states     |
+| CarImageGallery | Large main image + scrollable thumbnail strip               |
+| CarSpecsTable   | Key specs in a two-column table (fuel, trans, engine, etc.) |
+| StatusBadge     | Colour-coded pill per CarStatus                             |
 
-### Search & Filter Components  (`src/components/filters/`)
+### Search & Filter Components (`src/components/filters/`)
 
-| Component    | Purpose                                              |
-|--------------|------------------------------------------------------|
-| SearchBar    | Controlled input, submits to /cars?search=           |
-| FilterPanel  | Sidebar/drawer: make, model, year range, price range |
-| FilterChips  | Active filter pills shown above results, click to remove |
+| Component   | Purpose                                                  |
+| ----------- | -------------------------------------------------------- |
+| SearchBar   | Controlled input, submits to /cars?search=               |
+| FilterPanel | Sidebar/drawer: make, model, year range, price range     |
+| FilterChips | Active filter pills shown above results, click to remove |
 
-### Seller Components  (`src/components/seller/`)
+### Seller Components (`src/components/seller/`)
 
-| Component      | Purpose                                            |
-|----------------|----------------------------------------------------|
-| AddCarForm     | Multi-step: Details → Specs → Images → Review      |
-| SellerCarCard  | Like CarCard but with Edit / Delete actions        |
-| SellerCarTable | Compact table view of own listings with status     |
+| Component      | Purpose                                        |
+| -------------- | ---------------------------------------------- |
+| AddCarForm     | Multi-step: Details → Specs → Images → Review  |
+| SellerCarCard  | Like CarCard but with Edit / Delete actions    |
+| SellerCarTable | Compact table view of own listings with status |
 
-### Auth Components  (`src/components/auth/`)
+### Auth Components (`src/components/auth/`)
 
-| Component    | Purpose                                          |
-|--------------|--------------------------------------------------|
-| LoginForm    | Email + password, error display                  |
-| RegisterForm | First name, last name, email, phone, password    |
+| Component    | Purpose                                       |
+| ------------ | --------------------------------------------- |
+| LoginForm    | Email + password, error display               |
+| RegisterForm | First name, last name, email, phone, password |
 
-### Admin Components  (`src/components/admin/`)
+### Admin Components (`src/components/admin/`)
 
-| Component        | Purpose                                                  |
-|------------------|----------------------------------------------------------|
-| AdminCarTable    | All listings, sortable, with Approve/Reject/Delete       |
-| AdminSellerTable | All sellers with Suspend/Activate                        |
-| AdminNav         | Sidebar nav for admin section                            |
+| Component        | Purpose                                            |
+| ---------------- | -------------------------------------------------- |
+| AdminCarTable    | All listings, sortable, with Approve/Reject/Delete |
+| AdminSellerTable | All sellers with Suspend/Activate                  |
+| AdminNav         | Sidebar nav for admin section                      |
 
 ---
 

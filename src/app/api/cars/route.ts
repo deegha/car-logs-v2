@@ -1,22 +1,22 @@
-import { db } from "@/lib/db"
-import { getSellerSession } from "@/lib/auth"
-import { CarStatus, FuelType, Transmission } from "@/generated/prisma/client"
-import { generateCarSlug } from "@/lib/utils"
+import { db } from "@/lib/db";
+import { getSellerSession } from "@/lib/auth";
+import { CarStatus, FuelType, Transmission } from "@/generated/prisma/client";
+import { generateCarSlug } from "@/lib/utils";
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 20;
 
 // ── GET /api/cars — public listing with filters ────────────────────
 
 export async function GET(request: Request) {
-  const url = new URL(request.url)
-  const search = url.searchParams.get("search") ?? ""
-  const make = url.searchParams.get("make") ?? ""
-  const model = url.searchParams.get("model") ?? ""
-  const minYear = Number(url.searchParams.get("minYear")) || undefined
-  const maxYear = Number(url.searchParams.get("maxYear")) || undefined
-  const minPrice = Number(url.searchParams.get("minPrice")) || undefined
-  const maxPrice = Number(url.searchParams.get("maxPrice")) || undefined
-  const page = Math.max(1, Number(url.searchParams.get("page")) || 1)
+  const url = new URL(request.url);
+  const search = url.searchParams.get("search") ?? "";
+  const make = url.searchParams.get("make") ?? "";
+  const model = url.searchParams.get("model") ?? "";
+  const minYear = Number(url.searchParams.get("minYear")) || undefined;
+  const maxYear = Number(url.searchParams.get("maxYear")) || undefined;
+  const minPrice = Number(url.searchParams.get("minPrice")) || undefined;
+  const maxPrice = Number(url.searchParams.get("maxPrice")) || undefined;
+  const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
 
   const where = {
     status: CarStatus.AVAILABLE,
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
         { model: { contains: search } },
       ],
     }),
-  }
+  };
 
   const [cars, total] = await Promise.all([
     db.car.findMany({
@@ -52,24 +52,24 @@ export async function GET(request: Request) {
       include: { images: { where: { isPrimary: true }, take: 1 } },
     }),
     db.car.count({ where }),
-  ])
+  ]);
 
-  return Response.json({ cars, total, page, pages: Math.ceil(total / PAGE_SIZE) })
+  return Response.json({ cars, total, page, pages: Math.ceil(total / PAGE_SIZE) });
 }
 
 // ── POST /api/cars — seller submits a new listing ─────────────────
 
 export async function POST(request: Request) {
-  const session = await getSellerSession()
+  const session = await getSellerSession();
   if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 })
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: unknown
+  let body: unknown;
   try {
-    body = await request.json()
+    body = await request.json();
   } catch {
-    return Response.json({ error: "Invalid JSON" }, { status: 400 })
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const {
@@ -90,26 +90,38 @@ export async function POST(request: Request) {
     town,
     images,
   } = body as {
-    title?: string
-    make?: string
-    model?: string
-    year?: number
-    price?: number
-    mileage?: number
-    color?: string
-    fuelType?: FuelType
-    transmission?: Transmission
-    bodyType?: string
-    engineSize?: string
-    description?: string
-    province?: string
-    district?: string
-    town?: string
-    images?: { url: string; alt?: string; isPrimary?: boolean; order?: number }[]
-  }
+    title?: string;
+    make?: string;
+    model?: string;
+    year?: number;
+    price?: number;
+    mileage?: number;
+    color?: string;
+    fuelType?: FuelType;
+    transmission?: Transmission;
+    bodyType?: string;
+    engineSize?: string;
+    description?: string;
+    province?: string;
+    district?: string;
+    town?: string;
+    images?: { url: string; alt?: string; isPrimary?: boolean; order?: number }[];
+  };
 
-  if (!title || !make || !model || !year || price === undefined || mileage === undefined || !fuelType || !transmission) {
-    return Response.json({ error: "title, make, model, year, price, mileage, fuelType and transmission are required" }, { status: 400 })
+  if (
+    !title ||
+    !make ||
+    !model ||
+    !year ||
+    price === undefined ||
+    mileage === undefined ||
+    !fuelType ||
+    !transmission
+  ) {
+    return Response.json(
+      { error: "title, make, model, year, price, mileage, fuelType and transmission are required" },
+      { status: 400 }
+    );
   }
 
   // create first to get the id, then set the slug
@@ -143,12 +155,12 @@ export async function POST(request: Request) {
       }),
     },
     include: { images: true },
-  })
+  });
 
   await db.car.update({
     where: { id: car.id },
     data: { slug: generateCarSlug(make, model, year, car.id) },
-  })
+  });
 
-  return Response.json({ car }, { status: 201 })
+  return Response.json({ car }, { status: 201 });
 }

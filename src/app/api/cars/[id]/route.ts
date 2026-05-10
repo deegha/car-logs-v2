@@ -1,14 +1,14 @@
-import { db } from "@/lib/db"
-import { CarStatus } from "@/generated/prisma/client"
+import { db } from "@/lib/db";
+import { CarStatus } from "@/generated/prisma/client";
 
-type Params = Promise<{ id: string }>
+type Params = Promise<{ id: string }>;
 
 export async function GET(_req: Request, { params }: { params: Params }) {
-  const { id } = await params
-  const carId = Number(id)
+  const { id } = await params;
+  const carId = Number(id);
 
   if (isNaN(carId)) {
-    return Response.json({ error: "Invalid id" }, { status: 400 })
+    return Response.json({ error: "Invalid id" }, { status: 400 });
   }
 
   const car = await db.car.findFirst({
@@ -19,11 +19,11 @@ export async function GET(_req: Request, { params }: { params: Params }) {
         select: { firstName: true, lastName: true, phone: true },
       },
     },
-  })
+  });
 
   if (!car) {
-    return Response.json({ error: "Car not found" }, { status: 404 })
+    return Response.json({ error: "Car not found" }, { status: 404 });
   }
 
-  return Response.json({ car })
+  return Response.json({ car });
 }

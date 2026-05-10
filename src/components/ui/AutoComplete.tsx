@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect } from "react";
 
 interface AutoCompleteProps {
-  label?: string
-  value: string
-  onChange: (value: string) => void
-  options: string[]
-  placeholder?: string
-  error?: string
-  required?: boolean
-  disabled?: boolean
+  label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: string[];
+  placeholder?: string;
+  error?: string;
+  required?: boolean;
+  disabled?: boolean;
 }
 
 export function AutoComplete({
@@ -23,60 +23,60 @@ export function AutoComplete({
   required,
   disabled,
 }: AutoCompleteProps) {
-  const [open, setOpen] = useState(false)
-  const [highlighted, setHighlighted] = useState(-1)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLUListElement>(null)
+  const [open, setOpen] = useState(false);
+  const [highlighted, setHighlighted] = useState(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   const filtered = value
     ? options.filter((o) => o.toLowerCase().includes(value.toLowerCase()))
-    : options
+    : options;
 
-  const displayList = filtered.slice(0, 20)
+  const displayList = filtered.slice(0, 20);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false)
+        setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (highlighted >= 0 && listRef.current) {
-      const item = listRef.current.children[highlighted] as HTMLElement
-      item?.scrollIntoView({ block: "nearest" })
+      const item = listRef.current.children[highlighted] as HTMLElement;
+      item?.scrollIntoView({ block: "nearest" });
     }
-  }, [highlighted])
+  }, [highlighted]);
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!open) {
       if (e.key === "ArrowDown" || e.key === "Enter") {
-        e.preventDefault()
-        setOpen(true)
+        e.preventDefault();
+        setOpen(true);
       }
-      return
+      return;
     }
     if (e.key === "ArrowDown") {
-      e.preventDefault()
-      setHighlighted((h) => Math.min(h + 1, displayList.length - 1))
+      e.preventDefault();
+      setHighlighted((h) => Math.min(h + 1, displayList.length - 1));
     } else if (e.key === "ArrowUp") {
-      e.preventDefault()
-      setHighlighted((h) => Math.max(h - 1, -1))
+      e.preventDefault();
+      setHighlighted((h) => Math.max(h - 1, -1));
     } else if (e.key === "Enter") {
-      e.preventDefault()
+      e.preventDefault();
       if (highlighted >= 0 && displayList[highlighted]) {
-        onChange(displayList[highlighted])
-        setOpen(false)
+        onChange(displayList[highlighted]);
+        setOpen(false);
       }
     } else if (e.key === "Escape") {
-      setOpen(false)
+      setOpen(false);
     }
   }
 
-  const inputId = label?.toLowerCase().replace(/\s+/g, "-")
+  const inputId = label?.toLowerCase().replace(/\s+/g, "-");
 
   return (
     <div ref={containerRef} className="relative flex flex-col gap-1">
@@ -91,9 +91,9 @@ export function AutoComplete({
         type="text"
         value={value}
         onChange={(e) => {
-          onChange(e.target.value)
-          setHighlighted(-1)
-          setOpen(true)
+          onChange(e.target.value);
+          setHighlighted(-1);
+          setOpen(true);
         }}
         onFocus={() => setOpen(true)}
         onKeyDown={handleKeyDown}
@@ -102,7 +102,7 @@ export function AutoComplete({
         autoComplete="off"
         className={[
           "h-10 w-full rounded-md border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted",
-          "focus:outline-none focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:opacity-50",
+          "focus:ring-2 focus:ring-primary-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
           error
             ? "border-danger focus:border-danger focus:ring-danger/20"
             : "border-border focus:border-primary-500",
@@ -118,9 +118,9 @@ export function AutoComplete({
             <li
               key={option}
               onMouseDown={(e) => {
-                e.preventDefault()
-                onChange(option)
-                setOpen(false)
+                e.preventDefault();
+                onChange(option);
+                setOpen(false);
               }}
               onMouseEnter={() => setHighlighted(i)}
               className={[
@@ -136,5 +136,5 @@ export function AutoComplete({
         </ul>
       )}
     </div>
-  )
+  );
 }

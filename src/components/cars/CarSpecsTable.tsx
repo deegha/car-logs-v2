@@ -1,8 +1,8 @@
-import type { Car } from "@/types"
-import { formatMileage, formatPrice } from "@/lib/utils"
+import type { Car } from "@/types";
+import { formatMileage, formatPrice } from "@/lib/utils";
 
 interface CarSpecsTableProps {
-  car: Car
+  car: Car;
 }
 
 const fuelLabels: Record<string, string> = {
@@ -11,13 +11,13 @@ const fuelLabels: Record<string, string> = {
   HYBRID: "Hybrid",
   ELECTRIC: "Electric",
   PLUGIN_HYBRID: "Plug-in Hybrid",
-}
+};
 
 const transmissionLabels: Record<string, string> = {
   AUTOMATIC: "Automatic",
   MANUAL: "Manual",
   CVT: "CVT",
-}
+};
 
 export function CarSpecsTable({ car }: CarSpecsTableProps) {
   const rows = [
@@ -31,7 +31,7 @@ export function CarSpecsTable({ car }: CarSpecsTableProps) {
     car.bodyType ? { label: "Body Type", value: car.bodyType } : null,
     car.engineSize ? { label: "Engine Size", value: car.engineSize } : null,
     car.color ? { label: "Colour", value: car.color } : null,
-  ].filter(Boolean) as { label: string; value: string }[]
+  ].filter(Boolean) as { label: string; value: string }[];
 
   return (
     <div className="overflow-hidden rounded-lg border border-border">
@@ -46,5 +46,5 @@ export function CarSpecsTable({ car }: CarSpecsTableProps) {
         </tbody>
       </table>
     </div>
-  )
+  );
 }

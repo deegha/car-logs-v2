@@ -1,18 +1,18 @@
-import { redirect } from "next/navigation"
-import { Header } from "@/components/layout/Header"
-import { Footer } from "@/components/layout/Footer"
-import { RegisterForm } from "@/components/auth/RegisterForm"
-import { getSellerSession } from "@/lib/auth"
-import type { Metadata } from "next"
+import { redirect } from "next/navigation";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { RegisterForm } from "@/components/auth/RegisterForm";
+import { getSellerSession } from "@/lib/auth";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Create Account",
-}
+};
 
 export default async function RegisterPage() {
-  const session = await getSellerSession()
+  const session = await getSellerSession();
   if (session) {
-    redirect("/seller/dashboard")
+    redirect("/seller/dashboard");
   }
 
   return (
@@ -28,5 +28,5 @@ export default async function RegisterPage() {
 
       <Footer />
     </div>
-  )
+  );
 }

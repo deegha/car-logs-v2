@@ -1,28 +1,28 @@
-import { redirect } from "next/navigation"
-import { Header } from "@/components/layout/Header"
-import { Footer } from "@/components/layout/Footer"
-import { LoginForm } from "@/components/auth/LoginForm"
-import { getSellerSession } from "@/lib/auth"
-import type { Metadata } from "next"
+import { redirect } from "next/navigation";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { getSellerSession } from "@/lib/auth";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Sign In",
-}
+};
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [session, params] = await Promise.all([getSellerSession(), searchParams])
+  const [session, params] = await Promise.all([getSellerSession(), searchParams]);
   if (session) {
-    redirect("/seller/dashboard")
+    redirect("/seller/dashboard");
   }
 
-  const nextParam = params.next
+  const nextParam = params.next;
   const redirectTo = nextParam
     ? String(Array.isArray(nextParam) ? nextParam[0] : nextParam)
-    : "/seller/dashboard"
+    : "/seller/dashboard";
 
   return (
     <div className="flex min-h-full flex-col">
@@ -37,5 +37,5 @@ export default async function LoginPage({
 
       <Footer />
     </div>
-  )
+  );
 }

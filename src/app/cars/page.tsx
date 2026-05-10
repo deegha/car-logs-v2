@@ -1,38 +1,38 @@
-import { Suspense } from "react"
-import Link from "next/link"
-import { Header } from "@/components/layout/Header"
-import { Footer } from "@/components/layout/Footer"
-import { CarGrid } from "@/components/cars/CarGrid"
-import { FilterPanel } from "@/components/filters/FilterPanel"
-import { FilterChips } from "@/components/filters/FilterChips"
-import { SearchBar } from "@/components/filters/SearchBar"
-import { db } from "@/lib/db"
-import { CarStatus } from "@/generated/prisma/client"
-import type { Car } from "@/types"
-import type { Metadata } from "next"
+import { Suspense } from "react";
+import Link from "next/link";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { CarGrid } from "@/components/cars/CarGrid";
+import { FilterPanel } from "@/components/filters/FilterPanel";
+import { FilterChips } from "@/components/filters/FilterChips";
+import { SearchBar } from "@/components/filters/SearchBar";
+import { db } from "@/lib/db";
+import { CarStatus } from "@/generated/prisma/client";
+import type { Car } from "@/types";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Browse Cars",
   description: "Search and filter quality pre-owned vehicles.",
-}
+};
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 20;
 
 export default async function CarsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const params = await searchParams
+  const params = await searchParams;
 
-  const search = String(params.search ?? "")
-  const make = String(params.make ?? "")
-  const model = String(params.model ?? "")
-  const minYear = Number(params.minYear) || undefined
-  const maxYear = Number(params.maxYear) || undefined
-  const minPrice = Number(params.minPrice) || undefined
-  const maxPrice = Number(params.maxPrice) || undefined
-  const page = Math.max(1, Number(params.page) || 1)
+  const search = String(params.search ?? "");
+  const make = String(params.make ?? "");
+  const model = String(params.model ?? "");
+  const minYear = Number(params.minYear) || undefined;
+  const maxYear = Number(params.maxYear) || undefined;
+  const minPrice = Number(params.minPrice) || undefined;
+  const maxPrice = Number(params.maxPrice) || undefined;
+  const page = Math.max(1, Number(params.page) || 1);
 
   const where = {
     status: CarStatus.AVAILABLE,
@@ -57,7 +57,7 @@ export default async function CarsPage({
         { model: { contains: search } },
       ],
     }),
-  }
+  };
 
   const [cars, total] = await Promise.all([
     db.car.findMany({
@@ -68,9 +68,9 @@ export default async function CarsPage({
       include: { images: { where: { isPrimary: true }, take: 1 } },
     }),
     db.car.count({ where }),
-  ])
+  ]);
 
-  const pages = Math.ceil(total / PAGE_SIZE)
+  const pages = Math.ceil(total / PAGE_SIZE);
 
   return (
     <div className="flex min-h-full flex-col">
@@ -101,9 +101,7 @@ export default async function CarsPage({
 
               <CarGrid cars={cars as unknown as Car[]} />
 
-              {pages > 1 && (
-                <Pagination page={page} pages={pages} searchParams={params} />
-              )}
+              {pages > 1 && <Pagination page={page} pages={pages} searchParams={params} />}
             </div>
           </div>
         </div>
@@ -111,7 +109,7 @@ export default async function CarsPage({
 
       <Footer />
     </div>
-  )
+  );
 }
 
 function Pagination({
@@ -119,19 +117,19 @@ function Pagination({
   pages,
   searchParams,
 }: {
-  page: number
-  pages: number
-  searchParams: { [key: string]: string | string[] | undefined }
+  page: number;
+  pages: number;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
   function buildUrl(p: number) {
-    const sp = new URLSearchParams()
+    const sp = new URLSearchParams();
     for (const [k, v] of Object.entries(searchParams)) {
       if (v !== undefined && v !== "" && k !== "page") {
-        sp.set(k, Array.isArray(v) ? v[0] ?? "" : v)
+        sp.set(k, Array.isArray(v) ? (v[0] ?? "") : v);
       }
     }
-    sp.set("page", String(p))
-    return `/cars?${sp.toString()}`
+    sp.set("page", String(p));
+    return `/cars?${sp.toString()}`;
   }
 
   return (
@@ -156,5 +154,5 @@ function Pagination({
         </Link>
       )}
     </nav>
-  )
+  );
 }

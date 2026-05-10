@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { MobileNav } from "@/components/layout/MobileNav"
+import { MobileNav } from "@/components/layout/MobileNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,13 +19,13 @@ export const metadata: Metadata = {
     template: "%s | PrestigeRides",
   },
   description: "Browse our curated selection of quality pre-owned vehicles.",
-}
+};
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-}
+};
 
 export default function RootLayout({
   children,
@@ -33,10 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-background text-foreground">
         {children}
         <MobileNav />

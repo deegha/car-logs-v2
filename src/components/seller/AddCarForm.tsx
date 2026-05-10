@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { formatPrice } from "@/lib/utils"
-import { Input } from "@/components/ui/Input"
-import { Select } from "@/components/ui/Select"
-import { Textarea } from "@/components/ui/Textarea"
-import { Button } from "@/components/ui/Button"
-import { AutoComplete } from "@/components/ui/AutoComplete"
-import { ImageUploader } from "@/components/seller/ImageUploader"
-import { CAR_MAKES, getModels } from "@/data/carMakes"
-import { PROVINCES, getDistricts, getTowns } from "@/data/locations"
-import { currency } from "@/config/app"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { formatPrice } from "@/lib/utils";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
+import { Button } from "@/components/ui/Button";
+import { AutoComplete } from "@/components/ui/AutoComplete";
+import { ImageUploader } from "@/components/seller/ImageUploader";
+import { CAR_MAKES, getModels } from "@/data/carMakes";
+import { PROVINCES, getDistricts, getTowns } from "@/data/locations";
+import { currency } from "@/config/app";
 
-type Step = "details" | "specs" | "images" | "review"
+type Step = "details" | "specs" | "images" | "review";
 
-const STEPS: Step[] = ["details", "specs", "images", "review"]
+const STEPS: Step[] = ["details", "specs", "images", "review"];
 const STEP_LABELS: Record<Step, string> = {
   details: "Details",
   specs: "Specs",
   images: "Photos",
   review: "Review",
-}
+};
 
 const FUEL_OPTIONS = [
   { value: "PETROL", label: "Petrol" },
@@ -29,36 +29,36 @@ const FUEL_OPTIONS = [
   { value: "HYBRID", label: "Hybrid" },
   { value: "ELECTRIC", label: "Electric" },
   { value: "PLUGIN_HYBRID", label: "Plug-in Hybrid" },
-]
+];
 
 const TRANSMISSION_OPTIONS = [
   { value: "AUTOMATIC", label: "Automatic" },
   { value: "MANUAL", label: "Manual" },
   { value: "CVT", label: "CVT" },
-]
+];
 
-const currentYear = new Date().getFullYear()
+const currentYear = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: currentYear - 1989 }, (_, i) => {
-  const y = String(currentYear - i)
-  return { value: y, label: y }
-})
+  const y = String(currentYear - i);
+  return { value: y, label: y };
+});
 
 interface FormData {
-  title: string
-  make: string
-  model: string
-  year: string
-  price: string
-  mileage: string
-  color: string
-  fuelType: string
-  transmission: string
-  bodyType: string
-  engineSize: string
-  description: string
-  province: string
-  district: string
-  town: string
+  title: string;
+  make: string;
+  model: string;
+  year: string;
+  price: string;
+  mileage: string;
+  color: string;
+  fuelType: string;
+  transmission: string;
+  bodyType: string;
+  engineSize: string;
+  description: string;
+  province: string;
+  district: string;
+  town: string;
 }
 
 const EMPTY: FormData = {
@@ -77,95 +77,95 @@ const EMPTY: FormData = {
   province: "",
   district: "",
   town: "",
-}
+};
 
 export function AddCarForm() {
-  const router = useRouter()
-  const [step, setStep] = useState<Step>("details")
-  const [data, setData] = useState<FormData>(EMPTY)
-  const [errors, setErrors] = useState<Partial<FormData>>({})
-  const [uploadedUrls, setUploadedUrls] = useState<string[]>([])
-  const [uploading, setUploading] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [apiError, setApiError] = useState("")
+  const router = useRouter();
+  const [step, setStep] = useState<Step>("details");
+  const [data, setData] = useState<FormData>(EMPTY);
+  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [apiError, setApiError] = useState("");
 
   function update(key: keyof FormData) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-      setData((d) => ({ ...d, [key]: e.target.value }))
-      setErrors((er) => ({ ...er, [key]: undefined }))
-    }
+      setData((d) => ({ ...d, [key]: e.target.value }));
+      setErrors((er) => ({ ...er, [key]: undefined }));
+    };
   }
 
   function updateMake(value: string) {
-    setData((d) => ({ ...d, make: value, model: "" }))
-    setErrors((er) => ({ ...er, make: undefined }))
+    setData((d) => ({ ...d, make: value, model: "" }));
+    setErrors((er) => ({ ...er, make: undefined }));
   }
 
   function updateModel(value: string) {
-    setData((d) => ({ ...d, model: value }))
-    setErrors((er) => ({ ...er, model: undefined }))
+    setData((d) => ({ ...d, model: value }));
+    setErrors((er) => ({ ...er, model: undefined }));
   }
 
   function updateProvince(value: string) {
-    setData((d) => ({ ...d, province: value, district: "", town: "" }))
-    setErrors((er) => ({ ...er, province: undefined }))
+    setData((d) => ({ ...d, province: value, district: "", town: "" }));
+    setErrors((er) => ({ ...er, province: undefined }));
   }
 
   function updateDistrict(value: string) {
-    setData((d) => ({ ...d, district: value, town: "" }))
-    setErrors((er) => ({ ...er, district: undefined }))
+    setData((d) => ({ ...d, district: value, town: "" }));
+    setErrors((er) => ({ ...er, district: undefined }));
   }
 
   function updateTown(value: string) {
-    setData((d) => ({ ...d, town: value }))
-    setErrors((er) => ({ ...er, town: undefined }))
+    setData((d) => ({ ...d, town: value }));
+    setErrors((er) => ({ ...er, town: undefined }));
   }
 
   function validateDetails(): boolean {
-    const errs: Partial<FormData> = {}
-    if (!data.title.trim()) errs.title = "Required"
-    if (!data.make.trim()) errs.make = "Required"
-    if (!data.model.trim()) errs.model = "Required"
-    if (!data.year) errs.year = "Required"
-    if (!data.price || Number(data.price) <= 0) errs.price = "Enter a valid price"
-    if (!data.mileage || Number(data.mileage) < 0) errs.mileage = "Enter valid mileage"
-    if (!data.province.trim()) errs.province = "Required"
-    if (!data.district.trim()) errs.district = "Required"
-    if (!data.town.trim()) errs.town = "Required"
-    setErrors(errs)
-    return Object.keys(errs).length === 0
+    const errs: Partial<FormData> = {};
+    if (!data.title.trim()) errs.title = "Required";
+    if (!data.make.trim()) errs.make = "Required";
+    if (!data.model.trim()) errs.model = "Required";
+    if (!data.year) errs.year = "Required";
+    if (!data.price || Number(data.price) <= 0) errs.price = "Enter a valid price";
+    if (!data.mileage || Number(data.mileage) < 0) errs.mileage = "Enter valid mileage";
+    if (!data.province.trim()) errs.province = "Required";
+    if (!data.district.trim()) errs.district = "Required";
+    if (!data.town.trim()) errs.town = "Required";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   }
 
   function validateSpecs(): boolean {
-    const errs: Partial<FormData> = {}
-    if (!data.fuelType) errs.fuelType = "Required"
-    if (!data.transmission) errs.transmission = "Required"
-    setErrors(errs)
-    return Object.keys(errs).length === 0
+    const errs: Partial<FormData> = {};
+    if (!data.fuelType) errs.fuelType = "Required";
+    if (!data.transmission) errs.transmission = "Required";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   }
 
   function goNext() {
-    if (step === "details" && !validateDetails()) return
-    if (step === "specs" && !validateSpecs()) return
-    if (step === "images" && uploading) return // wait for uploads
-    const idx = STEPS.indexOf(step)
-    setStep(STEPS[idx + 1])
+    if (step === "details" && !validateDetails()) return;
+    if (step === "specs" && !validateSpecs()) return;
+    if (step === "images" && uploading) return; // wait for uploads
+    const idx = STEPS.indexOf(step);
+    setStep(STEPS[idx + 1]);
   }
 
   function goBack() {
-    const idx = STEPS.indexOf(step)
-    if (idx > 0) setStep(STEPS[idx - 1])
+    const idx = STEPS.indexOf(step);
+    if (idx > 0) setStep(STEPS[idx - 1]);
   }
 
   async function handleSubmit() {
-    setSubmitting(true)
-    setApiError("")
+    setSubmitting(true);
+    setApiError("");
 
     const images = uploadedUrls.map((url, i) => ({
       url,
       isPrimary: i === 0,
       order: i,
-    }))
+    }));
 
     try {
       const res = await fetch("/api/cars", {
@@ -189,21 +189,21 @@ export function AddCarForm() {
           town: data.town || null,
           images,
         }),
-      })
-      const result = await res.json()
+      });
+      const result = await res.json();
       if (!res.ok) {
-        setApiError(result.error ?? "Submission failed")
-        return
+        setApiError(result.error ?? "Submission failed");
+        return;
       }
-      router.push(`/seller/dashboard?submitted=1`)
+      router.push(`/seller/dashboard?submitted=1`);
     } catch {
-      setApiError("Something went wrong. Please try again.")
+      setApiError("Something went wrong. Please try again.");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
-  const stepIdx = STEPS.indexOf(step)
+  const stepIdx = STEPS.indexOf(step);
 
   return (
     <div className="flex flex-col gap-6">
@@ -299,7 +299,12 @@ export function AddCarForm() {
                 placeholder="45000"
               />
             </div>
-            <Input label="Colour" value={data.color} onChange={update("color")} placeholder="e.g. White" />
+            <Input
+              label="Colour"
+              value={data.color}
+              onChange={update("color")}
+              placeholder="e.g. White"
+            />
             <div className="grid grid-cols-3 gap-3 sm:gap-4">
               <AutoComplete
                 label="Province"
@@ -396,14 +401,19 @@ export function AddCarForm() {
             {data.bodyType && <ReviewRow label="Body" value={data.bodyType} />}
             {data.engineSize && <ReviewRow label="Engine" value={data.engineSize} />}
             {data.color && <ReviewRow label="Colour" value={data.color} />}
-            <ReviewRow label="Location" value={[data.town, data.district, data.province].filter(Boolean).join(", ")} />
+            <ReviewRow
+              label="Location"
+              value={[data.town, data.district, data.province].filter(Boolean).join(", ")}
+            />
             <ReviewRow
               label="Photos"
-              value={uploadedUrls.length > 0 ? `${uploadedUrls.length} photo${uploadedUrls.length !== 1 ? "s" : ""}` : "No photos"}
+              value={
+                uploadedUrls.length > 0
+                  ? `${uploadedUrls.length} photo${uploadedUrls.length !== 1 ? "s" : ""}`
+                  : "No photos"
+              }
             />
-            {apiError && (
-              <p className="rounded-md bg-red-50 px-3 py-2 text-danger">{apiError}</p>
-            )}
+            {apiError && <p className="rounded-md bg-red-50 px-3 py-2 text-danger">{apiError}</p>}
           </div>
         )}
       </div>
@@ -424,7 +434,7 @@ export function AddCarForm() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function ReviewRow({ label, value }: { label: string; value: string }) {
@@ -433,5 +443,5 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
       <span className="w-32 shrink-0 font-medium text-foreground-muted">{label}</span>
       <span className="text-foreground">{value}</span>
     </div>
-  )
+  );
 }

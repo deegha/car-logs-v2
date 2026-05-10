@@ -1,20 +1,20 @@
-import Link from "next/link"
-import { SellerCarTable } from "@/components/seller/SellerCarTable"
-import { db } from "@/lib/db"
-import { getSellerSession } from "@/lib/auth"
-import type { Car } from "@/types"
-import type { Metadata } from "next"
+import Link from "next/link";
+import { SellerCarTable } from "@/components/seller/SellerCarTable";
+import { db } from "@/lib/db";
+import { getSellerSession } from "@/lib/auth";
+import type { Car } from "@/types";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "My Listings",
-}
+};
 
 export default async function SellerDashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [session, params] = await Promise.all([getSellerSession(), searchParams])
+  const [session, params] = await Promise.all([getSellerSession(), searchParams]);
 
   const [seller, cars] = await Promise.all([
     db.seller.findUnique({
@@ -26,15 +26,16 @@ export default async function SellerDashboardPage({
       orderBy: { createdAt: "desc" },
       include: { images: { where: { isPrimary: true }, take: 1 } },
     }),
-  ])
+  ]);
 
-  const submitted = params.submitted === "1"
+  const submitted = params.submitted === "1";
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
       {submitted && (
         <div className="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          Your listing has been submitted and is pending review. We&apos;ll notify you once it&apos;s approved.
+          Your listing has been submitted and is pending review. We&apos;ll notify you once
+          it&apos;s approved.
         </div>
       )}
 
@@ -55,5 +56,5 @@ export default async function SellerDashboardPage({
 
       <SellerCarTable initialCars={cars.map((c) => ({ ...c, price: Number(c.price) })) as Car[]} />
     </div>
-  )
+  );
 }

@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
-import { type SelectHTMLAttributes, forwardRef } from "react"
-import { cn } from "@/lib/utils"
+import { type SelectHTMLAttributes, forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 interface SelectOption {
-  value: string
-  label: string
+  value: string;
+  label: string;
 }
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string
-  helperText?: string
-  error?: string
-  options: SelectOption[]
-  placeholder?: string
+  label?: string;
+  helperText?: string;
+  error?: string;
+  options: SelectOption[];
+  placeholder?: string;
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
   { label, helperText, error, options, placeholder, className, id, ...props },
-  ref,
+  ref
 ) {
-  const selectId = id ?? label?.toLowerCase().replace(/\s+/g, "-")
+  const selectId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
   return (
     <div className="flex flex-col gap-1">
       {label && (
@@ -32,9 +32,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
         ref={ref}
         id={selectId}
         className={cn(
-          "h-10 w-full appearance-none rounded-md border border-border bg-background px-3 text-sm text-foreground focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:opacity-50",
+          "h-10 w-full appearance-none rounded-md border border-border bg-background px-3 text-sm text-foreground focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
           error && "border-danger focus:border-danger focus:ring-danger/20",
-          className,
+          className
         )}
         {...props}
       >
@@ -55,5 +55,5 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
         <p className="text-sm text-foreground-muted">{helperText}</p>
       ) : null}
     </div>
-  )
-})
+  );
+});

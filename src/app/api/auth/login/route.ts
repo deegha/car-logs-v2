@@ -1,30 +1,30 @@
-import { db } from "@/lib/db"
-import { verifyPassword, createSellerSession } from "@/lib/auth"
+import { db } from "@/lib/db";
+import { verifyPassword, createSellerSession } from "@/lib/auth";
 
 export async function POST(request: Request) {
-  let body: unknown
+  let body: unknown;
   try {
-    body = await request.json()
+    body = await request.json();
   } catch {
-    return Response.json({ error: "Invalid JSON" }, { status: 400 })
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { email, password } = body as Record<string, string>
+  const { email, password } = body as Record<string, string>;
 
   if (!email || !password) {
-    return Response.json({ error: "Email and password are required" }, { status: 400 })
+    return Response.json({ error: "Email and password are required" }, { status: 400 });
   }
 
-  const seller = await db.seller.findUnique({ where: { email } })
+  const seller = await db.seller.findUnique({ where: { email } });
   if (!seller || !(await verifyPassword(password, seller.passwordHash))) {
-    return Response.json({ error: "Invalid email or password" }, { status: 401 })
+    return Response.json({ error: "Invalid email or password" }, { status: 401 });
   }
 
   if (seller.status === "SUSPENDED") {
-    return Response.json({ error: "Account suspended" }, { status: 403 })
+    return Response.json({ error: "Account suspended" }, { status: 403 });
   }
 
-  await createSellerSession(seller.id)
+  await createSellerSession(seller.id);
 
   return Response.json({
     seller: {
@@ -35,5 +35,5 @@ export async function POST(request: Request) {
       phone: seller.phone,
       status: seller.status,
     },
-  })
+  });
 }

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation";
 
 const LABELS: Record<string, string> = {
   search: "Search",
@@ -10,27 +10,27 @@ const LABELS: Record<string, string> = {
   maxYear: "Max Year",
   minPrice: "Min Price",
   maxPrice: "Max Price",
-}
+};
 
-const FILTER_KEYS = Object.keys(LABELS)
+const FILTER_KEYS = Object.keys(LABELS);
 
 export function FilterChips() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const active = FILTER_KEYS.filter((key) => searchParams.get(key))
+  const active = FILTER_KEYS.filter((key) => searchParams.get(key));
 
-  if (active.length === 0) return null
+  if (active.length === 0) return null;
 
   function removeFilter(key: string) {
-    const params = new URLSearchParams(searchParams.toString())
-    params.delete(key)
-    params.delete("page")
-    router.push(`/cars?${params.toString()}`)
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(key);
+    params.delete("page");
+    router.push(`/cars?${params.toString()}`);
   }
 
   function clearAll() {
-    router.push("/cars")
+    router.push("/cars");
   }
 
   return (
@@ -48,16 +48,24 @@ export function FilterChips() {
             aria-label={`Remove ${LABELS[key]} filter`}
           >
             <svg className="h-3 w-3" viewBox="0 0 12 12" fill="currentColor">
-              <path d="M9 3L3 9M3 3l6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path
+                d="M9 3L3 9M3 3l6 6"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
             </svg>
           </button>
         </span>
       ))}
       {active.length > 1 && (
-        <button onClick={clearAll} className="text-sm text-foreground-muted underline hover:text-foreground">
+        <button
+          onClick={clearAll}
+          className="text-sm text-foreground-muted underline hover:text-foreground"
+        >
           Clear all
         </button>
       )}
     </div>
-  )
+  );
 }

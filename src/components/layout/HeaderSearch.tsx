@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function HeaderSearch() {
-  const router = useRouter()
-  const [value, setValue] = useState("")
+  const router = useRouter();
+  const [value, setValue] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
     if (value.trim()) {
-      router.push(`/cars?search=${encodeURIComponent(value.trim())}`)
+      router.push(`/cars?search=${encodeURIComponent(value.trim())}`);
     }
   }
 
@@ -21,8 +21,8 @@ export function HeaderSearch() {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Search cars…"
-        className="h-9 w-full rounded-md border border-border bg-background-subtle px-3 text-sm text-foreground placeholder:text-foreground-muted focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+        className="h-9 w-full rounded-md border border-border bg-background-subtle px-3 text-sm text-foreground placeholder:text-foreground-muted focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
       />
     </form>
-  )
+  );
 }

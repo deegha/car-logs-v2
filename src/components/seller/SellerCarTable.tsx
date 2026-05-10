@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState } from "react"
-import { StatusBadge } from "@/components/cars/StatusBadge"
-import { Button } from "@/components/ui/Button"
-import { formatPrice, formatMileage } from "@/lib/utils"
-import type { Car } from "@/types"
+import Link from "next/link";
+import { useState } from "react";
+import { StatusBadge } from "@/components/cars/StatusBadge";
+import { Button } from "@/components/ui/Button";
+import { formatPrice, formatMileage } from "@/lib/utils";
+import type { Car } from "@/types";
 
 interface SellerCarTableProps {
-  initialCars: Car[]
+  initialCars: Car[];
 }
 
 export function SellerCarTable({ initialCars }: SellerCarTableProps) {
-  const [cars, setCars] = useState(initialCars)
+  const [cars, setCars] = useState(initialCars);
 
   async function handleDelete(id: number) {
-    const res = await fetch(`/api/seller/cars/${id}`, { method: "DELETE" })
-    if (res.ok) setCars((prev) => prev.filter((c) => c.id !== id))
+    const res = await fetch(`/api/seller/cars/${id}`, { method: "DELETE" });
+    if (res.ok) setCars((prev) => prev.filter((c) => c.id !== id));
   }
 
   if (cars.length === 0) {
@@ -30,14 +30,14 @@ export function SellerCarTable({ initialCars }: SellerCarTableProps) {
           List your first car
         </Link>
       </div>
-    )
+    );
   }
 
   return (
     <div className="overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-border bg-background-subtle text-left text-xs font-semibold uppercase tracking-wider text-foreground-muted">
+          <tr className="border-b border-border bg-background-subtle text-left text-xs font-semibold tracking-wider text-foreground-muted uppercase">
             <th className="px-4 py-3">Listing</th>
             <th className="px-4 py-3">Price</th>
             <th className="px-4 py-3">Mileage</th>
@@ -47,10 +47,16 @@ export function SellerCarTable({ initialCars }: SellerCarTableProps) {
         </thead>
         <tbody>
           {cars.map((car) => (
-            <tr key={car.id} className="border-b border-border last:border-0 hover:bg-background-subtle">
+            <tr
+              key={car.id}
+              className="border-b border-border last:border-0 hover:bg-background-subtle"
+            >
               <td className="px-4 py-3">
                 <div>
-                  <Link href={`/cars/${car.id}`} className="font-medium text-foreground hover:text-primary-600">
+                  <Link
+                    href={`/cars/${car.id}`}
+                    className="font-medium text-foreground hover:text-primary-600"
+                  >
                     {car.title}
                   </Link>
                   <p className="text-xs text-foreground-muted">
@@ -88,5 +94,5 @@ export function SellerCarTable({ initialCars }: SellerCarTableProps) {
         </tbody>
       </table>
     </div>
-  )
+  );
 }

@@ -1,39 +1,39 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/Button"
-import { Badge } from "@/components/ui/Badge"
-import type { Seller } from "@/types"
+import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import type { Seller } from "@/types";
 
 interface AdminSellerTableProps {
-  initialSellers: Seller[]
+  initialSellers: Seller[];
 }
 
 export function AdminSellerTable({ initialSellers }: AdminSellerTableProps) {
-  const [sellers, setSellers] = useState(initialSellers)
+  const [sellers, setSellers] = useState(initialSellers);
 
   async function toggleStatus(id: number, current: string) {
-    const status = current === "ACTIVE" ? "SUSPENDED" : "ACTIVE"
+    const status = current === "ACTIVE" ? "SUSPENDED" : "ACTIVE";
     const res = await fetch(`/api/admin/sellers/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
-    })
+    });
     if (res.ok) {
-      const { seller } = await res.json()
-      setSellers((prev) => prev.map((s) => (s.id === id ? seller : s)))
+      const { seller } = await res.json();
+      setSellers((prev) => prev.map((s) => (s.id === id ? seller : s)));
     }
   }
 
   if (sellers.length === 0) {
-    return <p className="py-8 text-center text-foreground-muted">No sellers found.</p>
+    return <p className="py-8 text-center text-foreground-muted">No sellers found.</p>;
   }
 
   return (
     <div className="overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-border bg-background-subtle text-left text-xs font-semibold uppercase tracking-wider text-foreground-muted">
+          <tr className="border-b border-border bg-background-subtle text-left text-xs font-semibold tracking-wider text-foreground-muted uppercase">
             <th className="px-4 py-3">Name</th>
             <th className="px-4 py-3">Email</th>
             <th className="px-4 py-3">Phone</th>
@@ -44,7 +44,10 @@ export function AdminSellerTable({ initialSellers }: AdminSellerTableProps) {
         </thead>
         <tbody>
           {sellers.map((seller) => (
-            <tr key={seller.id} className="border-b border-border last:border-0 hover:bg-background-subtle">
+            <tr
+              key={seller.id}
+              className="border-b border-border last:border-0 hover:bg-background-subtle"
+            >
               <td className="px-4 py-3 font-medium text-foreground">
                 {seller.firstName} {seller.lastName}
               </td>
@@ -73,5 +76,5 @@ export function AdminSellerTable({ initialSellers }: AdminSellerTableProps) {
         </tbody>
       </table>
     </div>
-  )
+  );
 }

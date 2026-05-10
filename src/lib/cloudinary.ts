@@ -10,9 +10,7 @@ export interface CloudinaryUploadResult {
   format: string;
 }
 
-export async function uploadCarImage(
-  file: File | Blob,
-): Promise<CloudinaryUploadResult> {
+export async function uploadCarImage(file: File | Blob): Promise<CloudinaryUploadResult> {
   if (!CLOUD_NAME) {
     throw new Error("CLOUDINARY_CLOUD_NAME environment variable is not set");
   }
@@ -22,16 +20,16 @@ export async function uploadCarImage(
   formData.append("upload_preset", UPLOAD_PRESET);
   formData.append("folder", FOLDER);
 
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-    { method: "POST", body: formData },
-  );
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+    method: "POST",
+    body: formData,
+  });
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(
       (body as { error?: { message?: string } }).error?.message ??
-        `Cloudinary upload failed (HTTP ${res.status})`,
+        `Cloudinary upload failed (HTTP ${res.status})`
     );
   }
 

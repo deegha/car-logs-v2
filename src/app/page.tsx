@@ -1,10 +1,10 @@
-import Link from "next/link"
-import { Header } from "@/components/layout/Header"
-import { Footer } from "@/components/layout/Footer"
-import { CarCard } from "@/components/cars/CarCard"
-import { db } from "@/lib/db"
-import { CarStatus } from "@/generated/prisma/client"
-import type { Car } from "@/types"
+import Link from "next/link";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { CarCard } from "@/components/cars/CarCard";
+import { db } from "@/lib/db";
+import { CarStatus } from "@/generated/prisma/client";
+import type { Car } from "@/types";
 
 export default async function HomePage() {
   const [featured, availableCount] = await Promise.all([
@@ -15,16 +15,16 @@ export default async function HomePage() {
       include: { images: { where: { isPrimary: true }, take: 1 } },
     }),
     db.car.count({ where: { status: CarStatus.AVAILABLE } }),
-  ])
+  ]);
 
-  let displayCars = featured
+  let displayCars = featured;
   if (displayCars.length === 0) {
     displayCars = await db.car.findMany({
       where: { status: CarStatus.AVAILABLE },
       take: 6,
       orderBy: { createdAt: "desc" },
       include: { images: { where: { isPrimary: true }, take: 1 } },
-    })
+    });
   }
 
   return (
@@ -35,19 +35,22 @@ export default async function HomePage() {
       <section className="bg-background-subtle px-4 py-10 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
-            Find Your Perfect{" "}
-            <span className="text-primary-600">Used Car</span>
+            Find Your Perfect <span className="text-primary-600">Used Car</span>
           </h1>
           <p className="mx-auto mt-3 max-w-md text-base text-foreground-muted sm:mt-4 sm:text-lg">
             Quality pre-owned vehicles from trusted sellers. No hidden fees.
           </p>
 
-          <form action="/cars" method="GET" className="mx-auto mt-6 flex max-w-xl flex-col gap-2 sm:mt-8 sm:flex-row sm:gap-3">
+          <form
+            action="/cars"
+            method="GET"
+            className="mx-auto mt-6 flex max-w-xl flex-col gap-2 sm:mt-8 sm:flex-row sm:gap-3"
+          >
             <input
               name="search"
               type="text"
               placeholder="Search make, model, or title…"
-              className="h-12 w-full flex-1 rounded-xl border border-border bg-background px-4 text-sm text-foreground placeholder:text-foreground-muted focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              className="h-12 w-full flex-1 rounded-xl border border-border bg-background px-4 text-sm text-foreground placeholder:text-foreground-muted focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
             />
             <button
               type="submit"
@@ -69,7 +72,9 @@ export default async function HomePage() {
           ].map((stat) => (
             <div key={stat.label} className="px-2 sm:px-4">
               <p className="text-xl font-bold text-primary-600 sm:text-2xl">{stat.value}</p>
-              <p className="mt-0.5 text-xs text-foreground-muted sm:mt-1 sm:text-sm">{stat.label}</p>
+              <p className="mt-0.5 text-xs text-foreground-muted sm:mt-1 sm:text-sm">
+                {stat.label}
+              </p>
             </div>
           ))}
         </div>
@@ -82,8 +87,18 @@ export default async function HomePage() {
           className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-background p-4 active:bg-background-subtle"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-primary-600">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
           <span className="text-sm font-semibold text-foreground">Browse Cars</span>
@@ -93,7 +108,13 @@ export default async function HomePage() {
           className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-background p-4 active:bg-background-subtle"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-primary-600">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-5 w-5"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
           </div>
@@ -132,5 +153,5 @@ export default async function HomePage() {
 
       <Footer />
     </div>
-  )
+  );
 }

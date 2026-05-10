@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "next/link";
 
 export function Footer() {
   return (
@@ -15,14 +15,27 @@ export function Footer() {
           <div className="flex gap-12 text-sm">
             <nav className="flex flex-col gap-2">
               <p className="font-semibold text-foreground">Browse</p>
-              <Link href="/cars" className="text-foreground-muted hover:text-foreground">All Cars</Link>
-              <Link href="/sell" className="text-foreground-muted hover:text-foreground">Sell Your Car</Link>
+              <Link href="/cars" className="text-foreground-muted hover:text-foreground">
+                All Cars
+              </Link>
+              <Link href="/sell" className="text-foreground-muted hover:text-foreground">
+                Sell Your Car
+              </Link>
             </nav>
             <nav className="flex flex-col gap-2">
               <p className="font-semibold text-foreground">Account</p>
-              <Link href="/auth/login" className="text-foreground-muted hover:text-foreground">Sign in</Link>
-              <Link href="/auth/register" className="text-foreground-muted hover:text-foreground">Register</Link>
-              <Link href="/seller/dashboard" className="text-foreground-muted hover:text-foreground">My Listings</Link>
+              <Link href="/auth/login" className="text-foreground-muted hover:text-foreground">
+                Sign in
+              </Link>
+              <Link href="/auth/register" className="text-foreground-muted hover:text-foreground">
+                Register
+              </Link>
+              <Link
+                href="/seller/dashboard"
+                className="text-foreground-muted hover:text-foreground"
+              >
+                My Listings
+              </Link>
             </nav>
           </div>
         </div>
@@ -32,5 +45,5 @@ export function Footer() {
         </p>
       </div>
     </footer>
-  )
+  );
 }

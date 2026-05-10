@@ -1,12 +1,12 @@
-import Link from "next/link"
-import { db } from "@/lib/db"
-import { CarStatus } from "@/generated/prisma/client"
-import { formatPrice } from "@/lib/utils"
-import type { Metadata } from "next"
+import Link from "next/link";
+import { db } from "@/lib/db";
+import { CarStatus } from "@/generated/prisma/client";
+import { formatPrice } from "@/lib/utils";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
-}
+};
 
 export default async function AdminDashboardPage() {
   const [pendingCount, availableCount, soldCount, reservedCount, rejectedCount, recentPending] =
@@ -30,7 +30,7 @@ export default async function AdminDashboardPage() {
           createdAt: true,
         },
       }),
-    ])
+    ]);
 
   const statCards = [
     { label: "Pending", count: pendingCount, color: "text-yellow-600" },
@@ -38,7 +38,7 @@ export default async function AdminDashboardPage() {
     { label: "Sold", count: soldCount, color: "text-foreground-muted" },
     { label: "Reserved", count: reservedCount, color: "text-primary-600" },
     { label: "Rejected", count: rejectedCount, color: "text-red-600" },
-  ]
+  ];
 
   return (
     <div>
@@ -72,7 +72,7 @@ export default async function AdminDashboardPage() {
           <div className="overflow-hidden rounded-lg border border-border bg-background">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border bg-background-subtle text-left text-xs font-semibold uppercase tracking-wider text-foreground-muted">
+                <tr className="border-b border-border bg-background-subtle text-left text-xs font-semibold tracking-wider text-foreground-muted uppercase">
                   <th className="px-4 py-3">Listing</th>
                   <th className="px-4 py-3">Price</th>
                   <th className="px-4 py-3">Submitted</th>
@@ -110,5 +110,5 @@ export default async function AdminDashboardPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

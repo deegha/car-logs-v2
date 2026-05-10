@@ -1,42 +1,42 @@
-import { notFound, redirect } from "next/navigation"
-import Link from "next/link"
-import { Header } from "@/components/layout/Header"
-import { Footer } from "@/components/layout/Footer"
-import { CarImageGallery } from "@/components/cars/CarImageGallery"
-import { CarSpecsTable } from "@/components/cars/CarSpecsTable"
-import { CarCard } from "@/components/cars/CarCard"
-import { db } from "@/lib/db"
-import { CarStatus } from "@/generated/prisma/client"
-import { formatPrice } from "@/lib/utils"
-import type { Car, CarImage } from "@/types"
-import type { Metadata } from "next"
+import { notFound, redirect } from "next/navigation";
+import Link from "next/link";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { CarImageGallery } from "@/components/cars/CarImageGallery";
+import { CarSpecsTable } from "@/components/cars/CarSpecsTable";
+import { CarCard } from "@/components/cars/CarCard";
+import { db } from "@/lib/db";
+import { CarStatus } from "@/generated/prisma/client";
+import { formatPrice } from "@/lib/utils";
+import type { Car, CarImage } from "@/types";
+import type { Metadata } from "next";
 
-type Params = Promise<{ slug: string }>
+type Params = Promise<{ slug: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const { slug } = await params
+  const { slug } = await params;
   const car = await db.car.findFirst({
     where: { slug, status: CarStatus.AVAILABLE },
     select: { title: true, description: true },
-  })
-  if (!car) return {}
+  });
+  if (!car) return {};
   return {
     title: car.title,
     description: car.description ?? undefined,
-  }
+  };
 }
 
 export default async function CarDetailPage({ params }: { params: Params }) {
-  const { slug } = await params
+  const { slug } = await params;
 
   // Support legacy numeric ID URLs — redirect to the slug URL
   if (/^\d+$/.test(slug)) {
     const carById = await db.car.findFirst({
       where: { id: Number(slug), status: CarStatus.AVAILABLE },
       select: { slug: true },
-    })
-    if (carById?.slug) redirect(`/cars/${carById.slug}`)
-    notFound()
+    });
+    if (carById?.slug) redirect(`/cars/${carById.slug}`);
+    notFound();
   }
 
   const car = await db.car.findFirst({
@@ -47,41 +47,44 @@ export default async function CarDetailPage({ params }: { params: Params }) {
         select: { firstName: true, lastName: true, phone: true },
       },
     },
-  })
+  });
 
-  if (!car) notFound()
+  if (!car) notFound();
 
   const related = await db.car.findMany({
     where: { status: CarStatus.AVAILABLE, make: car.make, id: { not: car.id } },
     take: 4,
     orderBy: { createdAt: "desc" },
     include: { images: { where: { isPrimary: true }, take: 1 } },
-  })
+  });
 
   return (
     <div className="flex min-h-full flex-col">
       <Header />
 
       <main className="flex-1 bg-background-subtle">
-
         {/* ── Mobile: edge-to-edge gallery ──────────────────────────── */}
         <div className="lg:hidden">
-          <CarImageGallery images={car.images as unknown as CarImage[]} title={car.title} edgeToEdge />
+          <CarImageGallery
+            images={car.images as unknown as CarImage[]}
+            title={car.title}
+            edgeToEdge
+          />
         </div>
 
         {/* ── Container ─────────────────────────────────────────────── */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 lg:py-8">
-
           {/* Breadcrumb — desktop only */}
           <nav className="mb-4 hidden text-sm text-foreground-muted lg:block">
-            <Link href="/cars" className="hover:text-foreground">Browse</Link>
+            <Link href="/cars" className="hover:text-foreground">
+              Browse
+            </Link>
             <span className="mx-2">›</span>
             <span className="text-foreground">{car.title}</span>
           </nav>
 
           {/* ── Desktop: original 2-column grid ───────────────────── */}
           <div className="grid gap-8 lg:grid-cols-[3fr_2fr]">
-
             {/* Gallery — desktop left column */}
             <div className="hidden lg:block">
               <CarImageGallery images={car.images as unknown as CarImage[]} title={car.title} />
@@ -89,10 +92,11 @@ export default async function CarDetailPage({ params }: { params: Params }) {
 
             {/* Info panel — right column on desktop, full-width on mobile */}
             <div className="flex flex-col gap-6">
-
               {/* Breadcrumb — mobile only */}
               <nav className="pt-3 text-sm text-foreground-muted lg:hidden">
-                <Link href="/cars" className="hover:text-foreground">← Browse</Link>
+                <Link href="/cars" className="hover:text-foreground">
+                  ← Browse
+                </Link>
               </nav>
 
               {/* Title + price */}
@@ -107,10 +111,10 @@ export default async function CarDetailPage({ params }: { params: Params }) {
 
               {car.description && (
                 <div>
-                  <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider text-foreground-muted">
+                  <h2 className="mb-2 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
                     Description
                   </h2>
-                  <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">
+                  <p className="text-sm leading-relaxed whitespace-pre-line text-foreground">
                     {car.description}
                   </p>
                 </div>
@@ -119,7 +123,7 @@ export default async function CarDetailPage({ params }: { params: Params }) {
               {/* Contact card */}
               {car.seller && (
                 <div className="rounded-lg border border-border bg-background p-4">
-                  <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground-muted">
+                  <h2 className="mb-3 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
                     Contact Seller
                   </h2>
                   <p className="font-medium text-foreground">
@@ -130,8 +134,18 @@ export default async function CarDetailPage({ params }: { params: Params }) {
                       href={`tel:${car.seller.phone}`}
                       className="mt-3 flex items-center gap-2 text-sm text-primary-600 hover:underline lg:inline-flex"
                     >
-                      <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      <svg
+                        className="h-4 w-4 shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                        />
                       </svg>
                       {car.seller.phone}
                     </a>
@@ -160,15 +174,25 @@ export default async function CarDetailPage({ params }: { params: Params }) {
       {/* Sticky bottom CTA — mobile only */}
       {car.seller?.phone && (
         <div
-          className="fixed inset-x-0 z-40 bg-background/90 px-4 pb-1 pt-2 shadow-[0_-1px_0_0_rgba(0,0,0,0.08)] backdrop-blur-sm lg:hidden"
+          className="fixed inset-x-0 z-40 bg-background/90 px-4 pt-2 pb-1 shadow-[0_-1px_0_0_rgba(0,0,0,0.08)] backdrop-blur-sm lg:hidden"
           style={{ bottom: "calc(56px + env(safe-area-inset-bottom))" }}
         >
           <a
             href={`tel:${car.seller.phone}`}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 py-3 text-sm font-semibold text-white active:bg-primary-800"
           >
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-4 w-4"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+              />
             </svg>
             Call Seller — {car.seller.phone}
           </a>
@@ -177,5 +201,5 @@ export default async function CarDetailPage({ params }: { params: Params }) {
 
       <Footer />
     </div>
-  )
+  );
 }

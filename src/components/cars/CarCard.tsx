@@ -1,20 +1,20 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Badge } from "@/components/ui/Badge"
-import { formatPrice, formatMileage } from "@/lib/utils"
-import type { Car } from "@/types"
+import Link from "next/link";
+import Image from "next/image";
+import { Badge } from "@/components/ui/Badge";
+import { formatPrice, formatMileage } from "@/lib/utils";
+import type { Car } from "@/types";
 
 interface CarCardProps {
-  car: Car
+  car: Car;
 }
 
 export function CarCard({ car }: CarCardProps) {
-  const coverImage = car.images?.find((img) => img.isPrimary) ?? car.images?.[0]
+  const coverImage = car.images?.find((img) => img.isPrimary) ?? car.images?.[0];
 
   return (
     <Link
       href={`/cars/${car.slug ?? car.id}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm transition-all active:scale-[0.98] hover:shadow-md"
+      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-background-subtle">
         {coverImage ? (
@@ -27,14 +27,29 @@ export function CarCard({ car }: CarCardProps) {
           />
         ) : (
           <div className="flex h-full items-center justify-center text-foreground-muted">
-            <svg className="h-10 w-10 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 9l2-2h14l2 2v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 14h.01M17 14h.01" />
+            <svg
+              className="h-10 w-10 opacity-30"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M3 9l2-2h14l2 2v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M7 14h.01M17 14h.01"
+              />
             </svg>
           </div>
         )}
         {car.featured && (
-          <span className="absolute left-2 top-2 rounded-full bg-accent-500 px-2 py-0.5 text-xs font-semibold text-white">
+          <span className="absolute top-2 left-2 rounded-full bg-accent-500 px-2 py-0.5 text-xs font-semibold text-white">
             Featured
           </span>
         )}
@@ -53,5 +68,5 @@ export function CarCard({ car }: CarCardProps) {
         </div>
       </div>
     </Link>
-  )
+  );
 }

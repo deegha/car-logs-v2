@@ -1,13 +1,13 @@
-import { redirect } from "next/navigation"
-import { Header } from "@/components/layout/Header"
-import { Footer } from "@/components/layout/Footer"
-import { getSellerSession } from "@/lib/auth"
-import type { ReactNode } from "react"
+import { redirect } from "next/navigation";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { getSellerSession } from "@/lib/auth";
+import type { ReactNode } from "react";
 
 export default async function SellerLayout({ children }: { children: ReactNode }) {
-  const session = await getSellerSession()
+  const session = await getSellerSession();
   if (!session) {
-    redirect("/auth/login")
+    redirect("/auth/login");
   }
 
   return (
@@ -16,5 +16,5 @@ export default async function SellerLayout({ children }: { children: ReactNode }
       <main className="flex-1 bg-background-subtle py-10">{children}</main>
       <Footer />
     </div>
-  )
+  );
 }

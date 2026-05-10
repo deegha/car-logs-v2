@@ -1,32 +1,35 @@
-"use client"
+"use client";
 
-import { useRouter, useSearchParams } from "next/navigation"
-import { useState, useTransition } from "react"
-import { cn } from "@/lib/utils"
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useTransition } from "react";
+import { cn } from "@/lib/utils";
 
 interface SearchBarProps {
-  className?: string
-  placeholder?: string
+  className?: string;
+  placeholder?: string;
 }
 
-export function SearchBar({ className, placeholder = "Search by make, model, or title…" }: SearchBarProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [value, setValue] = useState(searchParams.get("search") ?? "")
-  const [isPending, startTransition] = useTransition()
+export function SearchBar({
+  className,
+  placeholder = "Search by make, model, or title…",
+}: SearchBarProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [value, setValue] = useState(searchParams.get("search") ?? "");
+  const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const params = new URLSearchParams(searchParams.toString())
+    e.preventDefault();
+    const params = new URLSearchParams(searchParams.toString());
     if (value.trim()) {
-      params.set("search", value.trim())
+      params.set("search", value.trim());
     } else {
-      params.delete("search")
+      params.delete("search");
     }
-    params.delete("page")
+    params.delete("page");
     startTransition(() => {
-      router.push(`/cars?${params.toString()}`)
-    })
+      router.push(`/cars?${params.toString()}`);
+    });
   }
 
   return (
@@ -36,7 +39,7 @@ export function SearchBar({ className, placeholder = "Search by make, model, or 
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="h-10 flex-1 rounded-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+        className="h-10 flex-1 rounded-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
       />
       <button
         type="submit"
@@ -46,5 +49,5 @@ export function SearchBar({ className, placeholder = "Search by make, model, or 
         Search
       </button>
     </form>
-  )
+  );
 }

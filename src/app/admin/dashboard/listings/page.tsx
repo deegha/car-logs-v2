@@ -1,13 +1,13 @@
-import Link from "next/link"
-import { AdminCarTable } from "@/components/admin/AdminCarTable"
-import { db } from "@/lib/db"
-import { CarStatus } from "@/generated/prisma/client"
-import type { Car } from "@/types"
-import type { Metadata } from "next"
+import Link from "next/link";
+import { AdminCarTable } from "@/components/admin/AdminCarTable";
+import { db } from "@/lib/db";
+import { CarStatus } from "@/generated/prisma/client";
+import type { Car } from "@/types";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "All Listings",
-}
+};
 
 const STATUS_FILTERS = [
   { value: "", label: "All" },
@@ -16,24 +16,24 @@ const STATUS_FILTERS = [
   { value: "SOLD", label: "Sold" },
   { value: "RESERVED", label: "Reserved" },
   { value: "REJECTED", label: "Rejected" },
-]
+];
 
 export default async function AdminListingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const params = await searchParams
-  const statusParam = String(params.status ?? "")
+  const params = await searchParams;
+  const statusParam = String(params.status ?? "");
   const status = Object.values(CarStatus).includes(statusParam as CarStatus)
     ? (statusParam as CarStatus)
-    : null
+    : null;
 
   const cars = await db.car.findMany({
     where: status ? { status } : {},
     orderBy: { createdAt: "desc" },
     include: { images: { where: { isPrimary: true }, take: 1 } },
-  })
+  });
 
   return (
     <div>
@@ -43,11 +43,7 @@ export default async function AdminListingsPage({
         {STATUS_FILTERS.map(({ value, label }) => (
           <Link
             key={value}
-            href={
-              value
-                ? `/admin/dashboard/listings?status=${value}`
-                : "/admin/dashboard/listings"
-            }
+            href={value ? `/admin/dashboard/listings?status=${value}` : "/admin/dashboard/listings"}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
               (status ?? "") === value
                 ? "bg-primary-600 text-white"
@@ -61,5 +57,5 @@ export default async function AdminListingsPage({
 
       <AdminCarTable initialCars={cars.map((c) => ({ ...c, price: Number(c.price) })) as Car[]} />
     </div>
-  )
+  );
 }

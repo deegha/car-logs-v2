@@ -1,16 +1,16 @@
-import { redirect } from "next/navigation"
-import { getAdminSession } from "@/lib/auth"
-import { AdminLoginForm } from "@/components/admin/AdminLoginForm"
-import type { Metadata } from "next"
+import { redirect } from "next/navigation";
+import { getAdminSession } from "@/lib/auth";
+import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Admin Login",
-}
+};
 
 export default async function AdminLoginPage() {
-  const session = await getAdminSession()
+  const session = await getAdminSession();
   if (session) {
-    redirect("/admin/dashboard")
+    redirect("/admin/dashboard");
   }
 
   return (
@@ -24,5 +24,5 @@ export default async function AdminLoginPage() {
         <AdminLoginForm />
       </div>
     </div>
-  )
+  );
 }

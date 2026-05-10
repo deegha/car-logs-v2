@@ -2,7 +2,6 @@ import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
 declare global {
-  // eslint-disable-next-line no-var
   var __prismaClient: PrismaClient | undefined;
 }
 
@@ -14,12 +13,8 @@ function createClient(): PrismaClient {
 
   return new PrismaClient({
     adapter,
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
+    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 }
 
-export const db =
-  globalThis.__prismaClient ?? (globalThis.__prismaClient = createClient());
+export const db = globalThis.__prismaClient ?? (globalThis.__prismaClient = createClient());

@@ -1,11 +1,11 @@
-import { CarCard } from "@/components/cars/CarCard"
-import { Spinner } from "@/components/ui/Spinner"
-import type { Car } from "@/types"
+import { CarCard } from "@/components/cars/CarCard";
+import { Spinner } from "@/components/ui/Spinner";
+import type { Car } from "@/types";
 
 interface CarGridProps {
-  cars: Car[]
-  loading?: boolean
-  emptyMessage?: string
+  cars: Car[];
+  loading?: boolean;
+  emptyMessage?: string;
 }
 
 export function CarGrid({ cars, loading, emptyMessage = "No listings found." }: CarGridProps) {
@@ -14,7 +14,7 @@ export function CarGrid({ cars, loading, emptyMessage = "No listings found." }: 
       <div className="flex min-h-64 items-center justify-center">
         <Spinner size="lg" />
       </div>
-    )
+    );
   }
 
   if (cars.length === 0) {
@@ -30,7 +30,7 @@ export function CarGrid({ cars, loading, emptyMessage = "No listings found." }: 
         </svg>
         <p>{emptyMessage}</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -39,5 +39,5 @@ export function CarGrid({ cars, loading, emptyMessage = "No listings found." }: 
         <CarCard key={car.id} car={car} />
       ))}
     </div>
-  )
+  );
 }

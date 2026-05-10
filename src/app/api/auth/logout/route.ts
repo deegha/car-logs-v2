@@ -1,6 +1,6 @@
-import { clearSellerSession } from "@/lib/auth"
+import { clearSellerSession } from "@/lib/auth";
 
 export async function DELETE() {
-  await clearSellerSession()
-  return Response.json({ success: true })
+  await clearSellerSession();
+  return Response.json({ success: true });
 }

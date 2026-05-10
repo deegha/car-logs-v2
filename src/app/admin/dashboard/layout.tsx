@@ -1,12 +1,12 @@
-import { redirect } from "next/navigation"
-import { getAdminSession } from "@/lib/auth"
-import { AdminNav } from "@/components/admin/AdminNav"
-import type { ReactNode } from "react"
+import { redirect } from "next/navigation";
+import { getAdminSession } from "@/lib/auth";
+import { AdminNav } from "@/components/admin/AdminNav";
+import type { ReactNode } from "react";
 
 export default async function AdminDashboardLayout({ children }: { children: ReactNode }) {
-  const session = await getAdminSession()
+  const session = await getAdminSession();
   if (!session) {
-    redirect("/admin/login")
+    redirect("/admin/login");
   }
 
   return (
@@ -20,5 +20,5 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
       </aside>
       <main className="flex-1 overflow-auto p-6">{children}</main>
     </div>
-  )
+  );
 }

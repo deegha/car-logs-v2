@@ -1,49 +1,50 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Input } from "@/components/ui/Input"
-import { Button } from "@/components/ui/Button"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 export function RegisterForm() {
-  const router = useRouter()
+  const router = useRouter();
   const [fields, setFields] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
     password: "",
-  })
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function update(key: keyof typeof fields) {
-    return (e: React.ChangeEvent<HTMLInputElement>) => setFields((f) => ({ ...f, [key]: e.target.value }))
+    return (e: React.ChangeEvent<HTMLInputElement>) =>
+      setFields((f) => ({ ...f, [key]: e.target.value }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(fields),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Registration failed")
-        return
+        setError(data.error ?? "Registration failed");
+        return;
       }
-      router.push("/seller/dashboard")
-      router.refresh()
+      router.push("/seller/dashboard");
+      router.refresh();
     } catch {
-      setError("Something went wrong. Please try again.")
+      setError("Something went wrong. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -97,9 +98,7 @@ export function RegisterForm() {
         helperText="Minimum 8 characters"
       />
 
-      {error && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">{error}</p>
-      )}
+      {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">{error}</p>}
 
       <Button type="submit" disabled={loading} className="mt-2 w-full">
         {loading ? "Creating account…" : "Create account"}
@@ -112,5 +111,5 @@ export function RegisterForm() {
         </Link>
       </p>
     </form>
-  )
+  );
 }

@@ -1,16 +1,24 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 interface FormFieldProps {
-  label: string
-  htmlFor?: string
-  error?: string
-  helperText?: string
-  required?: boolean
-  children: React.ReactNode
-  className?: string
+  label: string;
+  htmlFor?: string;
+  error?: string;
+  helperText?: string;
+  required?: boolean;
+  children: React.ReactNode;
+  className?: string;
 }
 
-export function FormField({ label, htmlFor, error, helperText, required, children, className }: FormFieldProps) {
+export function FormField({
+  label,
+  htmlFor,
+  error,
+  helperText,
+  required,
+  children,
+  className,
+}: FormFieldProps) {
   return (
     <div className={cn("flex flex-col gap-1", className)}>
       <label htmlFor={htmlFor} className="text-sm font-medium text-foreground">
@@ -24,5 +32,5 @@ export function FormField({ label, htmlFor, error, helperText, required, childre
         <p className="text-sm text-foreground-muted">{helperText}</p>
       ) : null}
     </div>
-  )
+  );
 }
