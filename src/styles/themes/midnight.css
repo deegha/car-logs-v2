@@ -1,0 +1,66 @@
+/*
+ * MIDNIGHT THEME — Dark luxury feel
+ * To activate: change the @import in app/globals.css to this file
+ */
+
+:root {
+  /* Brand palette — deep teal/emerald */
+  --brand-primary-50: oklch(0.97 0.02 170);
+  --brand-primary-100: oklch(0.92 0.05 170);
+  --brand-primary-200: oklch(0.85 0.09 170);
+  --brand-primary-300: oklch(0.76 0.14 170);
+  --brand-primary-400: oklch(0.66 0.18 170);
+  --brand-primary-500: oklch(0.57 0.20 170);
+  --brand-primary-600: oklch(0.49 0.18 170);
+  --brand-primary-700: oklch(0.41 0.15 170);
+  --brand-primary-800: oklch(0.33 0.11 170);
+  --brand-primary-900: oklch(0.25 0.08 170);
+  --brand-primary-950: oklch(0.17 0.05 170);
+
+  --brand-secondary-50: oklch(0.97 0.01 260);
+  --brand-secondary-100: oklch(0.93 0.02 260);
+  --brand-secondary-200: oklch(0.86 0.05 260);
+  --brand-secondary-300: oklch(0.76 0.09 260);
+  --brand-secondary-400: oklch(0.64 0.13 260);
+  --brand-secondary-500: oklch(0.54 0.16 260);
+  --brand-secondary-600: oklch(0.46 0.14 260);
+  --brand-secondary-700: oklch(0.38 0.12 260);
+  --brand-secondary-800: oklch(0.30 0.09 260);
+  --brand-secondary-900: oklch(0.23 0.06 260);
+
+  --brand-accent-50: oklch(0.98 0.01 45);
+  --brand-accent-100: oklch(0.94 0.04 45);
+  --brand-accent-200: oklch(0.88 0.08 45);
+  --brand-accent-300: oklch(0.81 0.14 45);
+  --brand-accent-400: oklch(0.75 0.19 45);
+  --brand-accent-500: oklch(0.68 0.22 45);
+  --brand-accent-600: oklch(0.58 0.19 45);
+  --brand-accent-700: oklch(0.48 0.16 45);
+  --brand-accent-800: oklch(0.38 0.12 45);
+  --brand-accent-900: oklch(0.28 0.08 45);
+
+  /* Surface colors — dark */
+  --brand-background: #0d1117;
+  --brand-background-subtle: #161b22;
+  --brand-foreground: #e6edf3;
+  --brand-foreground-muted: #8b949e;
+  --brand-border: #30363d;
+  --brand-border-strong: #484f58;
+
+  /* Status colors */
+  --brand-success: oklch(0.62 0.18 150);
+  --brand-warning: oklch(0.74 0.17 80);
+  --brand-danger: oklch(0.60 0.22 20);
+
+  /* Shape */
+  --brand-radius-sm: 0.25rem;
+  --brand-radius-md: 0.5rem;
+  --brand-radius-lg: 0.75rem;
+  --brand-radius-xl: 1.25rem;
+  --brand-radius-full: 9999px;
+
+  /* Shadow */
+  --brand-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --brand-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --brand-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+}
