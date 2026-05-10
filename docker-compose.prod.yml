@@ -22,8 +22,6 @@ services:
     container_name: used_cars_app
     restart: unless-stopped
     env_file: .env
-    environment:
-      PORT: "4000"
     ports:
       - "4000:3000"
     depends_on:
