@@ -61,6 +61,26 @@ const items = [
     ),
   },
   {
+    href: "/blog",
+    label: "Blog",
+    exact: false,
+    icon: (
+      <svg
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+        className="h-5 w-5"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+        />
+      </svg>
+    ),
+  },
+  {
     href: "/seller/dashboard",
     label: "My Cars",
     exact: true,
@@ -90,7 +110,7 @@ export function MobileNav() {
       className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-5">
         {items.map(({ href, label, icon, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href);
           return (

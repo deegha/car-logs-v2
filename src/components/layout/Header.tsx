@@ -24,6 +24,9 @@ export async function Header() {
           <Link href="/sell" className="hover:text-foreground">
             Sell Your Car
           </Link>
+          <Link href="/blog" className="hover:text-foreground">
+            Blog
+          </Link>
         </nav>
 
         <div className="flex flex-1 items-center justify-end gap-2">

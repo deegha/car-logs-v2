@@ -21,8 +21,7 @@ export async function verifyPassword(password: string, hash: string) {
 // in .env when the server is behind HTTP only (e.g. reverse proxy without TLS).
 const COOKIE_BASE = {
   httpOnly: true,
-  secure:
-    process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
+  secure: process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
   sameSite: "lax" as const,
   path: "/",
 };
