@@ -109,6 +109,12 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
                         </Button>
                       </>
                     )}
+                    <Link
+                      href={`/admin/dashboard/listings/${car.id}/edit`}
+                      className="inline-flex h-8 items-center rounded-sm px-3 text-sm font-medium text-foreground hover:bg-background-subtle"
+                    >
+                      Edit
+                    </Link>
                     <Button
                       variant="ghost"
                       size="sm"

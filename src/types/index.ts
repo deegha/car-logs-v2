@@ -27,6 +27,9 @@ export interface Car {
   bodyType: string | null;
   engineSize: string | null;
   description: string | null;
+  province: string | null;
+  district: string | null;
+  town: string | null;
   status: CarStatus;
   featured: boolean;
   sellerId: number;

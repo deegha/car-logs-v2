@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { getAdminSession } from "@/lib/auth";
 import { CarStatus, FuelType, Transmission } from "@/generated/prisma/client";
+import { generateCarSlug } from "@/lib/utils";
 
 type Params = Promise<{ id: string }>;
 
@@ -45,6 +46,10 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     bodyType,
     engineSize,
     description,
+    province,
+    district,
+    town,
+    images,
   } = body as {
     status?: CarStatus;
     featured?: boolean;
@@ -60,16 +65,31 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     bodyType?: string | null;
     engineSize?: string | null;
     description?: string | null;
+    province?: string | null;
+    district?: string | null;
+    town?: string | null;
+    images?: { url: string; alt?: string; isPrimary?: boolean; order?: number }[];
   };
 
   if (status !== undefined && !Object.values(CarStatus).includes(status)) {
     return Response.json({ error: "Invalid status" }, { status: 400 });
   }
 
+  const hasContentChange = [
+    title, make, model, year, price, mileage, color, fuelType,
+    transmission, bodyType, engineSize, description, province, district, town, images,
+  ].some((v) => v !== undefined);
+
+  const slugMake = make ?? existing.make;
+  const slugModel = model ?? existing.model;
+  const slugYear = year ?? existing.year;
+  const newSlug = generateCarSlug(slugMake, slugModel, slugYear, carId);
+
   const car = await db.car.update({
     where: { id: carId },
     data: {
-      ...(status !== undefined && { status }),
+      ...(hasContentChange && { slug: newSlug }),
+      status: status !== undefined ? status : hasContentChange ? CarStatus.PENDING : undefined,
       ...(featured !== undefined && { featured }),
       ...(title !== undefined && { title }),
       ...(make !== undefined && { make }),
@@ -83,6 +103,20 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       ...(bodyType !== undefined && { bodyType }),
       ...(engineSize !== undefined && { engineSize }),
       ...(description !== undefined && { description }),
+      ...(province !== undefined && { province }),
+      ...(district !== undefined && { district }),
+      ...(town !== undefined && { town }),
+      ...(images !== undefined && {
+        images: {
+          deleteMany: {},
+          create: images.map((img, i) => ({
+            url: img.url,
+            alt: img.alt ?? null,
+            isPrimary: img.isPrimary ?? i === 0,
+            order: img.order ?? i,
+          })),
+        },
+      }),
     },
     include: { images: true, seller: { select: { id: true, firstName: true, lastName: true } } },
   });

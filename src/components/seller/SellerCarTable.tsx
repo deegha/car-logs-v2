@@ -71,14 +71,12 @@ export function SellerCarTable({ initialCars }: SellerCarTableProps) {
               </td>
               <td className="px-4 py-3">
                 <div className="flex justify-end gap-2">
-                  {car.status === "PENDING" && (
-                    <Link
-                      href={`/sell?edit=${car.id}`}
-                      className="inline-flex h-8 items-center rounded-sm px-3 text-sm font-medium text-foreground hover:bg-background-subtle"
-                    >
-                      Edit
-                    </Link>
-                  )}
+                  <Link
+                    href={`/seller/listings/${car.id}/edit`}
+                    className="inline-flex h-8 items-center rounded-sm px-3 text-sm font-medium text-foreground hover:bg-background-subtle"
+                  >
+                    Edit
+                  </Link>
                   <Button
                     variant="ghost"
                     size="sm"

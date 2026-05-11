@@ -96,7 +96,10 @@ function BlogPagination({ page, pages }: { page: number; pages: number }) {
       </Link>
       {getPageNumbers().map((p, i) =>
         p === "…" ? (
-          <span key={`e-${i}`} className="flex h-9 w-9 items-center justify-center text-sm text-foreground-muted">
+          <span
+            key={`e-${i}`}
+            className="flex h-9 w-9 items-center justify-center text-sm text-foreground-muted"
+          >
             …
           </span>
         ) : (

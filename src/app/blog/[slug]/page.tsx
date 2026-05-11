@@ -87,7 +87,7 @@ export default async function BlogPostPage({ params }: Props) {
           )}
 
           {/* Title */}
-          <h1 className="mb-4 text-3xl font-bold leading-tight text-foreground sm:text-4xl">
+          <h1 className="mb-4 text-3xl leading-tight font-bold text-foreground sm:text-4xl">
             {post.title}
           </h1>
 
@@ -115,10 +115,7 @@ export default async function BlogPostPage({ params }: Props) {
           )}
 
           {/* Content */}
-          <div
-            className="prose"
-            dangerouslySetInnerHTML={{ __html: post.content ?? "" }}
-          />
+          <div className="prose" dangerouslySetInnerHTML={{ __html: post.content ?? "" }} />
         </article>
       </main>
 

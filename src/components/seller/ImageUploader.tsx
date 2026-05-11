@@ -15,6 +15,7 @@ interface ImageUploaderProps {
   onChange: (cloudUrls: string[]) => void;
   onUploadingChange: (uploading: boolean) => void;
   maxImages?: number;
+  initialImages?: string[];
 }
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -56,8 +57,15 @@ async function compress(file: File): Promise<File> {
   });
 }
 
-export function ImageUploader({ onChange, onUploadingChange, maxImages = 5 }: ImageUploaderProps) {
-  const [images, setImages] = useState<ImageEntry[]>([]);
+export function ImageUploader({ onChange, onUploadingChange, maxImages = 5, initialImages }: ImageUploaderProps) {
+  const [images, setImages] = useState<ImageEntry[]>(() =>
+    (initialImages ?? []).map((url) => ({
+      id: `existing-${url}`,
+      previewUrl: url,
+      status: "done" as const,
+      cloudUrl: url,
+    }))
+  );
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Notify parent whenever images change

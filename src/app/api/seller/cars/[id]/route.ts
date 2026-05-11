@@ -23,9 +23,6 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
   if (!car) {
     return Response.json({ error: "Car not found" }, { status: 404 });
   }
-  if (car.status !== CarStatus.PENDING) {
-    return Response.json({ error: "Only PENDING listings can be edited" }, { status: 409 });
-  }
 
   let body: unknown;
   try {
@@ -47,6 +44,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     bodyType,
     engineSize,
     description,
+    province,
+    district,
+    town,
     images,
   } = body as {
     title?: string;
@@ -61,6 +61,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     bodyType?: string | null;
     engineSize?: string | null;
     description?: string | null;
+    province?: string | null;
+    district?: string | null;
+    town?: string | null;
     images?: { url: string; alt?: string; isPrimary?: boolean; order?: number }[];
   };
 
@@ -73,6 +76,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     where: { id: carId },
     data: {
       slug: newSlug,
+      status: CarStatus.PENDING,
       ...(title !== undefined && { title }),
       ...(make !== undefined && { make }),
       ...(model !== undefined && { model }),
@@ -85,6 +89,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       ...(bodyType !== undefined && { bodyType }),
       ...(engineSize !== undefined && { engineSize }),
       ...(description !== undefined && { description }),
+      ...(province !== undefined && { province }),
+      ...(district !== undefined && { district }),
+      ...(town !== undefined && { town }),
       ...(images !== undefined && {
         images: {
           deleteMany: {},
