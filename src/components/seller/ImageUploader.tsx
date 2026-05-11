@@ -57,7 +57,12 @@ async function compress(file: File): Promise<File> {
   });
 }
 
-export function ImageUploader({ onChange, onUploadingChange, maxImages = 5, initialImages }: ImageUploaderProps) {
+export function ImageUploader({
+  onChange,
+  onUploadingChange,
+  maxImages = 5,
+  initialImages,
+}: ImageUploaderProps) {
   const [images, setImages] = useState<ImageEntry[]>(() =>
     (initialImages ?? []).map((url) => ({
       id: `existing-${url}`,

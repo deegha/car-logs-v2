@@ -15,7 +15,12 @@ import { formatPrice } from "@/lib/utils";
 import type { Car, CarImage } from "@/types";
 
 interface EditCarFormProps {
-  car: Car & { images?: CarImage[]; province?: string | null; district?: string | null; town?: string | null };
+  car: Car & {
+    images?: CarImage[];
+    province?: string | null;
+    district?: string | null;
+    town?: string | null;
+  };
   apiEndpoint: string;
   cancelHref: string;
   isAdmin?: boolean;
@@ -64,8 +69,12 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
   const [bodyType, setBodyType] = useState(car.bodyType ?? "");
   const [engineSize, setEngineSize] = useState(car.engineSize ?? "");
   const [description, setDescription] = useState(car.description ?? "");
-  const [province, setProvince] = useState((car as Car & { province?: string | null }).province ?? "");
-  const [district, setDistrict] = useState((car as Car & { district?: string | null }).district ?? "");
+  const [province, setProvince] = useState(
+    (car as Car & { province?: string | null }).province ?? ""
+  );
+  const [district, setDistrict] = useState(
+    (car as Car & { district?: string | null }).district ?? ""
+  );
   const [town, setTown] = useState((car as Car & { town?: string | null }).town ?? "");
   const [status, setStatus] = useState<string>(isAdmin ? car.status : "PENDING");
   const [uploadedUrls, setUploadedUrls] = useState<string[]>(
@@ -76,7 +85,9 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState("");
 
-  const initialImageUrls = (car.images ?? []).sort((a, b) => a.order - b.order).map((img) => img.url);
+  const initialImageUrls = (car.images ?? [])
+    .sort((a, b) => a.order - b.order)
+    .map((img) => img.url);
 
   function validate() {
     const errs: Record<string, string> = {};
@@ -160,7 +171,10 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
         <Input
           label="Listing Title"
           value={title}
-          onChange={(e) => { setTitle(e.target.value); setErrors((er) => ({ ...er, title: undefined! })); }}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            setErrors((er) => ({ ...er, title: undefined! }));
+          }}
           error={errors.title}
           required
           placeholder="e.g. 2020 Toyota Camry SL – 1 Owner"
@@ -169,7 +183,11 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
           <AutoComplete
             label="Make"
             value={make}
-            onChange={(v) => { setMake(v); setModel(""); setErrors((er) => ({ ...er, make: undefined! })); }}
+            onChange={(v) => {
+              setMake(v);
+              setModel("");
+              setErrors((er) => ({ ...er, make: undefined! }));
+            }}
             options={CAR_MAKES}
             error={errors.make}
             required
@@ -178,7 +196,10 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
           <AutoComplete
             label="Model"
             value={model}
-            onChange={(v) => { setModel(v); setErrors((er) => ({ ...er, model: undefined! })); }}
+            onChange={(v) => {
+              setModel(v);
+              setErrors((er) => ({ ...er, model: undefined! }));
+            }}
             options={getModels(make)}
             error={errors.model}
             required
@@ -190,7 +211,10 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
           <Select
             label="Year"
             value={year}
-            onChange={(e) => { setYear(e.target.value); setErrors((er) => ({ ...er, year: undefined! })); }}
+            onChange={(e) => {
+              setYear(e.target.value);
+              setErrors((er) => ({ ...er, year: undefined! }));
+            }}
             options={YEAR_OPTIONS}
             placeholder="Year"
             error={errors.year}
@@ -200,7 +224,10 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
             label={`Price (${currency.code})`}
             type="number"
             value={price}
-            onChange={(e) => { setPrice(e.target.value); setErrors((er) => ({ ...er, price: undefined! })); }}
+            onChange={(e) => {
+              setPrice(e.target.value);
+              setErrors((er) => ({ ...er, price: undefined! }));
+            }}
             error={errors.price}
             required
             min={0}
@@ -210,7 +237,10 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
             label="Mileage (km)"
             type="number"
             value={mileage}
-            onChange={(e) => { setMileage(e.target.value); setErrors((er) => ({ ...er, mileage: undefined! })); }}
+            onChange={(e) => {
+              setMileage(e.target.value);
+              setErrors((er) => ({ ...er, mileage: undefined! }));
+            }}
             error={errors.mileage}
             required
             min={0}
@@ -227,14 +257,21 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
           <AutoComplete
             label="Province"
             value={province}
-            onChange={(v) => { setProvince(v); setDistrict(""); setTown(""); }}
+            onChange={(v) => {
+              setProvince(v);
+              setDistrict("");
+              setTown("");
+            }}
             options={PROVINCES}
             placeholder="Province"
           />
           <AutoComplete
             label="District"
             value={district}
-            onChange={(v) => { setDistrict(v); setTown(""); }}
+            onChange={(v) => {
+              setDistrict(v);
+              setTown("");
+            }}
             options={getDistricts(province)}
             placeholder={province ? "District" : "Select province first"}
             disabled={!province}
@@ -258,7 +295,10 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
           <Select
             label="Fuel Type"
             value={fuelType}
-            onChange={(e) => { setFuelType(e.target.value as typeof fuelType); setErrors((er) => ({ ...er, fuelType: undefined! })); }}
+            onChange={(e) => {
+              setFuelType(e.target.value as typeof fuelType);
+              setErrors((er) => ({ ...er, fuelType: undefined! }));
+            }}
             options={FUEL_OPTIONS}
             placeholder="Select fuel type"
             error={errors.fuelType}
@@ -267,7 +307,10 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
           <Select
             label="Transmission"
             value={transmission}
-            onChange={(e) => { setTransmission(e.target.value as typeof transmission); setErrors((er) => ({ ...er, transmission: undefined! })); }}
+            onChange={(e) => {
+              setTransmission(e.target.value as typeof transmission);
+              setErrors((er) => ({ ...er, transmission: undefined! }));
+            }}
             options={TRANSMISSION_OPTIONS}
             placeholder="Select transmission"
             error={errors.transmission}
@@ -315,8 +358,7 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
           <span className="font-medium text-foreground">
             {year} {make} {model}
           </span>{" "}
-          ·{" "}
-          <span className="font-semibold text-primary-600">{formatPrice(Number(price))}</span>
+          · <span className="font-semibold text-primary-600">{formatPrice(Number(price))}</span>
         </p>
       )}
 
@@ -326,9 +368,7 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
         </p>
       )}
 
-      {apiError && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">{apiError}</p>
-      )}
+      {apiError && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">{apiError}</p>}
 
       <div className="flex justify-end gap-3">
         <Button type="button" variant="secondary" onClick={() => router.push(cancelHref)}>
