@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
+import { RegisterForm } from "@/components/auth/RegisterForm";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
@@ -88,6 +89,7 @@ export function AddCarForm() {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   function update(key: keyof FormData) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -149,7 +151,14 @@ export function AddCarForm() {
     if (step === "specs" && !validateSpecs()) return;
     if (step === "images" && uploading) return; // wait for uploads
     const idx = STEPS.indexOf(step);
-    setStep(STEPS[idx + 1]);
+    const nextStep = STEPS[idx + 1];
+    setStep(nextStep);
+    if (nextStep === "review" && isAuthenticated === null) {
+      fetch("/api/auth/me")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => setIsAuthenticated(!!d?.seller))
+        .catch(() => setIsAuthenticated(false));
+    }
   }
 
   function goBack() {
@@ -389,7 +398,23 @@ export function AddCarForm() {
           />
         )}
 
-        {step === "review" && (
+        {step === "review" && isAuthenticated === null && (
+          <p className="py-4 text-center text-sm text-foreground-muted">Checking your session…</p>
+        )}
+
+        {step === "review" && isAuthenticated === false && (
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-foreground-muted">
+              Create a free account to submit your listing.
+            </p>
+            <RegisterForm
+              onSuccess={() => setIsAuthenticated(true)}
+              loginHref="/auth/login?next=/sell"
+            />
+          </div>
+        )}
+
+        {step === "review" && isAuthenticated === true && (
           <div className="flex flex-col gap-3 rounded-lg border border-border bg-background-subtle p-4 text-sm">
             <ReviewRow label="Title" value={data.title} />
             <ReviewRow label="Make / Model" value={`${data.make} ${data.model}`} />
@@ -427,11 +452,11 @@ export function AddCarForm() {
           <Button onClick={goNext} disabled={step === "images" && uploading}>
             {step === "images" && uploading ? "Uploading…" : "Continue"}
           </Button>
-        ) : (
+        ) : isAuthenticated === true ? (
           <Button onClick={handleSubmit} disabled={submitting}>
             {submitting ? "Submitting…" : "Submit Listing"}
           </Button>
-        )}
+        ) : null}
       </div>
     </div>
   );

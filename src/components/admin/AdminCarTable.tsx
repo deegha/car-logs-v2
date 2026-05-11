@@ -13,6 +13,8 @@ interface AdminCarTableProps {
 
 export function AdminCarTable({ initialCars }: AdminCarTableProps) {
   const [cars, setCars] = useState(initialCars);
+  const [pendingDelete, setPendingDelete] = useState<{ id: number; title: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   async function patch(id: number, body: Record<string, unknown>) {
     const res = await fetch(`/api/admin/cars/${id}`, {
@@ -26,9 +28,13 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
     }
   }
 
-  async function handleDelete(id: number) {
-    const res = await fetch(`/api/admin/cars/${id}`, { method: "DELETE" });
-    if (res.ok) setCars((prev) => prev.filter((c) => c.id !== id));
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    const res = await fetch(`/api/admin/cars/${pendingDelete.id}`, { method: "DELETE" });
+    if (res.ok) setCars((prev) => prev.filter((c) => c.id !== pendingDelete.id));
+    setDeleting(false);
+    setPendingDelete(null);
   }
 
   if (cars.length === 0) {
@@ -36,6 +42,7 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
   }
 
   return (
+    <>
     <div className="overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
         <thead>
@@ -103,7 +110,7 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleDelete(car.id)}
+                    onClick={() => setPendingDelete({ id: car.id, title: car.title })}
                     className="text-danger"
                   >
                     Delete
@@ -115,5 +122,34 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
         </tbody>
       </table>
     </div>
+
+      {pendingDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-xl border border-border bg-background p-6 shadow-lg">
+            <h2 className="mb-1 text-lg font-semibold text-foreground">Delete listing?</h2>
+            <p className="mb-1 text-sm font-medium text-foreground">{pendingDelete.title}</p>
+            <p className="mb-6 text-sm text-danger">
+              This cannot be undone. The listing will be permanently deleted.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => setPendingDelete(null)}
+                disabled={deleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="bg-danger text-white hover:bg-red-700"
+              >
+                {deleting ? "Deleting…" : "Delete"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

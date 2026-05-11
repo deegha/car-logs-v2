@@ -1,8 +1,6 @@
-import { redirect } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AddCarForm } from "@/components/seller/AddCarForm";
-import { getSellerSession } from "@/lib/auth";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,12 +8,7 @@ export const metadata: Metadata = {
   description: "Submit your car listing for review.",
 };
 
-export default async function SellPage() {
-  const session = await getSellerSession();
-  if (!session) {
-    redirect("/auth/login?next=/sell");
-  }
-
+export default function SellPage() {
   return (
     <div className="flex min-h-full flex-col">
       <Header />

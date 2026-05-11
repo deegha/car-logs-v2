@@ -35,9 +35,16 @@ export async function uploadCarImage(file: File | Blob): Promise<CloudinaryUploa
 
   const data = await res.json();
 
+  // Insert f_auto,q_auto so Cloudinary serves WebP/JPEG regardless of the
+  // uploaded format (e.g. HEIC from iPhone cameras becomes browser-renderable).
+  const secureUrl = (data.secure_url as string).replace(
+    "/image/upload/",
+    "/image/upload/f_auto,q_auto/"
+  );
+
   return {
     publicId: data.public_id as string,
-    secureUrl: data.secure_url as string,
+    secureUrl,
     width: data.width as number,
     height: data.height as number,
     format: data.format as string,

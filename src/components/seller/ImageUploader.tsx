@@ -183,10 +183,10 @@ export function ImageUploader({ onChange, onUploadingChange, maxImages = 5 }: Im
             key={img.id}
             className="relative aspect-square overflow-hidden rounded-lg border border-border bg-background-subtle"
           >
-            {/* Preview — plain img because src is a local blob: URL */}
+            {/* Preview — use Cloudinary URL once done (handles HEIC), else local blob */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={img.previewUrl}
+              src={img.status === "done" && img.cloudUrl ? img.cloudUrl : img.previewUrl}
               alt={`Car photo ${i + 1}`}
               className="absolute inset-0 h-full w-full object-cover"
             />
@@ -329,7 +329,7 @@ export function ImageUploader({ onChange, onUploadingChange, maxImages = 5 }: Im
 
       {/* Helper text */}
       <p className="text-xs text-foreground-muted">
-        Up to {maxImages} photos · JPEG, PNG, WebP · 10 MB max each.{" "}
+        Up to {maxImages} photos · JPEG, PNG, WebP, HEIC · 10 MB max each.{" "}
         <span className="text-foreground">First photo is the cover.</span>
       </p>
 

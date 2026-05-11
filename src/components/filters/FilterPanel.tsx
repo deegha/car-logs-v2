@@ -1,7 +1,8 @@
 "use client";
 
+import Form from "next/form";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { AutoComplete } from "@/components/ui/AutoComplete";
 import { currency } from "@/config/app";
@@ -10,7 +11,6 @@ import { CAR_MAKES, getModels } from "@/data/carMakes";
 export function FilterPanel() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
 
   const [make, setMake] = useState(searchParams.get("make") ?? "");
   const [model, setModel] = useState(searchParams.get("model") ?? "");
@@ -19,21 +19,7 @@ export function FilterPanel() {
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") ?? "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") ?? "");
 
-  function applyFilters(e: React.FormEvent) {
-    e.preventDefault();
-    const params = new URLSearchParams();
-    const search = searchParams.get("search");
-    if (search) params.set("search", search);
-    if (make) params.set("make", make);
-    if (model) params.set("model", model);
-    if (minYear) params.set("minYear", minYear);
-    if (maxYear) params.set("maxYear", maxYear);
-    if (minPrice) params.set("minPrice", minPrice);
-    if (maxPrice) params.set("maxPrice", maxPrice);
-    startTransition(() => {
-      router.push(`/cars?${params.toString()}`);
-    });
-  }
+  const currentSearch = searchParams.get("search") ?? "";
 
   function resetFilters() {
     setMake("");
@@ -42,19 +28,23 @@ export function FilterPanel() {
     setMaxYear("");
     setMinPrice("");
     setMaxPrice("");
-    const params = new URLSearchParams();
-    const search = searchParams.get("search");
-    if (search) params.set("search", search);
-    startTransition(() => {
-      router.push(`/cars?${params.toString()}`);
-    });
+    router.push(currentSearch ? `/cars?search=${encodeURIComponent(currentSearch)}` : "/cars");
   }
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1989 }, (_, i) => String(currentYear - i));
 
   return (
-    <form onSubmit={applyFilters} className="flex flex-col gap-4">
+    <Form action="/cars" className="flex flex-col gap-4">
+      {/* Hidden inputs serialized into URL on submit — only when non-empty for clean URLs */}
+      {currentSearch && <input type="hidden" name="search" value={currentSearch} />}
+      {make && <input type="hidden" name="make" value={make} />}
+      {model && <input type="hidden" name="model" value={model} />}
+      {minYear && <input type="hidden" name="minYear" value={minYear} />}
+      {maxYear && <input type="hidden" name="maxYear" value={maxYear} />}
+      {minPrice && <input type="hidden" name="minPrice" value={minPrice} />}
+      {maxPrice && <input type="hidden" name="maxPrice" value={maxPrice} />}
+
       <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
         Filters
       </h2>
@@ -132,7 +122,7 @@ export function FilterPanel() {
       </FilterGroup>
 
       <div className="flex flex-col gap-2 pt-2">
-        <Button type="submit" disabled={isPending} className="w-full">
+        <Button type="submit" className="w-full">
           Apply Filters
         </Button>
         <Button
@@ -144,7 +134,7 @@ export function FilterPanel() {
           Reset
         </Button>
       </div>
-    </form>
+    </Form>
   );
 }
 

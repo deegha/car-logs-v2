@@ -6,7 +6,12 @@ import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
-export function RegisterForm() {
+interface RegisterFormProps {
+  onSuccess?: () => void;
+  loginHref?: string;
+}
+
+export function RegisterForm({ onSuccess, loginHref = "/auth/login" }: RegisterFormProps) {
   const router = useRouter();
   const [fields, setFields] = useState({
     firstName: "",
@@ -39,8 +44,12 @@ export function RegisterForm() {
         setError(data.error ?? "Registration failed");
         return;
       }
-      router.push("/seller/dashboard");
-      router.refresh();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push("/seller/dashboard");
+        router.refresh();
+      }
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -106,7 +115,7 @@ export function RegisterForm() {
 
       <p className="text-center text-sm text-foreground-muted">
         Already have an account?{" "}
-        <Link href="/auth/login" className="text-primary-600 hover:underline">
+        <Link href={loginHref} className="text-primary-600 hover:underline">
           Sign in
         </Link>
       </p>

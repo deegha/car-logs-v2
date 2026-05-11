@@ -128,31 +128,63 @@ function Pagination({
         sp.set(k, Array.isArray(v) ? (v[0] ?? "") : v);
       }
     }
-    sp.set("page", String(p));
-    return `/cars?${sp.toString()}`;
+    if (p > 1) sp.set("page", String(p));
+    const qs = sp.toString();
+    return qs ? `/cars?${qs}` : "/cars";
   }
 
+  function getPageNumbers(): (number | "…")[] {
+    if (pages <= 7) return Array.from({ length: pages }, (_, i) => i + 1);
+    const nums: (number | "…")[] = [1];
+    if (page > 3) nums.push("…");
+    const lo = Math.max(2, page - 1);
+    const hi = Math.min(pages - 1, page + 1);
+    for (let i = lo; i <= hi; i++) nums.push(i);
+    if (page < pages - 2) nums.push("…");
+    nums.push(pages);
+    return nums;
+  }
+
+  const btnBase =
+    "flex h-9 items-center justify-center rounded-md border border-border bg-background text-sm hover:bg-background-subtle";
+
   return (
-    <nav className="flex items-center justify-center gap-4 pt-4" aria-label="Pagination">
-      {page > 1 && (
-        <Link
-          href={buildUrl(page - 1)}
-          className="rounded-md border border-border bg-background px-4 py-2 text-sm hover:bg-background-subtle"
-        >
-          ← Previous
-        </Link>
+    <nav className="flex items-center justify-center gap-1 pt-4" aria-label="Pagination">
+      <Link
+        href={buildUrl(page - 1)}
+        aria-disabled={page === 1}
+        className={`${btnBase} w-9 ${page === 1 ? "pointer-events-none opacity-40" : ""}`}
+      >
+        ←
+      </Link>
+
+      {getPageNumbers().map((p, i) =>
+        p === "…" ? (
+          <span
+            key={`ellipsis-${i}`}
+            className="flex h-9 w-9 items-center justify-center text-sm text-foreground-muted"
+          >
+            …
+          </span>
+        ) : (
+          <Link
+            key={p}
+            href={buildUrl(p)}
+            className={`${btnBase} w-9 ${p === page ? "border-primary-600 bg-primary-600 font-semibold text-white hover:bg-primary-700" : ""}`}
+            aria-current={p === page ? "page" : undefined}
+          >
+            {p}
+          </Link>
+        )
       )}
-      <span className="text-sm text-foreground-muted">
-        Page {page} of {pages}
-      </span>
-      {page < pages && (
-        <Link
-          href={buildUrl(page + 1)}
-          className="rounded-md border border-border bg-background px-4 py-2 text-sm hover:bg-background-subtle"
-        >
-          Next →
-        </Link>
-      )}
+
+      <Link
+        href={buildUrl(page + 1)}
+        aria-disabled={page === pages}
+        className={`${btnBase} w-9 ${page === pages ? "pointer-events-none opacity-40" : ""}`}
+      >
+        →
+      </Link>
     </nav>
   );
 }

@@ -1,14 +1,8 @@
-import { getSellerSession } from "@/lib/auth";
 import { uploadCarImage } from "@/lib/cloudinary";
 
 export const maxDuration = 30;
 
 export async function POST(request: Request) {
-  const session = await getSellerSession();
-  if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   let formData: FormData;
   try {
     formData = await request.formData();
