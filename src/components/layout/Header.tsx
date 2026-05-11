@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { getSellerSession } from "@/lib/auth";
 import { HeaderSearch } from "./HeaderSearch";
 import { HeaderAuthButton } from "./HeaderAuthButton";
@@ -26,7 +27,9 @@ export async function Header() {
         </nav>
 
         <div className="flex flex-1 items-center justify-end gap-2">
-          <HeaderSearch />
+          <Suspense fallback={<div className="hidden max-w-xs flex-1 sm:block" />}>
+            <HeaderSearch />
+          </Suspense>
           <HeaderAuthButton isLoggedIn={!!session} />
         </div>
       </div>

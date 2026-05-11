@@ -5,7 +5,6 @@ import { Footer } from "@/components/layout/Footer";
 import { CarGrid } from "@/components/cars/CarGrid";
 import { FilterPanel } from "@/components/filters/FilterPanel";
 import { FilterChips } from "@/components/filters/FilterChips";
-import { SearchBar } from "@/components/filters/SearchBar";
 import { db } from "@/lib/db";
 import { CarStatus } from "@/generated/prisma/client";
 import type { Car } from "@/types";
@@ -86,14 +85,9 @@ export default async function CarsPage({
             </aside>
 
             <div className="flex flex-1 flex-col gap-4">
-              <div className="flex flex-col gap-3">
-                <Suspense>
-                  <SearchBar />
-                </Suspense>
-                <Suspense>
-                  <FilterChips />
-                </Suspense>
-              </div>
+              <Suspense>
+                <FilterChips />
+              </Suspense>
 
               <p className="text-sm text-foreground-muted">
                 {total.toLocaleString()} {total === 1 ? "listing" : "listings"} found

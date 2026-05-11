@@ -37,7 +37,15 @@ export default async function AdminListingsPage({
 
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold text-foreground">Listings</h1>
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">Listings</h1>
+        <Link
+          href="/admin/dashboard/listings/new"
+          className="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
+        >
+          + Add Listing
+        </Link>
+      </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
         {STATUS_FILTERS.map(({ value, label }) => (
