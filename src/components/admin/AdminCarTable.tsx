@@ -63,7 +63,7 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
               >
                 <td className="px-4 py-3">
                   <Link
-                    href={`/cars/${car.id}`}
+                    href={`/cars/${car.slug ?? car.id}`}
                     className="font-medium text-foreground hover:text-primary-600"
                   >
                     {car.title}

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Blog",
   description: "Car buying guides, market insights, and tips for sellers in Sri Lanka.",
   openGraph: {
-    title: "Blog | PrestigeRides",
+    title: "Blog | carlogs.lk",
     description: "Car buying guides, market insights, and tips for sellers in Sri Lanka.",
     type: "website",
   },

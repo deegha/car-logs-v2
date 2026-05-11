@@ -2,7 +2,7 @@
 title: "Top 10 Tips for Buying a Used Car"
 date: "2026-05-10"
 excerpt: "Buying a used car doesn't have to be stressful. Follow these expert tips to make a smart purchase and avoid common pitfalls."
-author: "PrestigeRides Team"
+author: "carlogs.lk Team"
 coverImage: "https://res.cloudinary.com/duqpgdc9v/image/upload/v1778512009/car-listing/carllisting-blog-images/2026-mazda-cx-5-105-698f973b83731.avif"
 tags: ["buying guide", "tips", "used cars"]
 ---
@@ -103,4 +103,4 @@ A 5–10% reduction from the asking price is reasonable in most cases.
 
 ---
 
-Happy car hunting. Browse our current listings on PrestigeRides to find your next vehicle.
+Happy car hunting. Browse our current listings on carlogs.lk to find your next vehicle.

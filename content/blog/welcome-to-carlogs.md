@@ -1,13 +1,13 @@
 ---
-title: "Welcome to the PrestigeRides Blog"
+title: "Welcome to the carlogs.lk Blog"
 date: "2026-05-11"
-excerpt: "Introducing the PrestigeRides blog — your source for car buying guides, market insights, and tips for sellers."
-author: "PrestigeRides Team"
+excerpt: "Introducing the carlogs.lk blog — your source for car buying guides, market insights, and tips for sellers."
+author: "carlogs.lk Team"
 coverImage: ""
 tags: ["news", "announcement"]
 ---
 
-Welcome to the official PrestigeRides blog. We created this space to help buyers and sellers navigate the used car market in Sri Lanka with confidence.
+Welcome to the official carlogs.lk blog. We created this space to help buyers and sellers navigate the used car market in Sri Lanka with confidence.
 
 ## What You'll Find Here
 
@@ -33,7 +33,7 @@ We'll be publishing content across three main themes:
 - Seasonal buying and selling patterns
 - Import vs. locally purchased vehicles
 
-## How to Use PrestigeRides
+## How to Use carlogs.lk
 
 **Browsing listings** is free and requires no account. Use the filters on the [Browse page](/cars) to narrow down by make, model, year, and price.
 
@@ -45,4 +45,4 @@ We'll be publishing content across three main themes:
 
 We're just getting started. If there's a topic you'd like us to cover, feel free to reach out.
 
-The PrestigeRides Team
+The carlogs.lk Team

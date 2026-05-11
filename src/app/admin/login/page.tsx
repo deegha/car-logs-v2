@@ -17,7 +17,7 @@ export default async function AdminLoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background-subtle">
       <div className="w-full max-w-sm rounded-xl border border-border bg-background p-8 shadow-sm">
         <div className="mb-6">
-          <p className="text-xl font-bold text-primary-600">PrestigeRides</p>
+          <p className="text-xl font-bold text-primary-600">carlogs.lk</p>
           <h1 className="mt-1 text-2xl font-bold text-foreground">Admin Login</h1>
           <p className="mt-1 text-sm text-foreground-muted">Administration panel</p>
         </div>

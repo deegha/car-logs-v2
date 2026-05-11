@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "PrestigeRides — Quality Used Cars",
-    template: "%s | PrestigeRides",
+    default: "carlogs.lk — Quality Used Cars",
+    template: "%s | carlogs.lk",
   },
   description: "Browse our curated selection of quality pre-owned vehicles.",
 };

@@ -41,88 +41,94 @@ export function SellerCarTable({ initialCars }: SellerCarTableProps) {
 
   return (
     <>
-    <div className="overflow-x-auto rounded-lg border border-border">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-border bg-background-subtle text-left text-xs font-semibold tracking-wider text-foreground-muted uppercase">
-            <th className="px-4 py-3">Listing</th>
-            <th className="px-4 py-3">Price</th>
-            <th className="px-4 py-3">Mileage</th>
-            <th className="px-4 py-3">Status</th>
-            <th className="px-4 py-3 text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cars.map((car) => (
-            <tr
-              key={car.id}
-              className="border-b border-border last:border-0 hover:bg-background-subtle"
-            >
-              <td className="px-4 py-3">
-                <div>
-                  <Link
-                    href={`/cars/${car.id}`}
-                    className="font-medium text-foreground hover:text-primary-600"
-                  >
-                    {car.title}
-                  </Link>
-                  <p className="text-xs text-foreground-muted">
-                    {car.year} · {car.make} {car.model}
-                  </p>
-                </div>
-              </td>
-              <td className="px-4 py-3 font-semibold text-primary-600">{formatPrice(car.price)}</td>
-              <td className="px-4 py-3 text-foreground-muted">{formatMileage(car.mileage)}</td>
-              <td className="px-4 py-3">
-                <StatusBadge status={car.status} />
-              </td>
-              <td className="px-4 py-3">
-                <div className="flex justify-end gap-2">
-                  <Link
-                    href={`/seller/listings/${car.id}/edit`}
-                    className="inline-flex h-8 items-center rounded-sm px-3 text-sm font-medium text-foreground hover:bg-background-subtle"
-                  >
-                    Edit
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-danger"
-                    onClick={() => setPendingDelete({ id: car.id, title: car.title })}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </td>
+      <div className="overflow-x-auto rounded-lg border border-border">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border bg-background-subtle text-left text-xs font-semibold tracking-wider text-foreground-muted uppercase">
+              <th className="px-4 py-3">Listing</th>
+              <th className="px-4 py-3">Price</th>
+              <th className="px-4 py-3">Mileage</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3 text-right">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {cars.map((car) => (
+              <tr
+                key={car.id}
+                className="border-b border-border last:border-0 hover:bg-background-subtle"
+              >
+                <td className="px-4 py-3">
+                  <div>
+                    <Link
+                      href={`/cars/${car.slug ?? car.id}`}
+                      className="font-medium text-foreground hover:text-primary-600"
+                    >
+                      {car.title}
+                    </Link>
+                    <p className="text-xs text-foreground-muted">
+                      {car.year} · {car.make} {car.model}
+                    </p>
+                  </div>
+                </td>
+                <td className="px-4 py-3 font-semibold text-primary-600">
+                  {formatPrice(car.price)}
+                </td>
+                <td className="px-4 py-3 text-foreground-muted">{formatMileage(car.mileage)}</td>
+                <td className="px-4 py-3">
+                  <StatusBadge status={car.status} />
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex justify-end gap-2">
+                    <Link
+                      href={`/seller/listings/${car.id}/edit`}
+                      className="inline-flex h-8 items-center rounded-sm px-3 text-sm font-medium text-foreground hover:bg-background-subtle"
+                    >
+                      Edit
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-danger"
+                      onClick={() => setPendingDelete({ id: car.id, title: car.title })}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-    {pendingDelete && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-        <div className="w-full max-w-sm rounded-xl border border-border bg-background p-6 shadow-lg">
-          <h2 className="mb-1 text-lg font-semibold text-foreground">Delete listing?</h2>
-          <p className="mb-1 text-sm font-medium text-foreground">{pendingDelete.title}</p>
-          <p className="mb-6 text-sm text-danger">
-            This cannot be undone. The listing will be permanently deleted.
-          </p>
-          <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={() => setPendingDelete(null)} disabled={deleting}>
-              Cancel
-            </Button>
-            <Button
-              onClick={confirmDelete}
-              disabled={deleting}
-              className="bg-danger text-white hover:bg-red-700"
-            >
-              {deleting ? "Deleting…" : "Delete"}
-            </Button>
+      {pendingDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-xl border border-border bg-background p-6 shadow-lg">
+            <h2 className="mb-1 text-lg font-semibold text-foreground">Delete listing?</h2>
+            <p className="mb-1 text-sm font-medium text-foreground">{pendingDelete.title}</p>
+            <p className="mb-6 text-sm text-danger">
+              This cannot be undone. The listing will be permanently deleted.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => setPendingDelete(null)}
+                disabled={deleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="bg-danger text-white hover:bg-red-700"
+              >
+                {deleting ? "Deleting…" : "Delete"}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
     </>
   );
 }
