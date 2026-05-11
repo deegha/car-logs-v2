@@ -16,9 +16,13 @@ export async function verifyPassword(password: string, hash: string) {
   return bcrypt.compare(password, hash);
 }
 
+// COOKIE_SECURE=false lets production deployments on plain HTTP work.
+// Defaults to true in production (correct for HTTPS). Set COOKIE_SECURE=false
+// in .env when the server is behind HTTP only (e.g. reverse proxy without TLS).
 const COOKIE_BASE = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
+  secure:
+    process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
   sameSite: "lax" as const,
   path: "/",
 };

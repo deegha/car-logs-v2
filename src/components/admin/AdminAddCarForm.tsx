@@ -146,11 +146,16 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       {/* Seller & status */}
       <section className="flex flex-col gap-4 rounded-lg border border-border bg-background p-5">
-        <h2 className="text-sm font-semibold text-foreground-muted uppercase tracking-wider">Seller</h2>
+        <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
+          Seller
+        </h2>
         <Select
           label="List on behalf of"
           value={sellerId}
-          onChange={(e) => { setSellerId(e.target.value); setErrors((er) => ({ ...er, sellerId: undefined! })); }}
+          onChange={(e) => {
+            setSellerId(e.target.value);
+            setErrors((er) => ({ ...er, sellerId: undefined! }));
+          }}
           options={sellerOptions}
           placeholder="Select a seller"
           error={errors.sellerId}
@@ -167,11 +172,16 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
 
       {/* Basic details */}
       <section className="flex flex-col gap-4 rounded-lg border border-border bg-background p-5">
-        <h2 className="text-sm font-semibold text-foreground-muted uppercase tracking-wider">Details</h2>
+        <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
+          Details
+        </h2>
         <Input
           label="Listing Title"
           value={title}
-          onChange={(e) => { setTitle(e.target.value); setErrors((er) => ({ ...er, title: undefined! })); }}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            setErrors((er) => ({ ...er, title: undefined! }));
+          }}
           error={errors.title}
           required
           placeholder="e.g. 2020 Toyota Camry SL – 1 Owner"
@@ -180,7 +190,11 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           <AutoComplete
             label="Make"
             value={make}
-            onChange={(v) => { setMake(v); setModel(""); setErrors((er) => ({ ...er, make: undefined! })); }}
+            onChange={(v) => {
+              setMake(v);
+              setModel("");
+              setErrors((er) => ({ ...er, make: undefined! }));
+            }}
             options={CAR_MAKES}
             error={errors.make}
             required
@@ -189,7 +203,10 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           <AutoComplete
             label="Model"
             value={model}
-            onChange={(v) => { setModel(v); setErrors((er) => ({ ...er, model: undefined! })); }}
+            onChange={(v) => {
+              setModel(v);
+              setErrors((er) => ({ ...er, model: undefined! }));
+            }}
             options={getModels(make)}
             error={errors.model}
             required
@@ -201,7 +218,10 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           <Select
             label="Year"
             value={year}
-            onChange={(e) => { setYear(e.target.value); setErrors((er) => ({ ...er, year: undefined! })); }}
+            onChange={(e) => {
+              setYear(e.target.value);
+              setErrors((er) => ({ ...er, year: undefined! }));
+            }}
             options={YEAR_OPTIONS}
             placeholder="Year"
             error={errors.year}
@@ -211,7 +231,10 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
             label={`Price (${currency.code})`}
             type="number"
             value={price}
-            onChange={(e) => { setPrice(e.target.value); setErrors((er) => ({ ...er, price: undefined! })); }}
+            onChange={(e) => {
+              setPrice(e.target.value);
+              setErrors((er) => ({ ...er, price: undefined! }));
+            }}
             error={errors.price}
             required
             min={0}
@@ -221,26 +244,41 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
             label="Mileage (km)"
             type="number"
             value={mileage}
-            onChange={(e) => { setMileage(e.target.value); setErrors((er) => ({ ...er, mileage: undefined! })); }}
+            onChange={(e) => {
+              setMileage(e.target.value);
+              setErrors((er) => ({ ...er, mileage: undefined! }));
+            }}
             error={errors.mileage}
             required
             min={0}
             placeholder="45000"
           />
         </div>
-        <Input label="Colour" value={color} onChange={(e) => setColor(e.target.value)} placeholder="e.g. White" />
+        <Input
+          label="Colour"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          placeholder="e.g. White"
+        />
         <div className="grid grid-cols-3 gap-4">
           <AutoComplete
             label="Province"
             value={province}
-            onChange={(v) => { setProvince(v); setDistrict(""); setTown(""); }}
+            onChange={(v) => {
+              setProvince(v);
+              setDistrict("");
+              setTown("");
+            }}
             options={PROVINCES}
             placeholder="Province"
           />
           <AutoComplete
             label="District"
             value={district}
-            onChange={(v) => { setDistrict(v); setTown(""); }}
+            onChange={(v) => {
+              setDistrict(v);
+              setTown("");
+            }}
             options={getDistricts(province)}
             placeholder={province ? "District" : "Select province first"}
             disabled={!province}
@@ -258,12 +296,17 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
 
       {/* Specs */}
       <section className="flex flex-col gap-4 rounded-lg border border-border bg-background p-5">
-        <h2 className="text-sm font-semibold text-foreground-muted uppercase tracking-wider">Specs</h2>
+        <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
+          Specs
+        </h2>
         <div className="grid grid-cols-2 gap-4">
           <Select
             label="Fuel Type"
             value={fuelType}
-            onChange={(e) => { setFuelType(e.target.value); setErrors((er) => ({ ...er, fuelType: undefined! })); }}
+            onChange={(e) => {
+              setFuelType(e.target.value);
+              setErrors((er) => ({ ...er, fuelType: undefined! }));
+            }}
             options={FUEL_OPTIONS}
             placeholder="Select fuel type"
             error={errors.fuelType}
@@ -272,7 +315,10 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           <Select
             label="Transmission"
             value={transmission}
-            onChange={(e) => { setTransmission(e.target.value); setErrors((er) => ({ ...er, transmission: undefined! })); }}
+            onChange={(e) => {
+              setTransmission(e.target.value);
+              setErrors((er) => ({ ...er, transmission: undefined! }));
+            }}
             options={TRANSMISSION_OPTIONS}
             placeholder="Select transmission"
             error={errors.transmission}
@@ -280,8 +326,18 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Input label="Body Type" value={bodyType} onChange={(e) => setBodyType(e.target.value)} placeholder="e.g. Sedan, SUV" />
-          <Input label="Engine Size" value={engineSize} onChange={(e) => setEngineSize(e.target.value)} placeholder="e.g. 2.5L" />
+          <Input
+            label="Body Type"
+            value={bodyType}
+            onChange={(e) => setBodyType(e.target.value)}
+            placeholder="e.g. Sedan, SUV"
+          />
+          <Input
+            label="Engine Size"
+            value={engineSize}
+            onChange={(e) => setEngineSize(e.target.value)}
+            placeholder="e.g. 2.5L"
+          />
         </div>
         <Textarea
           label="Description"
@@ -294,24 +350,36 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
 
       {/* Photos */}
       <section className="flex flex-col gap-4 rounded-lg border border-border bg-background p-5">
-        <h2 className="text-sm font-semibold text-foreground-muted uppercase tracking-wider">Photos</h2>
+        <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
+          Photos
+        </h2>
         <ImageUploader onChange={setUploadedUrls} onUploadingChange={setUploading} maxImages={5} />
       </section>
 
       {/* Summary & submit */}
       {price && year && make && model && (
         <p className="text-sm text-foreground-muted">
-          Listing: <span className="font-medium text-foreground">{year} {make} {model}</span>
-          {price && <> · <span className="font-semibold text-primary-600">{formatPrice(Number(price))}</span></>}
+          Listing:{" "}
+          <span className="font-medium text-foreground">
+            {year} {make} {model}
+          </span>
+          {price && (
+            <>
+              {" "}
+              · <span className="font-semibold text-primary-600">{formatPrice(Number(price))}</span>
+            </>
+          )}
         </p>
       )}
 
-      {apiError && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">{apiError}</p>
-      )}
+      {apiError && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">{apiError}</p>}
 
       <div className="flex justify-end gap-3">
-        <Button type="button" variant="secondary" onClick={() => router.push("/admin/dashboard/listings")}>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => router.push("/admin/dashboard/listings")}
+        >
           Cancel
         </Button>
         <Button type="submit" disabled={submitting || uploading}>

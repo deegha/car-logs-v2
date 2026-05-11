@@ -91,9 +91,22 @@ export async function POST(request: Request) {
     images?: { url: string; isPrimary?: boolean; order?: number }[];
   };
 
-  if (!sellerId || !title || !make || !model || !year || price === undefined || mileage === undefined || !fuelType || !transmission) {
+  if (
+    !sellerId ||
+    !title ||
+    !make ||
+    !model ||
+    !year ||
+    price === undefined ||
+    mileage === undefined ||
+    !fuelType ||
+    !transmission
+  ) {
     return Response.json(
-      { error: "sellerId, title, make, model, year, price, mileage, fuelType and transmission are required" },
+      {
+        error:
+          "sellerId, title, make, model, year, price, mileage, fuelType and transmission are required",
+      },
       { status: 400 }
     );
   }
@@ -105,7 +118,12 @@ export async function POST(request: Request) {
 
   const car = await db.car.create({
     data: {
-      title, make, model, year, price, mileage,
+      title,
+      make,
+      model,
+      year,
+      price,
+      mileage,
       color: color ?? null,
       fuelType,
       transmission,
