@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { getSellerSession } from "@/lib/auth";
 import { HeaderSearch } from "./HeaderSearch";
 import { HeaderAuthButton } from "./HeaderAuthButton";
+import { CarlogsLogo } from "./CarlogsLogo";
 
 export async function Header() {
   const session = await getSellerSession();
@@ -13,8 +14,8 @@ export async function Header() {
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:h-16 sm:gap-4 sm:px-6 lg:px-8">
-        <Link href="/" className="shrink-0 text-lg font-bold text-primary-600 sm:text-xl">
-          carlogs.lk
+        <Link href="/" className="shrink-0">
+          <CarlogsLogo />
         </Link>
 
         <nav className="hidden items-center gap-6 text-sm font-medium text-foreground-muted sm:flex">

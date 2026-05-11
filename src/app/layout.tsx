@@ -13,12 +13,23 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const OG_IMAGE =
+  "https://res.cloudinary.com/duqpgdc9v/image/upload/c_pad,b_white,w_1200,h_630/v1778517784/car-listing/carllisting-blog-images/carlogs.lk-lgo.png";
+
 export const metadata: Metadata = {
   title: {
     default: "carlogs.lk — Quality Used Cars",
     template: "%s | carlogs.lk",
   },
   description: "Browse our curated selection of quality pre-owned vehicles.",
+  openGraph: {
+    siteName: "carlogs.lk",
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "carlogs.lk" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [OG_IMAGE],
+  },
 };
 
 export const viewport: Viewport = {

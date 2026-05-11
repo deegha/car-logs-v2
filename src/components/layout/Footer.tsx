@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CarlogsLogo } from "./CarlogsLogo";
 
 export function Footer() {
   return (
@@ -6,7 +7,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-lg font-bold text-primary-600">carlogs.lk</p>
+            <CarlogsLogo textClassName="text-lg font-bold text-foreground" />
             <p className="mt-1 max-w-xs text-sm text-foreground-muted">
               Connecting buyers and sellers of quality pre-owned vehicles across Sri Lanka.
             </p>
