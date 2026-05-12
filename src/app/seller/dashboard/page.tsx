@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { SellerCarTable } from "@/components/seller/SellerCarTable";
+import { SellerPhoneManager } from "@/components/seller/SellerPhoneManager";
 import { db } from "@/lib/db";
 import { getSellerSession } from "@/lib/auth";
-import type { Car } from "@/types";
+import type { Car, SellerPhone } from "@/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,7 +20,10 @@ export default async function SellerDashboardPage({
   const [seller, cars] = await Promise.all([
     db.seller.findUnique({
       where: { id: session!.sellerId },
-      select: { firstName: true },
+      select: {
+        firstName: true,
+        phones: { select: { id: true, number: true, isPrimary: true, isWhatsApp: true, sellerId: true, createdAt: true }, orderBy: { createdAt: "asc" } },
+      },
     }),
     db.car.findMany({
       where: { sellerId: session!.sellerId },
@@ -52,6 +56,13 @@ export default async function SellerDashboardPage({
         >
           + Add Listing
         </Link>
+      </div>
+
+      <div className="mb-8 rounded-lg border border-border bg-background p-5">
+        <h2 className="mb-4 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
+          Phone Numbers
+        </h2>
+        <SellerPhoneManager initialPhones={(seller?.phones ?? []) as SellerPhone[]} />
       </div>
 
       <SellerCarTable initialCars={cars.map((c) => ({ ...c, price: Number(c.price) })) as Car[]} />

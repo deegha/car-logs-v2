@@ -81,7 +81,18 @@ const EMPTY: FormData = {
   town: "",
 };
 
-export function AddCarForm() {
+interface SellerInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phones: { id: number; number: string; isPrimary: boolean; isWhatsApp: boolean }[];
+}
+
+interface AddCarFormProps {
+  isLoggedIn?: boolean;
+}
+
+export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
   const router = useRouter();
   const [step, setStep] = useState<Step>("details");
   const [data, setData] = useState<FormData>(EMPTY);
@@ -93,7 +104,17 @@ export function AddCarForm() {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [hasJustRegistered, setHasJustRegistered] = useState(false);
+  const showContactDetails = isLoggedIn || hasJustRegistered;
+  const [seller, setSeller] = useState<SellerInfo | null>(null);
+  const [newPhone, setNewPhone] = useState("");
+  const [addingPhone, setAddingPhone] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+  const [removingPhoneId, setRemovingPhoneId] = useState<number | null>(null);
+  const [patchingPhoneId, setPatchingPhoneId] = useState<number | null>(null);
+  const [localPhones, setLocalPhones] = useState<{ id: number; number: string; isPrimary: boolean; isWhatsApp: boolean }[]>([]);
+  const [localPhoneInput, setLocalPhoneInput] = useState("");
+  const [localPhoneError, setLocalPhoneError] = useState("");
 
   function update(key: keyof FormData) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -157,17 +178,124 @@ export function AddCarForm() {
     const idx = STEPS.indexOf(step);
     const nextStep = STEPS[idx + 1];
     setStep(nextStep);
-    if (nextStep === "review" && isAuthenticated === null) {
+    if (nextStep === "review" && (isLoggedIn || hasJustRegistered)) {
       fetch("/api/auth/me")
-        .then((r) => (r.ok ? r.json() : null))
-        .then((d) => setIsAuthenticated(!!d?.seller))
-        .catch(() => setIsAuthenticated(false));
+        .then((r) => r.ok ? r.json() : null)
+        .then((d) => { if (d?.seller) setSeller(d.seller); })
+        .catch(() => {});
     }
   }
 
   function goBack() {
     const idx = STEPS.indexOf(step);
     if (idx > 0) setStep(STEPS[idx - 1]);
+  }
+
+  async function addPhone() {
+    setPhoneError("");
+    if (!/^\d{9}$/.test(newPhone)) {
+      setPhoneError("Enter a 9-digit local number (e.g. 712345678)");
+      return;
+    }
+    setAddingPhone(true);
+    try {
+      const res = await fetch("/api/seller/phones", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ number: newPhone }),
+      });
+      const d = await res.json();
+      if (!res.ok) { setPhoneError(d.error ?? "Failed to add"); return; }
+      setSeller((s) => s ? { ...s, phones: [...s.phones, d.phone] } : s);
+      setNewPhone("");
+    } finally {
+      setAddingPhone(false);
+    }
+  }
+
+  async function removePhone(id: number) {
+    setPhoneError("");
+    setRemovingPhoneId(id);
+    try {
+      const res = await fetch(`/api/seller/phones/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setSeller((s) => {
+          if (!s) return s;
+          const filtered = s.phones.filter((p) => p.id !== id);
+          if (data.promotedId) {
+            return { ...s, phones: filtered.map((p) => p.id === data.promotedId ? { ...p, isPrimary: true } : p) };
+          }
+          return { ...s, phones: filtered };
+        });
+      } else if (res.status === 422) {
+        const data = await res.json();
+        setPhoneError(data.error ?? "Cannot remove this phone");
+      }
+    } finally {
+      setRemovingPhoneId(null);
+    }
+  }
+
+  async function patchPhone(id: number, update: { isPrimary?: boolean; isWhatsApp?: boolean }) {
+    setPatchingPhoneId(id);
+    try {
+      const res = await fetch(`/api/seller/phones/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(update),
+      });
+      if (!res.ok) return;
+      const { phone } = await res.json();
+      setSeller((s) => {
+        if (!s) return s;
+        return {
+          ...s,
+          phones: s.phones.map((p) => {
+            if (update.isPrimary) return p.id === id ? phone : { ...p, isPrimary: false };
+            return p.id === id ? phone : p;
+          }),
+        };
+      });
+    } finally {
+      setPatchingPhoneId(null);
+    }
+  }
+
+  function addLocalPhone() {
+    setLocalPhoneError("");
+    if (!/^\d{9}$/.test(localPhoneInput)) {
+      setLocalPhoneError("Enter a 9-digit local number (e.g. 712345678)");
+      return;
+    }
+    if (localPhones.length >= 5) {
+      setLocalPhoneError("Maximum 5 phone numbers allowed");
+      return;
+    }
+    setLocalPhones((prev) => [
+      ...prev,
+      { id: Date.now(), number: localPhoneInput, isPrimary: prev.length === 0, isWhatsApp: false },
+    ]);
+    setLocalPhoneInput("");
+  }
+
+  function removeLocalPhone(id: number) {
+    setLocalPhones((prev) => {
+      const wasP = prev.find((p) => p.id === id)?.isPrimary ?? false;
+      const filtered = prev.filter((p) => p.id !== id);
+      if (wasP && filtered.length > 0) {
+        return filtered.map((p, i) => (i === 0 ? { ...p, isPrimary: true } : p));
+      }
+      return filtered;
+    });
+  }
+
+  function setLocalPrimary(id: number) {
+    setLocalPhones((prev) => prev.map((p) => ({ ...p, isPrimary: p.id === id })));
+  }
+
+  function toggleLocalWhatsApp(id: number) {
+    setLocalPhones((prev) => prev.map((p) => (p.id === id ? { ...p, isWhatsApp: !p.isWhatsApp } : p)));
   }
 
   async function handleSubmit() {
@@ -463,52 +591,251 @@ export function AddCarForm() {
           </div>
         )}
 
-        {step === "review" && isAuthenticated === null && (
-          <p className="py-4 text-center text-sm text-foreground-muted">Checking your session…</p>
-        )}
-
-        {step === "review" && isAuthenticated === false && (
+        {step === "review" && !showContactDetails && (
           <div className="flex flex-col gap-4">
+            {/* Pre-registration phone collection */}
+            <div className="rounded-lg border border-border bg-background p-4">
+              <h3 className="mb-1 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
+                Your Phone Numbers
+              </h3>
+              <p className="mb-3 text-xs text-foreground-muted">
+                Add your contact numbers — they&apos;ll be saved when you create your account.
+              </p>
+              {localPhones.length > 0 && (
+                <ul className="mb-3 flex flex-col divide-y divide-border">
+                  {localPhones.map((p) => (
+                    <li key={p.id} className="flex items-center gap-2 py-2.5">
+                      <span className="text-sm font-medium text-foreground">+94 {p.number}</span>
+                      <div className="flex items-center gap-1 ml-1 flex-wrap">
+                        {p.isPrimary ? (
+                          <span className="rounded-full bg-primary-50 border border-primary-200 px-2 py-0.5 text-xs font-medium text-primary-700">
+                            Primary
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setLocalPrimary(p.id)}
+                            className="rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted hover:border-primary-300 hover:text-primary-600 transition-colors"
+                          >
+                            Set primary
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => toggleLocalWhatsApp(p.id)}
+                          className={`rounded-full border px-2 py-0.5 text-xs transition-colors ${
+                            p.isWhatsApp
+                              ? "border-green-200 bg-green-50 text-green-700"
+                              : "border-border text-foreground-muted hover:border-green-200 hover:text-green-600"
+                          }`}
+                        >
+                          WhatsApp
+                        </button>
+                      </div>
+                      {localPhones.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeLocalPhone(p.id)}
+                          className="ml-auto text-foreground-muted hover:text-danger transition-colors"
+                          title="Remove"
+                        >
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {localPhones.length < 5 && (
+                <div className="flex gap-2">
+                  <div className="flex flex-1">
+                    <span className="flex h-9 items-center rounded-l-md border border-r-0 border-border bg-background-subtle px-3 text-xs text-foreground-muted select-none">
+                      +94
+                    </span>
+                    <input
+                      type="tel"
+                      value={localPhoneInput}
+                      onChange={(e) => setLocalPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 9))}
+                      onKeyDown={(e) => e.key === "Enter" && addLocalPhone()}
+                      placeholder="712345678"
+                      maxLength={9}
+                      className="h-9 w-full rounded-r-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
+                    />
+                  </div>
+                  <Button type="button" variant="secondary" size="sm" onClick={addLocalPhone}>
+                    Add
+                  </Button>
+                </div>
+              )}
+              {localPhoneError && <p className="mt-2 text-xs text-danger">{localPhoneError}</p>}
+            </div>
             <p className="text-sm text-foreground-muted">
               Create a free account to submit your listing.
             </p>
             <RegisterForm
-              onSuccess={() => setIsAuthenticated(true)}
+              onSuccess={() => {
+                setHasJustRegistered(true);
+                (async () => {
+                  for (const lp of localPhones) {
+                    await fetch("/api/seller/phones", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ number: lp.number, isPrimary: lp.isPrimary, isWhatsApp: lp.isWhatsApp }),
+                    });
+                  }
+                  const r = await fetch("/api/auth/me");
+                  const d = await r.json();
+                  if (d?.seller) setSeller(d.seller);
+                })().catch(() => {});
+              }}
               loginHref="/auth/login?next=/sell"
             />
           </div>
         )}
 
-        {step === "review" && isAuthenticated === true && (
-          <div className="flex flex-col gap-3 rounded-lg border border-border bg-background-subtle p-4 text-sm">
-            <ReviewRow label="Title" value={data.title} />
-            <ReviewRow label="Make / Model" value={`${data.make} ${data.model}`} />
-            <ReviewRow label="Year" value={data.year} />
-            <ReviewRow label="Price" value={formatPrice(Number(data.price))} />
-            <ReviewRow label="Mileage" value={`${Number(data.mileage).toLocaleString()} km`} />
-            <ReviewRow label="Fuel" value={data.fuelType} />
-            <ReviewRow label="Transmission" value={data.transmission} />
-            {data.bodyType && <ReviewRow label="Body" value={data.bodyType} />}
-            {data.engineSize && <ReviewRow label="Engine" value={data.engineSize} />}
-            {data.color && <ReviewRow label="Colour" value={data.color} />}
-            <ReviewRow
-              label="Location"
-              value={[data.town, data.district, data.province].filter(Boolean).join(", ")}
-            />
-            <ReviewRow
-              label="Photos"
-              value={
-                uploadedUrls.length > 0
-                  ? `${uploadedUrls.length} photo${uploadedUrls.length !== 1 ? "s" : ""}`
-                  : "No photos"
-              }
-            />
-            <ReviewRow label="Negotiable" value={isNegotiable ? "Yes" : "No"} />
-            <ReviewRow
-              label="Emission Test"
-              value={emissionTestUrl ? "Uploaded" : "Not provided"}
-            />
-            {apiError && <p className="rounded-md bg-red-50 px-3 py-2 text-danger">{apiError}</p>}
+        {step === "review" && showContactDetails && (
+          <div className="flex flex-col gap-4">
+            {/* Contact details */}
+            <div className="rounded-lg border border-border bg-background p-4">
+              <h3 className="mb-3 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
+                Your Contact Details
+              </h3>
+              {seller ? (
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-medium text-foreground">
+                      {seller.firstName} {seller.lastName}
+                    </span>
+                    <span className="text-sm text-foreground-muted">{seller.email}</span>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
+                      Phone Numbers
+                    </p>
+                    {seller.phones.length === 0 && (
+                      <p className="text-sm text-danger">Add at least one phone number to submit.</p>
+                    )}
+                    <ul className="flex flex-col divide-y divide-border">
+                      {seller.phones.map((p) => (
+                        <li key={p.id} className="flex items-center gap-2 py-2.5">
+                          <span className="text-sm font-medium text-foreground">+94 {p.number}</span>
+                          <div className="flex items-center gap-1 ml-1 flex-wrap">
+                            {p.isPrimary ? (
+                              <span className="rounded-full bg-primary-50 border border-primary-200 px-2 py-0.5 text-xs font-medium text-primary-700">
+                                Primary
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => patchPhone(p.id, { isPrimary: true })}
+                                disabled={patchingPhoneId === p.id}
+                                className="rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted hover:border-primary-300 hover:text-primary-600 transition-colors disabled:opacity-40"
+                              >
+                                Set primary
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => patchPhone(p.id, { isWhatsApp: !p.isWhatsApp })}
+                              disabled={patchingPhoneId === p.id}
+                              className={`rounded-full border px-2 py-0.5 text-xs transition-colors disabled:opacity-40 ${
+                                p.isWhatsApp
+                                  ? "border-green-200 bg-green-50 text-green-700"
+                                  : "border-border text-foreground-muted hover:border-green-200 hover:text-green-600"
+                              }`}
+                            >
+                              WhatsApp
+                            </button>
+                          </div>
+                          {seller.phones.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removePhone(p.id)}
+                              disabled={removingPhoneId === p.id}
+                              className="ml-auto text-foreground-muted hover:text-danger disabled:opacity-40 transition-colors"
+                              title="Remove"
+                            >
+                              {removingPhoneId === p.id ? (
+                                <span className="text-xs">…</span>
+                              ) : (
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              )}
+                            </button>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+
+                    {seller.phones.length < 5 && (
+                      <div className="flex gap-2 pt-1">
+                        <div className="flex flex-1">
+                          <span className="flex h-9 items-center rounded-l-md border border-r-0 border-border bg-background-subtle px-3 text-xs text-foreground-muted select-none">
+                            +94
+                          </span>
+                          <input
+                            type="tel"
+                            value={newPhone}
+                            onChange={(e) => setNewPhone(e.target.value.replace(/\D/g, "").slice(0, 9))}
+                            placeholder="712345678"
+                            maxLength={9}
+                            className="h-9 w-full rounded-r-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          onClick={addPhone}
+                          disabled={addingPhone}
+                        >
+                          {addingPhone ? "Adding…" : "Add"}
+                        </Button>
+                      </div>
+                    )}
+                    {phoneError && <p className="text-xs text-danger">{phoneError}</p>}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-foreground-muted">Loading…</p>
+              )}
+            </div>
+
+            {/* Listing summary */}
+            <div className="flex flex-col gap-3 rounded-lg border border-border bg-background-subtle p-4 text-sm">
+              <ReviewRow label="Title" value={data.title} />
+              <ReviewRow label="Make / Model" value={`${data.make} ${data.model}`} />
+              <ReviewRow label="Year" value={data.year} />
+              <ReviewRow label="Price" value={formatPrice(Number(data.price))} />
+              <ReviewRow label="Mileage" value={`${Number(data.mileage).toLocaleString()} km`} />
+              <ReviewRow label="Fuel" value={data.fuelType} />
+              <ReviewRow label="Transmission" value={data.transmission} />
+              {data.bodyType && <ReviewRow label="Body" value={data.bodyType} />}
+              {data.engineSize && <ReviewRow label="Engine" value={data.engineSize} />}
+              {data.color && <ReviewRow label="Colour" value={data.color} />}
+              <ReviewRow
+                label="Location"
+                value={[data.town, data.district, data.province].filter(Boolean).join(", ")}
+              />
+              <ReviewRow
+                label="Photos"
+                value={
+                  uploadedUrls.length > 0
+                    ? `${uploadedUrls.length} photo${uploadedUrls.length !== 1 ? "s" : ""}`
+                    : "No photos"
+                }
+              />
+              <ReviewRow label="Negotiable" value={isNegotiable ? "Yes" : "No"} />
+              <ReviewRow
+                label="Emission Test"
+                value={emissionTestUrl ? "Uploaded" : "Not provided"}
+              />
+              {apiError && <p className="rounded-md bg-red-50 px-3 py-2 text-danger">{apiError}</p>}
+            </div>
           </div>
         )}
       </div>
@@ -522,8 +849,12 @@ export function AddCarForm() {
           <Button onClick={goNext} disabled={step === "images" && (uploading || emissionUploading)}>
             {step === "images" && (uploading || emissionUploading) ? "Uploading…" : "Continue"}
           </Button>
-        ) : isAuthenticated === true ? (
-          <Button onClick={handleSubmit} disabled={submitting}>
+        ) : showContactDetails ? (
+          <Button
+            onClick={handleSubmit}
+            disabled={submitting || !seller || seller.phones.length === 0}
+            title={seller?.phones.length === 0 ? "Add at least one phone number" : undefined}
+          >
             {submitting ? "Submitting…" : "Submit Listing"}
           </Button>
         ) : null}

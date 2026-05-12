@@ -41,12 +41,21 @@ export interface Car {
   updatedAt: string | Date;
 }
 
+export interface SellerPhone {
+  id: number;
+  number: string;
+  isPrimary: boolean;
+  isWhatsApp: boolean;
+  sellerId: number;
+  createdAt: string | Date;
+}
+
 export interface Seller {
   id: number;
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
+  phones?: SellerPhone[];
   status: SellerStatus;
   createdAt: string | Date;
   updatedAt: string | Date;

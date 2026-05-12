@@ -15,10 +15,10 @@ export default async function AdminSellersPage() {
       firstName: true,
       lastName: true,
       email: true,
-      phone: true,
       status: true,
       createdAt: true,
       updatedAt: true,
+      phones: { select: { id: true, number: true, isPrimary: true, isWhatsApp: true } },
     },
   });
 

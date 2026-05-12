@@ -16,7 +16,10 @@ export async function GET(_req: Request, { params }: { params: Params }) {
     include: {
       images: { orderBy: { order: "asc" } },
       seller: {
-        select: { firstName: true, lastName: true, phone: true },
+        select: {
+          firstName: true, lastName: true,
+          phones: { select: { number: true, isPrimary: true, isWhatsApp: true }, orderBy: { createdAt: "asc" } },
+        },
       },
     },
   });

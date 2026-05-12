@@ -49,7 +49,7 @@ export function FilterPanel() {
       <button
         type="button"
         onClick={() => setMobileOpen((o) => !o)}
-        className="flex w-full items-center justify-between lg:cursor-default lg:pointer-events-none"
+        className="flex w-full items-center justify-between lg:pointer-events-none lg:cursor-default"
         aria-expanded={mobileOpen}
       >
         <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
@@ -67,91 +67,91 @@ export function FilterPanel() {
       </button>
 
       <div className={`flex flex-col gap-4 ${mobileOpen ? "flex" : "hidden"} lg:flex`}>
-      <FilterGroup label="Make">
-        <AutoComplete
-          value={make}
-          onChange={(v) => {
-            setMake(v);
-            setModel("");
-          }}
-          options={CAR_MAKES}
-          placeholder="All makes"
-        />
-      </FilterGroup>
-
-      <FilterGroup label="Model">
-        <AutoComplete
-          value={model}
-          onChange={setModel}
-          options={getModels(make)}
-          placeholder={make ? "Any model" : "Select a make first"}
-          disabled={!make}
-        />
-      </FilterGroup>
-
-      <FilterGroup label="Year">
-        <div className="flex gap-2">
-          <select
-            value={minYear}
-            onChange={(e) => setMinYear(e.target.value)}
-            className="field-input flex-1"
-          >
-            <option value="">From</option>
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
-          <select
-            value={maxYear}
-            onChange={(e) => setMaxYear(e.target.value)}
-            className="field-input flex-1"
-          >
-            <option value="">To</option>
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
-        </div>
-      </FilterGroup>
-
-      <FilterGroup label={`Price (${currency.code})`}>
-        <div className="flex gap-2">
-          <input
-            type="number"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            placeholder="Min"
-            min={0}
-            className="field-input flex-1"
+        <FilterGroup label="Make">
+          <AutoComplete
+            value={make}
+            onChange={(v) => {
+              setMake(v);
+              setModel("");
+            }}
+            options={CAR_MAKES}
+            placeholder="All makes"
           />
-          <input
-            type="number"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            placeholder="Max"
-            min={0}
-            className="field-input flex-1"
-          />
-        </div>
-      </FilterGroup>
+        </FilterGroup>
 
-      <div className="flex flex-col gap-2 pt-2">
-        <Button type="submit" className="w-full">
-          Apply Filters
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={resetFilters}
-          className="w-full text-foreground-muted"
-        >
-          Reset
-        </Button>
-      </div>
+        <FilterGroup label="Model">
+          <AutoComplete
+            value={model}
+            onChange={setModel}
+            options={getModels(make)}
+            placeholder={make ? "Any model" : "Select a make first"}
+            disabled={!make}
+          />
+        </FilterGroup>
+
+        <FilterGroup label="Year">
+          <div className="flex gap-2">
+            <select
+              value={minYear}
+              onChange={(e) => setMinYear(e.target.value)}
+              className="field-input flex-1"
+            >
+              <option value="">From</option>
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+            <select
+              value={maxYear}
+              onChange={(e) => setMaxYear(e.target.value)}
+              className="field-input flex-1"
+            >
+              <option value="">To</option>
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </div>
+        </FilterGroup>
+
+        <FilterGroup label={`Price (${currency.code})`}>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              placeholder="Min"
+              min={0}
+              className="field-input flex-1"
+            />
+            <input
+              type="number"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              placeholder="Max"
+              min={0}
+              className="field-input flex-1"
+            />
+          </div>
+        </FilterGroup>
+
+        <div className="flex flex-col gap-2 pt-2">
+          <Button type="submit" className="w-full">
+            Apply Filters
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={resetFilters}
+            className="w-full text-foreground-muted"
+          >
+            Reset
+          </Button>
+        </div>
       </div>
     </Form>
   );

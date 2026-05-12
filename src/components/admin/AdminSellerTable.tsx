@@ -52,7 +52,13 @@ export function AdminSellerTable({ initialSellers }: AdminSellerTableProps) {
                 {seller.firstName} {seller.lastName}
               </td>
               <td className="px-4 py-3 text-foreground-muted">{seller.email}</td>
-              <td className="px-4 py-3 text-foreground-muted">{seller.phone}</td>
+              <td className="px-4 py-3 text-foreground-muted">
+                {seller.phones?.find((p) => p.isPrimary)
+                  ? `+94 ${seller.phones.find((p) => p.isPrimary)!.number}`
+                  : seller.phones?.[0]
+                    ? `+94 ${seller.phones[0].number}`
+                    : "—"}
+              </td>
               <td className="px-4 py-3">
                 <Badge variant={seller.status === "ACTIVE" ? "success" : "danger"}>
                   {seller.status === "ACTIVE" ? "Active" : "Suspended"}

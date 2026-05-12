@@ -14,6 +14,9 @@ export async function POST(request: Request) {
   if (!firstName || !lastName || !email || !phone || !password) {
     return Response.json({ error: "All fields are required" }, { status: 400 });
   }
+  if (!/^\d{9}$/.test(phone)) {
+    return Response.json({ error: "Phone must be 9 digits (after +94)" }, { status: 400 });
+  }
   if (password.length < 8) {
     return Response.json({ error: "Password must be at least 8 characters" }, { status: 400 });
   }
@@ -28,10 +31,13 @@ export async function POST(request: Request) {
       firstName,
       lastName,
       email,
-      phone,
       passwordHash: await hashPassword(password),
+      phones: { create: { number: phone, isPrimary: true, isWhatsApp: false } },
     },
-    select: { id: true, firstName: true, lastName: true, email: true, phone: true, status: true },
+    select: {
+      id: true, firstName: true, lastName: true, email: true, status: true,
+      phones: { select: { id: true, number: true, isPrimary: true, isWhatsApp: true } },
+    },
   });
 
   await createSellerSession(seller.id);

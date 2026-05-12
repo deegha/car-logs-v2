@@ -32,7 +32,6 @@ export async function POST(request: Request) {
       firstName: seller.firstName,
       lastName: seller.lastName,
       email: seller.email,
-      phone: seller.phone,
       status: seller.status,
     },
   });

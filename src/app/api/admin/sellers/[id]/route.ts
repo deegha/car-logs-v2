@@ -37,7 +37,10 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
   const seller = await db.seller.update({
     where: { id: sellerId },
     data: { status },
-    select: { id: true, firstName: true, lastName: true, email: true, phone: true, status: true },
+    select: {
+      id: true, firstName: true, lastName: true, email: true, status: true,
+      phones: { select: { id: true, number: true, isPrimary: true, isWhatsApp: true } },
+    },
   });
 
   return Response.json({ seller });

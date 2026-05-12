@@ -9,7 +9,10 @@ export async function GET() {
 
   const seller = await db.seller.findUnique({
     where: { id: session.sellerId },
-    select: { id: true, firstName: true, lastName: true, email: true, phone: true, status: true },
+    select: {
+      id: true, firstName: true, lastName: true, email: true, status: true,
+      phones: { select: { id: true, number: true, isPrimary: true, isWhatsApp: true }, orderBy: { createdAt: "asc" } },
+    },
   });
 
   if (!seller) {
