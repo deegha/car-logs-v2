@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/Button";
 interface RegisterFormProps {
   onSuccess?: () => void;
   loginHref?: string;
+  showPhone?: boolean;
 }
 
-export function RegisterForm({ onSuccess, loginHref = "/auth/login" }: RegisterFormProps) {
+export function RegisterForm({ onSuccess, loginHref = "/auth/login", showPhone = true }: RegisterFormProps) {
   const router = useRouter();
   const [fields, setFields] = useState({
     firstName: "",
@@ -86,26 +87,28 @@ export function RegisterForm({ onSuccess, loginHref = "/auth/login" }: RegisterF
         placeholder="you@example.com"
       />
 
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-foreground">Phone</label>
-        <div className="flex">
-          <span className="flex h-10 items-center rounded-l-md border border-r-0 border-border bg-background-subtle px-3 text-sm text-foreground-muted select-none">
-            +94
-          </span>
-          <input
-            type="tel"
-            value={fields.phone}
-            onChange={update("phone")}
-            required
-            autoComplete="tel"
-            placeholder="712345678"
-            maxLength={9}
-            pattern="\d{9}"
-            title="9-digit local number (e.g. 712345678)"
-            className="h-10 w-full rounded-r-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
-          />
+      {showPhone && (
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-foreground">Phone</label>
+          <div className="flex">
+            <span className="flex h-10 items-center rounded-l-md border border-r-0 border-border bg-background-subtle px-3 text-sm text-foreground-muted select-none">
+              +94
+            </span>
+            <input
+              type="tel"
+              value={fields.phone}
+              onChange={update("phone")}
+              required
+              autoComplete="tel"
+              placeholder="712345678"
+              maxLength={9}
+              pattern="\d{9}"
+              title="9-digit local number (e.g. 712345678)"
+              className="h-10 w-full rounded-r-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <Input
         label="Password"

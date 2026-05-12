@@ -17,8 +17,12 @@ export async function GET(_req: Request, { params }: { params: Params }) {
       images: { orderBy: { order: "asc" } },
       seller: {
         select: {
-          firstName: true, lastName: true,
-          phones: { select: { number: true, isPrimary: true, isWhatsApp: true }, orderBy: { createdAt: "asc" } },
+          firstName: true,
+          lastName: true,
+          phones: {
+            select: { number: true, isPrimary: true, isWhatsApp: true },
+            orderBy: { createdAt: "asc" },
+          },
         },
       },
     },

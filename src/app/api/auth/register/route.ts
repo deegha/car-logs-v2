@@ -11,10 +11,10 @@ export async function POST(request: Request) {
 
   const { firstName, lastName, email, phone, password } = body as Record<string, string>;
 
-  if (!firstName || !lastName || !email || !phone || !password) {
+  if (!firstName || !lastName || !email || !password) {
     return Response.json({ error: "All fields are required" }, { status: 400 });
   }
-  if (!/^\d{9}$/.test(phone)) {
+  if (phone !== undefined && phone !== "" && !/^\d{9}$/.test(phone)) {
     return Response.json({ error: "Phone must be 9 digits (after +94)" }, { status: 400 });
   }
   if (password.length < 8) {
@@ -26,16 +26,22 @@ export async function POST(request: Request) {
     return Response.json({ error: "Email already registered" }, { status: 409 });
   }
 
+  const hasPhone = phone && /^\d{9}$/.test(phone);
+
   const seller = await db.seller.create({
     data: {
       firstName,
       lastName,
       email,
       passwordHash: await hashPassword(password),
-      phones: { create: { number: phone, isPrimary: true, isWhatsApp: false } },
+      ...(hasPhone && { phones: { create: { number: phone, isPrimary: true, isWhatsApp: false } } }),
     },
     select: {
-      id: true, firstName: true, lastName: true, email: true, status: true,
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      status: true,
       phones: { select: { id: true, number: true, isPrimary: true, isWhatsApp: true } },
     },
   });

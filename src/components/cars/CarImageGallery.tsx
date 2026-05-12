@@ -19,8 +19,16 @@ export function CarImageGallery({ images, title, edgeToEdge = false }: CarImageG
   });
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const active = sorted[activeIndex];
   const stripRef = useRef<HTMLDivElement>(null);
+
+  function selectImage(i: number) {
+    if (i !== activeIndex) {
+      setActiveIndex(i);
+      setIsLoading(true);
+    }
+  }
 
   if (sorted.length === 0) {
     return (
@@ -52,13 +60,20 @@ export function CarImageGallery({ images, title, edgeToEdge = false }: CarImageG
         )}
       >
         <Image
+          key={active.url}
           src={cloudinaryUrl(active.url, "w_1200,h_900,c_fill,g_auto")}
           alt={active.alt ?? title}
           fill
           priority
           sizes="(max-width: 768px) 100vw, 60vw"
           className="object-cover"
+          onLoad={() => setIsLoading(false)}
         />
+
+        {/* Loading shimmer */}
+        {isLoading && (
+          <div className="absolute inset-0 animate-pulse bg-background-subtle" />
+        )}
 
         {/* Image counter dot indicator */}
         {sorted.length > 1 && (
@@ -66,7 +81,7 @@ export function CarImageGallery({ images, title, edgeToEdge = false }: CarImageG
             {sorted.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setActiveIndex(i)}
+                onClick={() => selectImage(i)}
                 className={cn(
                   "h-1.5 rounded-full transition-all",
                   i === activeIndex ? "w-4 bg-white" : "w-1.5 bg-white/50"
@@ -88,7 +103,7 @@ export function CarImageGallery({ images, title, edgeToEdge = false }: CarImageG
           {sorted.map((img, i) => (
             <button
               key={img.id}
-              onClick={() => setActiveIndex(i)}
+              onClick={() => selectImage(i)}
               className={cn(
                 "relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition-colors",
                 i === activeIndex

@@ -38,7 +38,11 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     where: { id: sellerId },
     data: { status },
     select: {
-      id: true, firstName: true, lastName: true, email: true, status: true,
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      status: true,
       phones: { select: { id: true, number: true, isPrimary: true, isWhatsApp: true } },
     },
   });

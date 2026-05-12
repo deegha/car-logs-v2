@@ -22,7 +22,17 @@ export default async function SellerDashboardPage({
       where: { id: session!.sellerId },
       select: {
         firstName: true,
-        phones: { select: { id: true, number: true, isPrimary: true, isWhatsApp: true, sellerId: true, createdAt: true }, orderBy: { createdAt: "asc" } },
+        phones: {
+          select: {
+            id: true,
+            number: true,
+            isPrimary: true,
+            isWhatsApp: true,
+            sellerId: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: "asc" },
+        },
       },
     }),
     db.car.findMany({

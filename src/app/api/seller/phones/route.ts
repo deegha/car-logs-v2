@@ -24,9 +24,16 @@ export async function POST(request: Request) {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { number, isPrimary, isWhatsApp } = body as { number?: string; isPrimary?: boolean; isWhatsApp?: boolean };
+  const { number, isPrimary, isWhatsApp } = body as {
+    number?: string;
+    isPrimary?: boolean;
+    isWhatsApp?: boolean;
+  };
   if (!number || !/^\d{9}$/.test(number)) {
-    return Response.json({ error: "number must be 9 digits (local part after +94)" }, { status: 400 });
+    return Response.json(
+      { error: "number must be 9 digits (local part after +94)" },
+      { status: 400 }
+    );
   }
 
   const count = await db.sellerPhone.count({ where: { sellerId: session.sellerId } });
@@ -43,7 +50,12 @@ export async function POST(request: Request) {
   }
 
   const phone = await db.sellerPhone.create({
-    data: { number, isPrimary: shouldBePrimary, isWhatsApp: isWhatsApp ?? false, sellerId: session.sellerId },
+    data: {
+      number,
+      isPrimary: shouldBePrimary,
+      isWhatsApp: isWhatsApp ?? false,
+      sellerId: session.sellerId,
+    },
   });
 
   return Response.json({ phone }, { status: 201 });

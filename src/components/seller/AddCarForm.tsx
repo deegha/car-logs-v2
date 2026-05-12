@@ -112,7 +112,9 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
   const [phoneError, setPhoneError] = useState("");
   const [removingPhoneId, setRemovingPhoneId] = useState<number | null>(null);
   const [patchingPhoneId, setPatchingPhoneId] = useState<number | null>(null);
-  const [localPhones, setLocalPhones] = useState<{ id: number; number: string; isPrimary: boolean; isWhatsApp: boolean }[]>([]);
+  const [localPhones, setLocalPhones] = useState<
+    { id: number; number: string; isPrimary: boolean; isWhatsApp: boolean }[]
+  >([]);
   const [localPhoneInput, setLocalPhoneInput] = useState("");
   const [localPhoneError, setLocalPhoneError] = useState("");
 
@@ -180,8 +182,10 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
     setStep(nextStep);
     if (nextStep === "review" && (isLoggedIn || hasJustRegistered)) {
       fetch("/api/auth/me")
-        .then((r) => r.ok ? r.json() : null)
-        .then((d) => { if (d?.seller) setSeller(d.seller); })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d?.seller) setSeller(d.seller);
+        })
         .catch(() => {});
     }
   }
@@ -205,8 +209,11 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
         body: JSON.stringify({ number: newPhone }),
       });
       const d = await res.json();
-      if (!res.ok) { setPhoneError(d.error ?? "Failed to add"); return; }
-      setSeller((s) => s ? { ...s, phones: [...s.phones, d.phone] } : s);
+      if (!res.ok) {
+        setPhoneError(d.error ?? "Failed to add");
+        return;
+      }
+      setSeller((s) => (s ? { ...s, phones: [...s.phones, d.phone] } : s));
       setNewPhone("");
     } finally {
       setAddingPhone(false);
@@ -224,7 +231,12 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
           if (!s) return s;
           const filtered = s.phones.filter((p) => p.id !== id);
           if (data.promotedId) {
-            return { ...s, phones: filtered.map((p) => p.id === data.promotedId ? { ...p, isPrimary: true } : p) };
+            return {
+              ...s,
+              phones: filtered.map((p) =>
+                p.id === data.promotedId ? { ...p, isPrimary: true } : p
+              ),
+            };
           }
           return { ...s, phones: filtered };
         });
@@ -295,7 +307,9 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
   }
 
   function toggleLocalWhatsApp(id: number) {
-    setLocalPhones((prev) => prev.map((p) => (p.id === id ? { ...p, isWhatsApp: !p.isWhatsApp } : p)));
+    setLocalPhones((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, isWhatsApp: !p.isWhatsApp } : p))
+    );
   }
 
   async function handleSubmit() {
@@ -598,24 +612,32 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
               <h3 className="mb-1 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
                 Your Phone Numbers
               </h3>
-              <p className="mb-3 text-xs text-foreground-muted">
+              <p className="mb-1 text-xs text-foreground-muted">
                 Add your contact numbers — they&apos;ll be saved when you create your account.
               </p>
+              <p className="mb-3 text-xs text-foreground-muted/70">
+                Tap <span className="font-medium">WhatsApp</span> next to a number to mark it — it turns green so buyers know they can reach you there.
+              </p>
+              {localPhones.length === 1 && (
+                <p className="mb-2 text-xs text-foreground-muted/60 italic">
+                  Wrong number? Add the correct one below, then remove this one.
+                </p>
+              )}
               {localPhones.length > 0 && (
                 <ul className="mb-3 flex flex-col divide-y divide-border">
                   {localPhones.map((p) => (
                     <li key={p.id} className="flex items-center gap-2 py-2.5">
                       <span className="text-sm font-medium text-foreground">+94 {p.number}</span>
-                      <div className="flex items-center gap-1 ml-1 flex-wrap">
+                      <div className="ml-1 flex flex-wrap items-center gap-1">
                         {p.isPrimary ? (
-                          <span className="rounded-full bg-primary-50 border border-primary-200 px-2 py-0.5 text-xs font-medium text-primary-700">
+                          <span className="rounded-full border border-primary-200 bg-primary-50 px-2 py-0.5 text-xs font-medium text-primary-700">
                             Primary
                           </span>
                         ) : (
                           <button
                             type="button"
                             onClick={() => setLocalPrimary(p.id)}
-                            className="rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted hover:border-primary-300 hover:text-primary-600 transition-colors"
+                            className="cursor-pointer rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted transition-colors hover:border-primary-300 hover:text-primary-600"
                           >
                             Set primary
                           </button>
@@ -623,7 +645,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                         <button
                           type="button"
                           onClick={() => toggleLocalWhatsApp(p.id)}
-                          className={`rounded-full border px-2 py-0.5 text-xs transition-colors ${
+                          className={`cursor-pointer rounded-full border px-2 py-0.5 text-xs transition-colors ${
                             p.isWhatsApp
                               ? "border-green-200 bg-green-50 text-green-700"
                               : "border-border text-foreground-muted hover:border-green-200 hover:text-green-600"
@@ -636,11 +658,21 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                         <button
                           type="button"
                           onClick={() => removeLocalPhone(p.id)}
-                          className="ml-auto text-foreground-muted hover:text-danger transition-colors"
+                          className="ml-auto text-foreground-muted transition-colors hover:text-danger"
                           title="Remove"
                         >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </button>
                       )}
@@ -657,7 +689,9 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                     <input
                       type="tel"
                       value={localPhoneInput}
-                      onChange={(e) => setLocalPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 9))}
+                      onChange={(e) =>
+                        setLocalPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 9))
+                      }
                       onKeyDown={(e) => e.key === "Enter" && addLocalPhone()}
                       placeholder="712345678"
                       maxLength={9}
@@ -675,6 +709,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
               Create a free account to submit your listing.
             </p>
             <RegisterForm
+              showPhone={false}
               onSuccess={() => {
                 setHasJustRegistered(true);
                 (async () => {
@@ -682,7 +717,11 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                     await fetch("/api/seller/phones", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ number: lp.number, isPrimary: lp.isPrimary, isWhatsApp: lp.isWhatsApp }),
+                      body: JSON.stringify({
+                        number: lp.number,
+                        isPrimary: lp.isPrimary,
+                        isWhatsApp: lp.isWhatsApp,
+                      }),
                     });
                   }
                   const r = await fetch("/api/auth/me");
@@ -712,19 +751,23 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <p className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
+                    <p className="text-xs font-medium tracking-wide text-foreground-muted uppercase">
                       Phone Numbers
                     </p>
                     {seller.phones.length === 0 && (
-                      <p className="text-sm text-danger">Add at least one phone number to submit.</p>
+                      <p className="text-sm text-danger">
+                        Add at least one phone number to submit.
+                      </p>
                     )}
                     <ul className="flex flex-col divide-y divide-border">
                       {seller.phones.map((p) => (
                         <li key={p.id} className="flex items-center gap-2 py-2.5">
-                          <span className="text-sm font-medium text-foreground">+94 {p.number}</span>
-                          <div className="flex items-center gap-1 ml-1 flex-wrap">
+                          <span className="text-sm font-medium text-foreground">
+                            +94 {p.number}
+                          </span>
+                          <div className="ml-1 flex flex-wrap items-center gap-1">
                             {p.isPrimary ? (
-                              <span className="rounded-full bg-primary-50 border border-primary-200 px-2 py-0.5 text-xs font-medium text-primary-700">
+                              <span className="rounded-full border border-primary-200 bg-primary-50 px-2 py-0.5 text-xs font-medium text-primary-700">
                                 Primary
                               </span>
                             ) : (
@@ -732,7 +775,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                                 type="button"
                                 onClick={() => patchPhone(p.id, { isPrimary: true })}
                                 disabled={patchingPhoneId === p.id}
-                                className="rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted hover:border-primary-300 hover:text-primary-600 transition-colors disabled:opacity-40"
+                                className="cursor-pointer rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted transition-colors hover:border-primary-300 hover:text-primary-600 disabled:opacity-40"
                               >
                                 Set primary
                               </button>
@@ -741,7 +784,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                               type="button"
                               onClick={() => patchPhone(p.id, { isWhatsApp: !p.isWhatsApp })}
                               disabled={patchingPhoneId === p.id}
-                              className={`rounded-full border px-2 py-0.5 text-xs transition-colors disabled:opacity-40 ${
+                              className={`cursor-pointer rounded-full border px-2 py-0.5 text-xs transition-colors disabled:opacity-40 ${
                                 p.isWhatsApp
                                   ? "border-green-200 bg-green-50 text-green-700"
                                   : "border-border text-foreground-muted hover:border-green-200 hover:text-green-600"
@@ -755,14 +798,24 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                               type="button"
                               onClick={() => removePhone(p.id)}
                               disabled={removingPhoneId === p.id}
-                              className="ml-auto text-foreground-muted hover:text-danger disabled:opacity-40 transition-colors"
+                              className="ml-auto text-foreground-muted transition-colors hover:text-danger disabled:opacity-40"
                               title="Remove"
                             >
                               {removingPhoneId === p.id ? (
                                 <span className="text-xs">…</span>
                               ) : (
-                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                <svg
+                                  className="h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  strokeWidth={1.5}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
                                 </svg>
                               )}
                             </button>
@@ -780,7 +833,9 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                           <input
                             type="tel"
                             value={newPhone}
-                            onChange={(e) => setNewPhone(e.target.value.replace(/\D/g, "").slice(0, 9))}
+                            onChange={(e) =>
+                              setNewPhone(e.target.value.replace(/\D/g, "").slice(0, 9))
+                            }
                             placeholder="712345678"
                             maxLength={9}
                             className="h-9 w-full rounded-r-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
