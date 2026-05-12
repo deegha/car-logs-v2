@@ -12,7 +12,11 @@ interface RegisterFormProps {
   showPhone?: boolean;
 }
 
-export function RegisterForm({ onSuccess, loginHref = "/auth/login", showPhone = true }: RegisterFormProps) {
+export function RegisterForm({
+  onSuccess,
+  loginHref = "/auth/login",
+  showPhone = true,
+}: RegisterFormProps) {
   const router = useRouter();
   const [fields, setFields] = useState({
     firstName: "",

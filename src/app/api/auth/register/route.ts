@@ -34,7 +34,9 @@ export async function POST(request: Request) {
       lastName,
       email,
       passwordHash: await hashPassword(password),
-      ...(hasPhone && { phones: { create: { number: phone, isPrimary: true, isWhatsApp: false } } }),
+      ...(hasPhone && {
+        phones: { create: { number: phone, isPrimary: true, isWhatsApp: false } },
+      }),
     },
     select: {
       id: true,

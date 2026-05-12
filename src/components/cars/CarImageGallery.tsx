@@ -71,9 +71,7 @@ export function CarImageGallery({ images, title, edgeToEdge = false }: CarImageG
         />
 
         {/* Loading shimmer */}
-        {isLoading && (
-          <div className="absolute inset-0 animate-pulse bg-background-subtle" />
-        )}
+        {isLoading && <div className="absolute inset-0 animate-pulse bg-background-subtle" />}
 
         {/* Image counter dot indicator */}
         {sorted.length > 1 && (

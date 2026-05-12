@@ -449,8 +449,12 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                 options={getModels(data.make)}
                 error={errors.model}
                 required
-                placeholder={data.make ? "e.g. Camry" : "Select a make first"}
-                disabled={!data.make}
+                placeholder={
+                  CAR_MAKES.includes(data.make)
+                    ? `e.g. ${getModels(data.make)[0] ?? "Model"}`
+                    : "Select a make first"
+                }
+                disabled={!CAR_MAKES.includes(data.make)}
               />
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
@@ -522,8 +526,12 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                 options={getDistricts(data.province)}
                 error={errors.district}
                 required
-                placeholder={data.province ? "e.g. Colombo" : "Select province first"}
-                disabled={!data.province}
+                placeholder={
+                  PROVINCES.includes(data.province)
+                    ? `e.g. ${getDistricts(data.province)[0] ?? "District"}`
+                    : "Select province first"
+                }
+                disabled={!PROVINCES.includes(data.province)}
               />
               <AutoComplete
                 label="Town"
@@ -532,8 +540,12 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                 options={getTowns(data.province, data.district)}
                 error={errors.town}
                 required
-                placeholder={data.district ? "e.g. Nugegoda" : "Select district first"}
-                disabled={!data.district}
+                placeholder={
+                  getDistricts(data.province).includes(data.district)
+                    ? `e.g. ${getTowns(data.province, data.district)[0] ?? "Town"}`
+                    : "Select district first"
+                }
+                disabled={!getDistricts(data.province).includes(data.district)}
               />
             </div>
           </>
@@ -616,7 +628,8 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                 Add your contact numbers — they&apos;ll be saved when you create your account.
               </p>
               <p className="mb-3 text-xs text-foreground-muted/70">
-                Tap <span className="font-medium">WhatsApp</span> next to a number to mark it — it turns green so buyers know they can reach you there.
+                Tap <span className="font-medium">WhatsApp</span> next to a number to mark it — it
+                turns green so buyers know they can reach you there.
               </p>
               {localPhones.length === 1 && (
                 <p className="mb-2 text-xs text-foreground-muted/60 italic">
