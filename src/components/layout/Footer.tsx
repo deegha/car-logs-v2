@@ -38,12 +38,25 @@ export function Footer() {
                 My Listings
               </Link>
             </nav>
+            <nav className="flex flex-col gap-2">
+              <p className="font-semibold text-foreground">Legal</p>
+              <Link href="/terms" className="text-foreground-muted hover:text-foreground">
+                Terms &amp; Conditions
+              </Link>
+              <Link href="/privacy" className="text-foreground-muted hover:text-foreground">
+                Privacy Policy
+              </Link>
+            </nav>
           </div>
         </div>
 
-        <p className="mt-8 border-t border-border pt-6 text-center text-xs text-foreground-muted">
-          &copy; {new Date().getFullYear()} carlogs.lk. All rights reserved.
-        </p>
+        <div className="mt-8 flex flex-col items-center gap-2 border-t border-border pt-6 text-center text-xs text-foreground-muted sm:flex-row sm:justify-between">
+          <p>&copy; {new Date().getFullYear()} carlogs.lk. All rights reserved.</p>
+          <p className="flex gap-4">
+            <Link href="/terms" className="hover:text-foreground">Terms &amp; Conditions</Link>
+            <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+          </p>
+        </div>
       </div>
     </footer>
   );

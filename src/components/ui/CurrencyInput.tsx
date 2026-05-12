@@ -64,7 +64,7 @@ export function CurrencyInput({
           disabled && "opacity-50"
         )}
       >
-        <span className="flex select-none items-center border-r border-border bg-background-subtle px-3 text-sm font-medium text-foreground-muted">
+        <span className="flex items-center border-r border-border bg-background-subtle px-3 text-sm font-medium text-foreground-muted select-none">
           LKR
         </span>
         <input

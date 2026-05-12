@@ -4,6 +4,7 @@ import { getSellerSession } from "@/lib/auth";
 import { HeaderSearch } from "./HeaderSearch";
 import { HeaderAuthButton } from "./HeaderAuthButton";
 import { CarlogsLogo } from "./CarlogsLogo";
+import { NavLinks } from "./NavLinks";
 
 export async function Header() {
   const session = await getSellerSession();
@@ -18,17 +19,7 @@ export async function Header() {
           <CarlogsLogo />
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm font-medium text-foreground-muted sm:flex">
-          <Link href="/cars" className="hover:text-foreground">
-            Browse
-          </Link>
-          <Link href="/sell" className="hover:text-foreground">
-            Sell Your Car
-          </Link>
-          <Link href="/blog" className="hover:text-foreground">
-            Blog
-          </Link>
-        </nav>
+        <NavLinks />
 
         <div className="flex flex-1 items-center justify-end gap-2">
           <Suspense fallback={<div className="hidden max-w-xs flex-1 sm:block" />}>
