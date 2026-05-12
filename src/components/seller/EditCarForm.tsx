@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/Input";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { MileageInput } from "@/components/ui/MileageInput";
 import { Select } from "@/components/ui/Select";
-import { Textarea } from "@/components/ui/Textarea";
+import { RichTextEditor } from "@/components/ui/RichTextEditor";
 import { Button } from "@/components/ui/Button";
 import { AutoComplete } from "@/components/ui/AutoComplete";
 import { ImageUploader } from "@/components/seller/ImageUploader";
 import { CAR_MAKES, getModels } from "@/data/carMakes";
+import { BODY_TYPE_OPTIONS } from "@/data/bodyTypes";
 import { PROVINCES, getDistricts, getTowns } from "@/data/locations";
 import { formatPrice } from "@/lib/utils";
 import type { Car, CarImage } from "@/types";
@@ -332,11 +333,12 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Input
+          <Select
             label="Body Type"
             value={bodyType}
             onChange={(e) => setBodyType(e.target.value)}
-            placeholder="e.g. Sedan, SUV"
+            options={BODY_TYPE_OPTIONS}
+            placeholder="Select body type"
           />
           <Input
             label="Engine Size"
@@ -345,12 +347,11 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
             placeholder="e.g. 2.5L"
           />
         </div>
-        <Textarea
+        <RichTextEditor
           label="Description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={setDescription}
           placeholder="Describe the car's condition, features, history…"
-          rows={4}
         />
       </section>
 

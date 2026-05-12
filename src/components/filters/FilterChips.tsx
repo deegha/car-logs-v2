@@ -6,6 +6,7 @@ const LABELS: Record<string, string> = {
   search: "Search",
   make: "Make",
   model: "Model",
+  bodyType: "Body Type",
   minYear: "Min Year",
   maxYear: "Max Year",
   minPrice: "Min Price",

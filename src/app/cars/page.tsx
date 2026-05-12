@@ -27,6 +27,7 @@ export default async function CarsPage({
   const search = String(params.search ?? "");
   const make = String(params.make ?? "");
   const model = String(params.model ?? "");
+  const bodyType = String(params.bodyType ?? "");
   const minYear = Number(params.minYear) || undefined;
   const maxYear = Number(params.maxYear) || undefined;
   const minPrice = Number(params.minPrice) || undefined;
@@ -37,6 +38,7 @@ export default async function CarsPage({
     status: CarStatus.AVAILABLE,
     ...(make && { make }),
     ...(model && { model }),
+    ...(bodyType && { bodyType }),
     ...((minYear || maxYear) && {
       year: {
         ...(minYear && { gte: minYear }),

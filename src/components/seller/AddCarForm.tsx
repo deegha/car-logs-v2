@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/Input";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { MileageInput } from "@/components/ui/MileageInput";
 import { Select } from "@/components/ui/Select";
-import { Textarea } from "@/components/ui/Textarea";
+import { RichTextEditor } from "@/components/ui/RichTextEditor";
 import { Button } from "@/components/ui/Button";
 import { AutoComplete } from "@/components/ui/AutoComplete";
 import { ImageUploader } from "@/components/seller/ImageUploader";
 import { CAR_MAKES, getModels } from "@/data/carMakes";
+import { BODY_TYPE_OPTIONS } from "@/data/bodyTypes";
 import { PROVINCES, getDistricts, getTowns } from "@/data/locations";
 
 type Step = "details" | "specs" | "images" | "review";
@@ -571,11 +572,12 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
               placeholder="Select transmission"
               required
             />
-            <Input
+            <Select
               label="Body Type"
               value={data.bodyType}
               onChange={update("bodyType")}
-              placeholder="e.g. Sedan, SUV, Hatchback"
+              options={BODY_TYPE_OPTIONS}
+              placeholder="Select body type"
             />
             <Input
               label="Engine Size"
@@ -583,12 +585,14 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
               onChange={update("engineSize")}
               placeholder="e.g. 2.5L"
             />
-            <Textarea
+            <RichTextEditor
               label="Description"
               value={data.description}
-              onChange={update("description")}
+              onChange={(html) => {
+                setData((d) => ({ ...d, description: html }));
+                setErrors((er) => ({ ...er, description: undefined }));
+              }}
               placeholder="Describe the car's condition, features, history…"
-              rows={5}
             />
           </>
         )}
