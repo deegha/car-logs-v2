@@ -20,4 +20,4 @@ RUN DATABASE_URL=mysql://build:build@localhost/build npm run build
 EXPOSE 3000
 
 # 5) Push schema, seed, start app at runtime
-CMD ["sh", "-c", "npx prisma db push && npm run db:seed && npm start"]
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss && npm run db:seed && npm start"]
