@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { AutoComplete } from "@/components/ui/AutoComplete";
+import { sendGAEvent } from "@next/third-parties/google";
 import { currency } from "@/config/app";
 import { CAR_MAKES, getModels } from "@/data/carMakes";
 import { BODY_TYPES } from "@/data/bodyTypes";
@@ -25,6 +26,7 @@ export function FilterPanel() {
   const currentSearch = searchParams.get("search") ?? "";
 
   function resetFilters() {
+    sendGAEvent("event", "filter_reset");
     setMake("");
     setModel("");
     setBodyType("");
@@ -39,7 +41,21 @@ export function FilterPanel() {
   const years = Array.from({ length: currentYear - 1989 }, (_, i) => String(currentYear - i));
 
   return (
-    <Form action="/cars" className="flex flex-col gap-4">
+    <Form
+      action="/cars"
+      className="flex flex-col gap-4"
+      onSubmit={() =>
+        sendGAEvent("event", "filter_applied", {
+          make: make || undefined,
+          model: model || undefined,
+          body_type: bodyType || undefined,
+          min_year: minYear || undefined,
+          max_year: maxYear || undefined,
+          min_price: minPrice || undefined,
+          max_price: maxPrice || undefined,
+        })
+      }
+    >
       {/* Hidden inputs serialized into URL on submit — only when non-empty for clean URLs */}
       {currentSearch && <input type="hidden" name="search" value={currentSearch} />}
       {make && <input type="hidden" name="make" value={make} />}

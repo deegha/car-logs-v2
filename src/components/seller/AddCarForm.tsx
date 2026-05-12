@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { sendGAEvent } from "@next/third-parties/google";
 import { formatPrice } from "@/lib/utils";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { Input } from "@/components/ui/Input";
@@ -119,6 +120,13 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
   const [localPhoneInput, setLocalPhoneInput] = useState("");
   const [localPhoneError, setLocalPhoneError] = useState("");
 
+  useEffect(() => {
+    sendGAEvent("event", "listing_step_view", {
+      step,
+      step_number: STEPS.indexOf(step) + 1,
+    });
+  }, [step]);
+
   function update(key: keyof FormData) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       setData((d) => ({ ...d, [key]: e.target.value }));
@@ -175,9 +183,19 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
   }
 
   function goNext() {
-    if (step === "details" && !validateDetails()) return;
-    if (step === "specs" && !validateSpecs()) return;
+    if (step === "details" && !validateDetails()) {
+      sendGAEvent("event", "listing_step_validation_failed", { step });
+      return;
+    }
+    if (step === "specs" && !validateSpecs()) {
+      sendGAEvent("event", "listing_step_validation_failed", { step });
+      return;
+    }
     if (step === "images" && (uploading || emissionUploading)) return;
+    sendGAEvent("event", "listing_step_complete", {
+      step,
+      step_number: STEPS.indexOf(step) + 1,
+    });
     const idx = STEPS.indexOf(step);
     const nextStep = STEPS[idx + 1];
     setStep(nextStep);
@@ -193,7 +211,10 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
 
   function goBack() {
     const idx = STEPS.indexOf(step);
-    if (idx > 0) setStep(STEPS[idx - 1]);
+    if (idx > 0) {
+      sendGAEvent("event", "listing_step_back", { from_step: step });
+      setStep(STEPS[idx - 1]);
+    }
   }
 
   async function addPhone() {
@@ -351,11 +372,20 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
       const result = await res.json();
       if (!res.ok) {
         setApiError(result.error ?? "Submission failed");
+        sendGAEvent("event", "listing_submit_error", { error: result.error ?? "unknown" });
         return;
       }
+      sendGAEvent("event", "listing_submitted", {
+        make: data.make,
+        model: data.model,
+        year: data.year,
+        price: data.price,
+        photo_count: uploadedUrls.length,
+      });
       router.push(`/seller/dashboard?submitted=1`);
     } catch {
       setApiError("Something went wrong. Please try again.");
+      sendGAEvent("event", "listing_submit_error", { error: "network_error" });
     } finally {
       setSubmitting(false);
     }

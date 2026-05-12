@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
+import { sendGAEvent } from "@next/third-parties/google";
 import { cn } from "@/lib/utils";
 
 interface SearchBarProps {
@@ -23,6 +24,7 @@ export function SearchBar({
     const params = new URLSearchParams(searchParams.toString());
     if (value.trim()) {
       params.set("search", value.trim());
+      sendGAEvent("event", "search_performed", { query: value.trim() });
     } else {
       params.delete("search");
     }
