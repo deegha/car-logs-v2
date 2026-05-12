@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { MobileNav } from "@/components/layout/MobileNav";
 
@@ -74,6 +75,7 @@ export default function RootLayout({
         {/* spacer so content isn't hidden behind the mobile nav */}
         <div className="h-[calc(56px+env(safe-area-inset-bottom))] md:hidden" aria-hidden />
       </body>
+      <GoogleAnalytics gaId="G-CTQN7XQWY1" />
     </html>
   );
 }
