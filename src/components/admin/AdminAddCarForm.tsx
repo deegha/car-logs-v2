@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/Input";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { MileageInput } from "@/components/ui/MileageInput";
 import { Select } from "@/components/ui/Select";
-import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { AutoComplete } from "@/components/ui/AutoComplete";
 import { ImageUploader } from "@/components/seller/ImageUploader";
 import { CAR_MAKES, getModels } from "@/data/carMakes";
 import { PROVINCES, getDistricts, getTowns } from "@/data/locations";
+import { BODY_TYPE_OPTIONS } from "@/data/bodyTypes";
+import { RichTextEditor } from "@/components/ui/RichTextEditor";
 import { formatPrice } from "@/lib/utils";
 
 interface SellerOption {
@@ -55,7 +56,11 @@ const YEAR_OPTIONS = Array.from({ length: currentYear - 1989 }, (_, i) => {
 export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
   const router = useRouter();
 
+  const [sellerMode, setSellerMode] = useState<"existing" | "manual">("existing");
   const [sellerId, setSellerId] = useState("");
+  const [contactName, setContactName] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactIsWhatsApp, setContactIsWhatsApp] = useState(false);
   const [status, setStatus] = useState("AVAILABLE");
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
@@ -88,7 +93,12 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
 
   function validate() {
     const errs: Record<string, string> = {};
-    if (!sellerId) errs.sellerId = "Required";
+    if (sellerMode === "existing") {
+      if (!sellerId) errs.sellerId = "Required";
+    } else {
+      if (!contactName.trim()) errs.contactName = "Required";
+      if (!/^\d{9}$/.test(contactPhone)) errs.contactPhone = "Enter 9 digits after +94";
+    }
     if (!title.trim()) errs.title = "Required";
     if (!make.trim()) errs.make = "Required";
     if (!model.trim()) errs.model = "Required";
@@ -112,7 +122,9 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sellerId: Number(sellerId),
+          ...(sellerMode === "existing"
+            ? { sellerId: Number(sellerId) }
+            : { manualContact: { name: contactName, phone: contactPhone, isWhatsApp: contactIsWhatsApp } }),
           title,
           make,
           model,
@@ -155,18 +167,106 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
         <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
           Seller
         </h2>
-        <Select
-          label="List on behalf of"
-          value={sellerId}
-          onChange={(e) => {
-            setSellerId(e.target.value);
-            setErrors((er) => ({ ...er, sellerId: undefined! }));
-          }}
-          options={sellerOptions}
-          placeholder="Select a seller"
-          error={errors.sellerId}
-          required
-        />
+
+        {/* Mode toggle */}
+        <div className="flex overflow-hidden rounded-md border border-border text-sm">
+          {(["existing", "manual"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => {
+                setSellerMode(mode);
+                setErrors((er) => ({ ...er, sellerId: undefined!, contactName: undefined!, contactPhone: undefined! }));
+              }}
+              className={`flex-1 px-4 py-2 font-medium transition-colors ${
+                sellerMode === mode
+                  ? "bg-primary-600 text-white"
+                  : "bg-background text-foreground-muted hover:bg-background-subtle"
+              }`}
+            >
+              {mode === "existing" ? "Existing seller" : "Manual contact"}
+            </button>
+          ))}
+        </div>
+
+        {sellerMode === "existing" ? (
+          <Select
+            label="List on behalf of"
+            value={sellerId}
+            onChange={(e) => {
+              setSellerId(e.target.value);
+              setErrors((er) => ({ ...er, sellerId: undefined! }));
+            }}
+            options={sellerOptions}
+            placeholder="Select a seller"
+            error={errors.sellerId}
+            required
+          />
+        ) : (
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-foreground">
+                Contact Name <span className="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                value={contactName}
+                onChange={(e) => {
+                  setContactName(e.target.value);
+                  setErrors((er) => ({ ...er, contactName: undefined! }));
+                }}
+                placeholder="e.g. Kamal Perera"
+                className={`field-input ${errors.contactName ? "border-danger" : ""}`}
+              />
+              {errors.contactName && (
+                <p className="text-sm text-danger">{errors.contactName}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-foreground">
+                Phone Number <span className="text-danger">*</span>
+              </label>
+              <div className="flex">
+                <span className="flex h-9 items-center rounded-l-md border border-r-0 border-border bg-background-subtle px-3 text-xs text-foreground-muted select-none">
+                  +94
+                </span>
+                <input
+                  type="tel"
+                  value={contactPhone}
+                  onChange={(e) => {
+                    setContactPhone(e.target.value.replace(/\D/g, "").slice(0, 9));
+                    setErrors((er) => ({ ...er, contactPhone: undefined! }));
+                  }}
+                  placeholder="712345678"
+                  maxLength={9}
+                  className={`h-9 flex-1 rounded-r-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none ${
+                    errors.contactPhone ? "border-danger focus:border-danger focus:ring-danger/20" : ""
+                  }`}
+                />
+              </div>
+              {errors.contactPhone && (
+                <p className="text-sm text-danger">{errors.contactPhone}</p>
+              )}
+            </div>
+
+            <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background-subtle px-4 py-3 hover:bg-background-subtle/80">
+              <input
+                type="checkbox"
+                checked={contactIsWhatsApp}
+                onChange={(e) => setContactIsWhatsApp(e.target.checked)}
+                className="h-4 w-4 rounded border-border accent-primary-600"
+              />
+              <div>
+                <p className="text-sm font-medium text-foreground">This number is on WhatsApp</p>
+                <p className="text-xs text-foreground-muted">
+                  Buyers will see a WhatsApp button on the listing
+                </p>
+              </div>
+            </label>
+          </div>
+        )}
+
         <Select
           label="Listing status"
           value={status}
@@ -340,11 +440,12 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Input
+          <Select
             label="Body Type"
             value={bodyType}
             onChange={(e) => setBodyType(e.target.value)}
-            placeholder="e.g. Sedan, SUV"
+            options={BODY_TYPE_OPTIONS}
+            placeholder="Select body type"
           />
           <Input
             label="Engine Size"
@@ -353,12 +454,11 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
             placeholder="e.g. 2.5L"
           />
         </div>
-        <Textarea
+        <RichTextEditor
           label="Description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={setDescription}
           placeholder="Describe the car's condition, features, history…"
-          rows={4}
         />
       </section>
 

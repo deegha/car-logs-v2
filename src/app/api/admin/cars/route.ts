@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { getAdminSession } from "@/lib/auth";
+import { getAdminSession, hashPassword } from "@/lib/auth";
 import { CarStatus, FuelType, Transmission } from "@/generated/prisma/client";
 import { generateCarSlug } from "@/lib/utils";
 
@@ -53,6 +53,7 @@ export async function POST(request: Request) {
 
   const {
     sellerId,
+    manualContact,
     title,
     make,
     model,
@@ -74,6 +75,7 @@ export async function POST(request: Request) {
     images,
   } = body as {
     sellerId?: number;
+    manualContact?: { name: string; phone: string; isWhatsApp: boolean };
     title?: string;
     make?: string;
     model?: string;
@@ -95,8 +97,14 @@ export async function POST(request: Request) {
     images?: { url: string; isPrimary?: boolean; order?: number }[];
   };
 
+  if (!sellerId && !manualContact) {
+    return Response.json(
+      { error: "Either sellerId or manualContact is required" },
+      { status: 400 }
+    );
+  }
+
   if (
-    !sellerId ||
     !title ||
     !make ||
     !model ||
@@ -107,17 +115,53 @@ export async function POST(request: Request) {
     !transmission
   ) {
     return Response.json(
-      {
-        error:
-          "sellerId, title, make, model, year, price, mileage, fuelType and transmission are required",
-      },
+      { error: "title, make, model, year, price, mileage, fuelType and transmission are required" },
       { status: 400 }
     );
   }
 
-  const seller = await db.seller.findUnique({ where: { id: sellerId } });
-  if (!seller) {
-    return Response.json({ error: "Seller not found" }, { status: 404 });
+  if (manualContact) {
+    if (!manualContact.name?.trim()) {
+      return Response.json({ error: "Contact name is required" }, { status: 400 });
+    }
+    if (!/^\d{9}$/.test(manualContact.phone ?? "")) {
+      return Response.json(
+        { error: "Phone must be 9 digits (after +94)" },
+        { status: 400 }
+      );
+    }
+  }
+
+  // Resolve the seller — either existing or auto-created from manual contact
+  let resolvedSellerId: number;
+
+  if (sellerId) {
+    const seller = await db.seller.findUnique({ where: { id: sellerId } });
+    if (!seller) return Response.json({ error: "Seller not found" }, { status: 404 });
+    resolvedSellerId = seller.id;
+  } else {
+    // Auto-create a locked account for manual contact listings
+    const contact = manualContact!;
+    const nameParts = contact.name.trim().split(/\s+/);
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(" ") || "-";
+    const uniqueEmail = `noaccount+${Date.now()}+${Math.random().toString(36).slice(2, 8)}@carlogs.internal`;
+    const ghostSeller = await db.seller.create({
+      data: {
+        firstName,
+        lastName,
+        email: uniqueEmail,
+        passwordHash: await hashPassword(crypto.randomUUID()),
+        phones: {
+          create: {
+            number: contact.phone,
+            isPrimary: true,
+            isWhatsApp: contact.isWhatsApp ?? false,
+          },
+        },
+      },
+    });
+    resolvedSellerId = ghostSeller.id;
   }
 
   const car = await db.car.create({
@@ -140,7 +184,7 @@ export async function POST(request: Request) {
       isNegotiable: isNegotiable ?? false,
       emissionTestUrl: emissionTestUrl ?? null,
       status,
-      sellerId,
+      sellerId: resolvedSellerId,
       ...(images?.length && {
         images: {
           create: images.map((img, i) => ({
