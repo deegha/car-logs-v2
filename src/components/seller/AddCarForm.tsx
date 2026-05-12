@@ -599,6 +599,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
               onChange={setUploadedUrls}
               onUploadingChange={setUploading}
               maxImages={5}
+              initialImages={uploadedUrls}
             />
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium text-foreground">
@@ -612,6 +613,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                 onChange={(urls) => setEmissionTestUrl(urls[0] ?? "")}
                 onUploadingChange={setEmissionUploading}
                 maxImages={1}
+                initialImages={emissionTestUrl ? [emissionTestUrl] : []}
               />
             </div>
           </div>
