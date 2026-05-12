@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
@@ -10,7 +11,6 @@ import { AutoComplete } from "@/components/ui/AutoComplete";
 import { ImageUploader } from "@/components/seller/ImageUploader";
 import { CAR_MAKES, getModels } from "@/data/carMakes";
 import { PROVINCES, getDistricts, getTowns } from "@/data/locations";
-import { currency } from "@/config/app";
 import { formatPrice } from "@/lib/utils";
 
 interface SellerOption {
@@ -232,18 +232,15 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
             error={errors.year}
             required
           />
-          <Input
-            label={`Price (${currency.code})`}
-            type="number"
+          <CurrencyInput
+            label="Price"
             value={price}
-            onChange={(e) => {
-              setPrice(e.target.value);
+            onChange={(raw) => {
+              setPrice(raw);
               setErrors((er) => ({ ...er, price: undefined! }));
             }}
             error={errors.price}
             required
-            min={0}
-            placeholder="25000"
           />
           <Input
             label="Mileage (km)"
@@ -274,7 +271,9 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           />
           <div>
             <p className="text-sm font-medium text-foreground">Price is negotiable</p>
-            <p className="text-xs text-foreground-muted">Shows a &ldquo;Negotiable&rdquo; badge on the listing</p>
+            <p className="text-xs text-foreground-muted">
+              Shows a &ldquo;Negotiable&rdquo; badge on the listing
+            </p>
           </div>
         </label>
         <div className="grid grid-cols-3 gap-4">
@@ -372,8 +371,13 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
         </h2>
         <ImageUploader onChange={setUploadedUrls} onUploadingChange={setUploading} maxImages={5} />
         <div className="flex flex-col gap-2 border-t border-border pt-4">
-          <p className="text-sm font-medium text-foreground">Emission Test Certificate <span className="font-normal text-foreground-muted">(optional)</span></p>
-          <p className="text-xs text-foreground-muted">Upload a photo of the latest emission test certificate.</p>
+          <p className="text-sm font-medium text-foreground">
+            Emission Test Certificate{" "}
+            <span className="font-normal text-foreground-muted">(optional)</span>
+          </p>
+          <p className="text-xs text-foreground-muted">
+            Upload a photo of the latest emission test certificate.
+          </p>
           <ImageUploader
             onChange={(urls) => setEmissionTestUrl(urls[0] ?? "")}
             onUploadingChange={setEmissionUploading}

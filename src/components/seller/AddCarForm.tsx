@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { Input } from "@/components/ui/Input";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
@@ -12,7 +13,6 @@ import { AutoComplete } from "@/components/ui/AutoComplete";
 import { ImageUploader } from "@/components/seller/ImageUploader";
 import { CAR_MAKES, getModels } from "@/data/carMakes";
 import { PROVINCES, getDistricts, getTowns } from "@/data/locations";
-import { currency } from "@/config/app";
 
 type Step = "details" | "specs" | "images" | "review";
 
@@ -320,15 +320,15 @@ export function AddCarForm() {
                 placeholder="Year"
                 required
               />
-              <Input
-                label={`Price (${currency.code})`}
-                type="number"
+              <CurrencyInput
+                label="Price"
                 value={data.price}
-                onChange={update("price")}
+                onChange={(raw) => {
+                  setData((d) => ({ ...d, price: raw }));
+                  setErrors((er) => ({ ...er, price: undefined }));
+                }}
                 error={errors.price}
                 required
-                min={0}
-                placeholder="25000"
               />
               <Input
                 label="Mileage (km)"
@@ -357,7 +357,9 @@ export function AddCarForm() {
               />
               <div>
                 <p className="text-sm font-medium text-foreground">Price is negotiable</p>
-                <p className="text-xs text-foreground-muted">Buyers will see a &ldquo;Negotiable&rdquo; badge on your listing</p>
+                <p className="text-xs text-foreground-muted">
+                  Buyers will see a &ldquo;Negotiable&rdquo; badge on your listing
+                </p>
               </div>
             </label>
             <div className="grid grid-cols-3 gap-3 sm:gap-4">
@@ -444,8 +446,13 @@ export function AddCarForm() {
               maxImages={5}
             />
             <div className="flex flex-col gap-2">
-              <p className="text-sm font-medium text-foreground">Emission Test Certificate <span className="font-normal text-foreground-muted">(optional)</span></p>
-              <p className="text-xs text-foreground-muted">Upload a photo of your latest emission test certificate.</p>
+              <p className="text-sm font-medium text-foreground">
+                Emission Test Certificate{" "}
+                <span className="font-normal text-foreground-muted">(optional)</span>
+              </p>
+              <p className="text-xs text-foreground-muted">
+                Upload a photo of your latest emission test certificate.
+              </p>
               <ImageUploader
                 onChange={(urls) => setEmissionTestUrl(urls[0] ?? "")}
                 onUploadingChange={setEmissionUploading}
@@ -496,7 +503,10 @@ export function AddCarForm() {
               }
             />
             <ReviewRow label="Negotiable" value={isNegotiable ? "Yes" : "No"} />
-            <ReviewRow label="Emission Test" value={emissionTestUrl ? "Uploaded" : "Not provided"} />
+            <ReviewRow
+              label="Emission Test"
+              value={emissionTestUrl ? "Uploaded" : "Not provided"}
+            />
             {apiError && <p className="rounded-md bg-red-50 px-3 py-2 text-danger">{apiError}</p>}
           </div>
         )}

@@ -80,9 +80,24 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
   }
 
   const hasContentChange = [
-    title, make, model, year, price, mileage, color, fuelType,
-    transmission, bodyType, engineSize, description, province, district, town,
-    isNegotiable, emissionTestUrl, images,
+    title,
+    make,
+    model,
+    year,
+    price,
+    mileage,
+    color,
+    fuelType,
+    transmission,
+    bodyType,
+    engineSize,
+    description,
+    province,
+    district,
+    town,
+    isNegotiable,
+    emissionTestUrl,
+    images,
   ].some((v) => v !== undefined);
 
   const slugMake = make ?? existing.make;

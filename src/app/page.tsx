@@ -52,7 +52,7 @@ export default async function HomePage() {
               name="search"
               type="text"
               placeholder="Search make, model, or title…"
-              className="h-12 w-full flex-1 rounded-xl border border-border bg-background px-4 text-sm text-foreground placeholder:text-foreground-muted focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
+              className="h-12 w-full flex-1 rounded-xl border border-border bg-background px-4 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
             />
             <button
               type="submit"

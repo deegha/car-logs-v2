@@ -101,7 +101,7 @@ export function AutoComplete({
         disabled={disabled}
         autoComplete="off"
         className={[
-          "h-10 w-full rounded-md border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted",
+          "h-10 w-full rounded-md border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted/50",
           "focus:ring-2 focus:ring-primary-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
           error
             ? "border-danger focus:border-danger focus:ring-danger/20"

@@ -102,7 +102,9 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => patch(car.id, "status-approve", { status: "AVAILABLE" as CarStatus })}
+                          onClick={() =>
+                            patch(car.id, "status-approve", { status: "AVAILABLE" as CarStatus })
+                          }
                           disabled={!!patchingId}
                           className="text-success"
                         >
@@ -111,7 +113,9 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => patch(car.id, "status-reject", { status: "REJECTED" as CarStatus })}
+                          onClick={() =>
+                            patch(car.id, "status-reject", { status: "REJECTED" as CarStatus })
+                          }
                           disabled={!!patchingId}
                           className="text-danger"
                         >
