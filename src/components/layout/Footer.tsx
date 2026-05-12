@@ -53,8 +53,12 @@ export function Footer() {
         <div className="mt-8 flex flex-col items-center gap-2 border-t border-border pt-6 text-center text-xs text-foreground-muted sm:flex-row sm:justify-between">
           <p>&copy; {new Date().getFullYear()} carlogs.lk. All rights reserved.</p>
           <p className="flex gap-4">
-            <Link href="/terms" className="hover:text-foreground">Terms &amp; Conditions</Link>
-            <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-foreground">
+              Terms &amp; Conditions
+            </Link>
+            <Link href="/privacy" className="hover:text-foreground">
+              Privacy Policy
+            </Link>
           </p>
         </div>
       </div>

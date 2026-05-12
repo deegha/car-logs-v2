@@ -39,9 +39,7 @@ export const metadata: Metadata = {
       { url: "/apple-icon-152x152.png", sizes: "152x152" },
       { url: "/apple-icon-180x180.png", sizes: "180x180" },
     ],
-    other: [
-      { rel: "msapplication-TileImage", url: "/ms-icon-144x144.png" },
-    ],
+    other: [{ rel: "msapplication-TileImage", url: "/ms-icon-144x144.png" }],
   },
   other: {
     "msapplication-TileColor": "#ffffff",

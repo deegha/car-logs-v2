@@ -62,8 +62,7 @@ export default function PrivacyPage() {
                 <li>Display and manage your vehicle listings.</li>
                 <li>Authenticate your account and keep it secure.</li>
                 <li>
-                  Understand how visitors use the site so we can improve the experience
-                  (analytics).
+                  Understand how visitors use the site so we can improve the experience (analytics).
                 </li>
                 <li>Communicate with you about your listings or account.</li>
               </ul>

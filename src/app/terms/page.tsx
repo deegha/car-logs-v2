@@ -38,9 +38,7 @@ export default function TermsPage() {
                 any transaction between buyers and sellers. We do not buy, sell, inspect, transfer
                 ownership of, or take possession of any vehicle listed on this site.
               </p>
-              <p>
-                We expressly disclaim all liability for:
-              </p>
+              <p>We expressly disclaim all liability for:</p>
               <ul>
                 <li>The accuracy, completeness, or truthfulness of any vehicle listing.</li>
                 <li>
