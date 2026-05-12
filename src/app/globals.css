@@ -85,7 +85,9 @@ body {
 
 /* Prevent iOS (Safari + Chrome) from zooming on input focus — mobile only */
 @media (max-width: 767px) {
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     font-size: max(16px, 1em);
   }
 }
