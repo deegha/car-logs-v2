@@ -18,6 +18,7 @@ export function FilterPanel() {
   const [maxYear, setMaxYear] = useState(searchParams.get("maxYear") ?? "");
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") ?? "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") ?? "");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const currentSearch = searchParams.get("search") ?? "";
 
@@ -45,10 +46,27 @@ export function FilterPanel() {
       {minPrice && <input type="hidden" name="minPrice" value={minPrice} />}
       {maxPrice && <input type="hidden" name="maxPrice" value={maxPrice} />}
 
-      <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
-        Filters
-      </h2>
+      <button
+        type="button"
+        onClick={() => setMobileOpen((o) => !o)}
+        className="flex w-full items-center justify-between lg:cursor-default lg:pointer-events-none"
+        aria-expanded={mobileOpen}
+      >
+        <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
+          Filters
+        </h2>
+        <svg
+          className={`h-4 w-4 text-foreground-muted transition-transform lg:hidden ${mobileOpen ? "rotate-180" : ""}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
 
+      <div className={`flex flex-col gap-4 ${mobileOpen ? "flex" : "hidden"} lg:flex`}>
       <FilterGroup label="Make">
         <AutoComplete
           value={make}
@@ -133,6 +151,7 @@ export function FilterPanel() {
         >
           Reset
         </Button>
+      </div>
       </div>
     </Form>
   );

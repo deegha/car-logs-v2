@@ -1,12 +1,15 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState } from "react";
 
 export function HeaderSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [value, setValue] = useState(searchParams.get("search") ?? "");
+
+  if (pathname === "/") return null;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
