@@ -15,16 +15,23 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
   const [cars, setCars] = useState(initialCars);
   const [pendingDelete, setPendingDelete] = useState<{ id: number; title: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [patchingId, setPatchingId] = useState<string | null>(null);
 
-  async function patch(id: number, body: Record<string, unknown>) {
-    const res = await fetch(`/api/admin/cars/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (res.ok) {
-      const { car } = await res.json();
-      setCars((prev) => prev.map((c) => (c.id === id ? car : c)));
+  async function patch(id: number, key: string, body: Record<string, unknown>) {
+    const opKey = `${id}-${key}`;
+    setPatchingId(opKey);
+    try {
+      const res = await fetch(`/api/admin/cars/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        const { car } = await res.json();
+        setCars((prev) => prev.map((c) => (c.id === id ? car : c)));
+      }
+    } finally {
+      setPatchingId(null);
     }
   }
 
@@ -81,10 +88,11 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
                 </td>
                 <td className="px-4 py-3">
                   <button
-                    onClick={() => patch(car.id, { featured: !car.featured })}
-                    className={`text-xs font-medium ${car.featured ? "text-accent-600" : "text-foreground-muted"}`}
+                    onClick={() => patch(car.id, "featured", { featured: !car.featured })}
+                    disabled={patchingId === `${car.id}-featured`}
+                    className={`text-xs font-medium transition-opacity disabled:opacity-40 ${car.featured ? "text-accent-600" : "text-foreground-muted"}`}
                   >
-                    {car.featured ? "Yes" : "No"}
+                    {patchingId === `${car.id}-featured` ? "…" : car.featured ? "Yes" : "No"}
                   </button>
                 </td>
                 <td className="px-4 py-3">
@@ -94,18 +102,20 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => patch(car.id, { status: "AVAILABLE" as CarStatus })}
+                          onClick={() => patch(car.id, "status-approve", { status: "AVAILABLE" as CarStatus })}
+                          disabled={!!patchingId}
                           className="text-success"
                         >
-                          Approve
+                          {patchingId === `${car.id}-status-approve` ? "…" : "Approve"}
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => patch(car.id, { status: "REJECTED" as CarStatus })}
+                          onClick={() => patch(car.id, "status-reject", { status: "REJECTED" as CarStatus })}
+                          disabled={!!patchingId}
                           className="text-danger"
                         >
-                          Reject
+                          {patchingId === `${car.id}-status-reject` ? "…" : "Reject"}
                         </Button>
                       </>
                     )}

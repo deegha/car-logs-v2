@@ -88,6 +88,8 @@ export async function POST(request: Request) {
     province,
     district,
     town,
+    isNegotiable,
+    emissionTestUrl,
     images,
   } = body as {
     title?: string;
@@ -105,6 +107,8 @@ export async function POST(request: Request) {
     province?: string;
     district?: string;
     town?: string;
+    isNegotiable?: boolean;
+    emissionTestUrl?: string;
     images?: { url: string; alt?: string; isPrimary?: boolean; order?: number }[];
   };
 
@@ -142,6 +146,8 @@ export async function POST(request: Request) {
       province: province ?? null,
       district: district ?? null,
       town: town ?? null,
+      isNegotiable: isNegotiable ?? false,
+      emissionTestUrl: emissionTestUrl ?? null,
       sellerId: session.sellerId,
       ...(images?.length && {
         images: {

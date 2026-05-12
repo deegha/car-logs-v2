@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { cloudinaryUrl } from "@/lib/cloudinaryUrl";
 import type { CarImage } from "@/types";
 
 interface CarImageGalleryProps {
@@ -51,7 +52,7 @@ export function CarImageGallery({ images, title, edgeToEdge = false }: CarImageG
         )}
       >
         <Image
-          src={active.url}
+          src={cloudinaryUrl(active.url, "w_1200,h_900,c_fill,g_auto")}
           alt={active.alt ?? title}
           fill
           priority
@@ -96,7 +97,7 @@ export function CarImageGallery({ images, title, edgeToEdge = false }: CarImageG
               )}
             >
               <Image
-                src={img.url}
+                src={cloudinaryUrl(img.url, "w_200,h_150,c_fill,g_auto")}
                 alt={img.alt ?? `${title} photo ${i + 1}`}
                 fill
                 sizes="96px"

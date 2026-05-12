@@ -2,7 +2,9 @@ interface CarlogsLogoProps {
   textClassName?: string;
 }
 
-export function CarlogsLogo({ textClassName = "text-lg font-bold text-foreground sm:text-xl" }: CarlogsLogoProps) {
+export function CarlogsLogo({
+  textClassName = "text-lg font-bold text-foreground sm:text-xl",
+}: CarlogsLogoProps) {
   return (
     <span className="flex items-center gap-1">
       <svg

@@ -1,5 +1,5 @@
 import { CarCard } from "@/components/cars/CarCard";
-import { Spinner } from "@/components/ui/Spinner";
+import { CarCardSkeleton } from "@/components/cars/CarCardSkeleton";
 import type { Car } from "@/types";
 
 interface CarGridProps {
@@ -11,8 +11,10 @@ interface CarGridProps {
 export function CarGrid({ cars, loading, emptyMessage = "No listings found." }: CarGridProps) {
   if (loading) {
     return (
-      <div className="flex min-h-64 items-center justify-center">
-        <Spinner size="lg" />
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <CarCardSkeleton key={i} />
+        ))}
       </div>
     );
   }

@@ -71,6 +71,9 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [town, setTown] = useState("");
+  const [isNegotiable, setIsNegotiable] = useState(false);
+  const [emissionTestUrl, setEmissionTestUrl] = useState("");
+  const [emissionUploading, setEmissionUploading] = useState(false);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -124,6 +127,8 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           province: province || null,
           district: district || null,
           town: town || null,
+          isNegotiable,
+          emissionTestUrl: emissionTestUrl || null,
           status,
           images: uploadedUrls.map((url, i) => ({ url, isPrimary: i === 0, order: i })),
         }),
@@ -260,6 +265,18 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           onChange={(e) => setColor(e.target.value)}
           placeholder="e.g. White"
         />
+        <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background-subtle px-4 py-3 hover:bg-background-subtle/80">
+          <input
+            type="checkbox"
+            checked={isNegotiable}
+            onChange={(e) => setIsNegotiable(e.target.checked)}
+            className="h-4 w-4 rounded border-border accent-primary-600"
+          />
+          <div>
+            <p className="text-sm font-medium text-foreground">Price is negotiable</p>
+            <p className="text-xs text-foreground-muted">Shows a &ldquo;Negotiable&rdquo; badge on the listing</p>
+          </div>
+        </label>
         <div className="grid grid-cols-3 gap-4">
           <AutoComplete
             label="Province"
@@ -354,6 +371,15 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           Photos
         </h2>
         <ImageUploader onChange={setUploadedUrls} onUploadingChange={setUploading} maxImages={5} />
+        <div className="flex flex-col gap-2 border-t border-border pt-4">
+          <p className="text-sm font-medium text-foreground">Emission Test Certificate <span className="font-normal text-foreground-muted">(optional)</span></p>
+          <p className="text-xs text-foreground-muted">Upload a photo of the latest emission test certificate.</p>
+          <ImageUploader
+            onChange={(urls) => setEmissionTestUrl(urls[0] ?? "")}
+            onUploadingChange={setEmissionUploading}
+            maxImages={1}
+          />
+        </div>
       </section>
 
       {/* Summary & submit */}
@@ -382,7 +408,7 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={submitting || uploading}>
+        <Button type="submit" disabled={submitting || uploading || emissionUploading}>
           {submitting ? "Creating…" : uploading ? "Uploading photos…" : "Create Listing"}
         </Button>
       </div>

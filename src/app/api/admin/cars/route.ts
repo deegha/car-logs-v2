@@ -68,6 +68,8 @@ export async function POST(request: Request) {
     province,
     district,
     town,
+    isNegotiable,
+    emissionTestUrl,
     status = CarStatus.AVAILABLE,
     images,
   } = body as {
@@ -87,6 +89,8 @@ export async function POST(request: Request) {
     province?: string;
     district?: string;
     town?: string;
+    isNegotiable?: boolean;
+    emissionTestUrl?: string;
     status?: CarStatus;
     images?: { url: string; isPrimary?: boolean; order?: number }[];
   };
@@ -133,6 +137,8 @@ export async function POST(request: Request) {
       province: province ?? null,
       district: district ?? null,
       town: town ?? null,
+      isNegotiable: isNegotiable ?? false,
+      emissionTestUrl: emissionTestUrl ?? null,
       status,
       sellerId,
       ...(images?.length && {

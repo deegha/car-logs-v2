@@ -1,0 +1,18 @@
+import { Skeleton } from "@/components/ui/Skeleton";
+
+export function CarCardSkeleton() {
+  return (
+    <div className="flex flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+      <Skeleton className="aspect-[4/3] w-full rounded-none" />
+      <div className="flex flex-col gap-2 p-3 sm:p-4">
+        <Skeleton className="h-3.5 w-4/5" />
+        <Skeleton className="h-3 w-2/5" />
+        <Skeleton className="mt-1 h-5 w-1/2" />
+        <div className="flex gap-1.5">
+          <Skeleton className="h-5 w-10 rounded-full" />
+          <Skeleton className="h-5 w-20 rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}

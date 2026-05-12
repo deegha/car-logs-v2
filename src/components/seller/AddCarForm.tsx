@@ -85,6 +85,9 @@ export function AddCarForm() {
   const [step, setStep] = useState<Step>("details");
   const [data, setData] = useState<FormData>(EMPTY);
   const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [isNegotiable, setIsNegotiable] = useState(false);
+  const [emissionTestUrl, setEmissionTestUrl] = useState<string>("");
+  const [emissionUploading, setEmissionUploading] = useState(false);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -149,7 +152,7 @@ export function AddCarForm() {
   function goNext() {
     if (step === "details" && !validateDetails()) return;
     if (step === "specs" && !validateSpecs()) return;
-    if (step === "images" && uploading) return; // wait for uploads
+    if (step === "images" && (uploading || emissionUploading)) return;
     const idx = STEPS.indexOf(step);
     const nextStep = STEPS[idx + 1];
     setStep(nextStep);
@@ -196,6 +199,8 @@ export function AddCarForm() {
           province: data.province || null,
           district: data.district || null,
           town: data.town || null,
+          isNegotiable,
+          emissionTestUrl: emissionTestUrl || null,
           images,
         }),
       });
@@ -216,6 +221,35 @@ export function AddCarForm() {
 
   return (
     <div className="flex flex-col gap-6">
+      {submitting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="flex w-full max-w-xs flex-col items-center gap-6 rounded-2xl border border-border bg-background p-8 text-center shadow-xl">
+            <div className="relative flex h-16 w-16 items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-4 border-primary-100" />
+              <div className="absolute inset-0 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
+              <svg
+                className="h-6 w-6 text-primary-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
+                />
+              </svg>
+            </div>
+            <div>
+              <p className="text-base font-semibold text-foreground">Submitting your listing</p>
+              <p className="mt-1 text-sm text-foreground-muted">
+                Just a moment — please don&apos;t close this tab.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Step indicators */}
       <div className="flex items-center gap-2">
         {STEPS.map((s, i) => (
@@ -314,6 +348,18 @@ export function AddCarForm() {
               onChange={update("color")}
               placeholder="e.g. White"
             />
+            <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 hover:bg-background-subtle">
+              <input
+                type="checkbox"
+                checked={isNegotiable}
+                onChange={(e) => setIsNegotiable(e.target.checked)}
+                className="h-4 w-4 rounded border-border accent-primary-600"
+              />
+              <div>
+                <p className="text-sm font-medium text-foreground">Price is negotiable</p>
+                <p className="text-xs text-foreground-muted">Buyers will see a &ldquo;Negotiable&rdquo; badge on your listing</p>
+              </div>
+            </label>
             <div className="grid grid-cols-3 gap-3 sm:gap-4">
               <AutoComplete
                 label="Province"
@@ -391,11 +437,22 @@ export function AddCarForm() {
         )}
 
         {step === "images" && (
-          <ImageUploader
-            onChange={setUploadedUrls}
-            onUploadingChange={setUploading}
-            maxImages={5}
-          />
+          <div className="flex flex-col gap-6">
+            <ImageUploader
+              onChange={setUploadedUrls}
+              onUploadingChange={setUploading}
+              maxImages={5}
+            />
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-medium text-foreground">Emission Test Certificate <span className="font-normal text-foreground-muted">(optional)</span></p>
+              <p className="text-xs text-foreground-muted">Upload a photo of your latest emission test certificate.</p>
+              <ImageUploader
+                onChange={(urls) => setEmissionTestUrl(urls[0] ?? "")}
+                onUploadingChange={setEmissionUploading}
+                maxImages={1}
+              />
+            </div>
+          </div>
         )}
 
         {step === "review" && isAuthenticated === null && (
@@ -438,6 +495,8 @@ export function AddCarForm() {
                   : "No photos"
               }
             />
+            <ReviewRow label="Negotiable" value={isNegotiable ? "Yes" : "No"} />
+            <ReviewRow label="Emission Test" value={emissionTestUrl ? "Uploaded" : "Not provided"} />
             {apiError && <p className="rounded-md bg-red-50 px-3 py-2 text-danger">{apiError}</p>}
           </div>
         )}
@@ -449,8 +508,8 @@ export function AddCarForm() {
           Back
         </Button>
         {step !== "review" ? (
-          <Button onClick={goNext} disabled={step === "images" && uploading}>
-            {step === "images" && uploading ? "Uploading…" : "Continue"}
+          <Button onClick={goNext} disabled={step === "images" && (uploading || emissionUploading)}>
+            {step === "images" && (uploading || emissionUploading) ? "Uploading…" : "Continue"}
           </Button>
         ) : isAuthenticated === true ? (
           <Button onClick={handleSubmit} disabled={submitting}>

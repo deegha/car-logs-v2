@@ -56,10 +56,12 @@ model Car {
   bodyType     String?      @db.VarChar(50)
   engineSize   String?      @db.VarChar(20)
   description  String?      @db.Text
-  province     String?      @db.VarChar(100)
-  district     String?      @db.VarChar(100)
-  town         String?      @db.VarChar(100)
-  status       CarStatus    @default(PENDING)
+  province         String?      @db.VarChar(100)
+  district         String?      @db.VarChar(100)
+  town             String?      @db.VarChar(100)
+  isNegotiable     Boolean      @default(false)
+  emissionTestUrl  String?      @db.VarChar(500)
+  status           CarStatus    @default(PENDING)
   featured     Boolean      @default(false)
   sellerId     Int
   seller       Seller       @relation(fields: [sellerId], references: [id], onDelete: Cascade)

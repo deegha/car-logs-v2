@@ -31,6 +31,12 @@ export function CarSpecsTable({ car }: CarSpecsTableProps) {
     car.bodyType ? { label: "Body Type", value: car.bodyType } : null,
     car.engineSize ? { label: "Engine Size", value: car.engineSize } : null,
     car.color ? { label: "Colour", value: car.color } : null,
+    (car.province || car.district || car.town)
+      ? {
+          label: "Location",
+          value: [car.town, car.district, car.province].filter(Boolean).join(", "),
+        }
+      : null,
   ].filter(Boolean) as { label: string; value: string }[];
 
   return (

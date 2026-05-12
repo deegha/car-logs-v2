@@ -49,6 +49,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     province,
     district,
     town,
+    isNegotiable,
+    emissionTestUrl,
     images,
   } = body as {
     status?: CarStatus;
@@ -68,6 +70,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     province?: string | null;
     district?: string | null;
     town?: string | null;
+    isNegotiable?: boolean;
+    emissionTestUrl?: string | null;
     images?: { url: string; alt?: string; isPrimary?: boolean; order?: number }[];
   };
 
@@ -76,22 +80,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
   }
 
   const hasContentChange = [
-    title,
-    make,
-    model,
-    year,
-    price,
-    mileage,
-    color,
-    fuelType,
-    transmission,
-    bodyType,
-    engineSize,
-    description,
-    province,
-    district,
-    town,
-    images,
+    title, make, model, year, price, mileage, color, fuelType,
+    transmission, bodyType, engineSize, description, province, district, town,
+    isNegotiable, emissionTestUrl, images,
   ].some((v) => v !== undefined);
 
   const slugMake = make ?? existing.make;
@@ -120,6 +111,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       ...(province !== undefined && { province }),
       ...(district !== undefined && { district }),
       ...(town !== undefined && { town }),
+      ...(isNegotiable !== undefined && { isNegotiable }),
+      ...(emissionTestUrl !== undefined && { emissionTestUrl }),
       ...(images !== undefined && {
         images: {
           deleteMany: {},

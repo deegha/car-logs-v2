@@ -30,6 +30,8 @@ export interface Car {
   province: string | null;
   district: string | null;
   town: string | null;
+  isNegotiable: boolean;
+  emissionTestUrl: string | null;
   status: CarStatus;
   featured: boolean;
   sellerId: number;

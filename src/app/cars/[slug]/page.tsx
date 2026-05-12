@@ -102,12 +102,46 @@ export default async function CarDetailPage({ params }: { params: Params }) {
               {/* Title + price */}
               <div>
                 <h1 className="text-2xl font-bold text-foreground">{car.title}</h1>
-                <p className="mt-2 text-3xl font-bold text-primary-600">
-                  {formatPrice(Number(car.price))}
-                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <p className="text-3xl font-bold text-primary-600">
+                    {formatPrice(Number(car.price))}
+                  </p>
+                  {car.isNegotiable && (
+                    <span className="rounded-full border border-green-300 bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                      Negotiable
+                    </span>
+                  )}
+                </div>
               </div>
 
               <CarSpecsTable car={car as unknown as Car} />
+
+              {/* Emission test */}
+              {car.emissionTestUrl && (
+                <div>
+                  <h2 className="mb-2 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
+                    Emission Test
+                  </h2>
+                  <a
+                    href={car.emissionTestUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative block overflow-hidden rounded-lg border border-border"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={car.emissionTestUrl}
+                      alt="Emission test certificate"
+                      className="max-h-48 w-full object-cover object-top"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                      <span className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-foreground">
+                        View Full Certificate
+                      </span>
+                    </div>
+                  </a>
+                </div>
+              )}
 
               {car.description && (
                 <div>

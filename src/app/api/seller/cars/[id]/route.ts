@@ -47,6 +47,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     province,
     district,
     town,
+    isNegotiable,
+    emissionTestUrl,
     images,
   } = body as {
     title?: string;
@@ -64,6 +66,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     province?: string | null;
     district?: string | null;
     town?: string | null;
+    isNegotiable?: boolean;
+    emissionTestUrl?: string | null;
     images?: { url: string; alt?: string; isPrimary?: boolean; order?: number }[];
   };
 
@@ -92,6 +96,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       ...(province !== undefined && { province }),
       ...(district !== undefined && { district }),
       ...(town !== undefined && { town }),
+      ...(isNegotiable !== undefined && { isNegotiable }),
+      ...(emissionTestUrl !== undefined && { emissionTestUrl }),
       ...(images !== undefined && {
         images: {
           deleteMany: {},
