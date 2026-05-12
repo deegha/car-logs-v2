@@ -186,7 +186,7 @@ export default async function CarDetailPage({ params }: { params: Params }) {
                     Description
                   </h2>
                   <div
-                    className="text-sm leading-relaxed text-foreground [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:font-semibold [&_em]:italic [&_u]:underline [&_p]:mb-1 last:[&_p]:mb-0 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:mb-1"
+                    className="text-sm leading-relaxed text-foreground [&_em]:italic [&_h2]:mb-1 [&_h2]:text-base [&_h2]:font-semibold [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-1 last:[&_p]:mb-0 [&_strong]:font-semibold [&_u]:underline [&_ul]:list-disc [&_ul]:pl-5"
                     dangerouslySetInnerHTML={{ __html: car.description }}
                   />
                 </div>

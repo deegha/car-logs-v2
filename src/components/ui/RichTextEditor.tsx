@@ -163,7 +163,15 @@ function ToolbarButton({
 
 function IconHeading() {
   return (
-    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 16 16"
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M2 3v10M2 8h7M9 3v10M12 11h2M13 10v3" />
     </svg>
   );
@@ -171,7 +179,15 @@ function IconHeading() {
 
 function IconBold() {
   return (
-    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 16 16"
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M4 3h5a2.5 2.5 0 010 5H4V3z" />
       <path d="M4 8h5.5a2.5 2.5 0 010 5H4V8z" />
     </svg>
@@ -180,7 +196,15 @@ function IconBold() {
 
 function IconItalic() {
   return (
-    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 16 16"
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="10" y1="3" x2="6" y2="13" />
       <line x1="7" y1="3" x2="13" y2="3" />
       <line x1="3" y1="13" x2="9" y2="13" />
@@ -190,7 +214,15 @@ function IconItalic() {
 
 function IconUnderline() {
   return (
-    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 16 16"
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M4 3v5a4 4 0 008 0V3" />
       <line x1="2" y1="14" x2="14" y2="14" />
     </svg>
@@ -199,7 +231,15 @@ function IconUnderline() {
 
 function IconBulletList() {
   return (
-    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 16 16"
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="2.5" cy="4" r="0.75" fill="currentColor" stroke="none" />
       <line x1="5.5" y1="4" x2="14" y2="4" />
       <circle cx="2.5" cy="8" r="0.75" fill="currentColor" stroke="none" />
@@ -212,7 +252,15 @@ function IconBulletList() {
 
 function IconOrderedList() {
   return (
-    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 16 16"
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="6" y1="4" x2="14" y2="4" />
       <line x1="6" y1="8" x2="14" y2="8" />
       <line x1="6" y1="12" x2="14" y2="12" />
