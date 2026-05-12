@@ -76,7 +76,7 @@ export function MileageInput({
           disabled={disabled}
           className="h-full flex-1 bg-transparent px-3 text-sm text-foreground placeholder:text-foreground-muted/50 focus:outline-none disabled:cursor-not-allowed"
         />
-        <span className="flex select-none items-center border-l border-border bg-background-subtle px-3 text-sm font-medium text-foreground-muted">
+        <span className="flex items-center border-l border-border bg-background-subtle px-3 text-sm font-medium text-foreground-muted select-none">
           km
         </span>
       </div>

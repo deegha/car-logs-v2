@@ -53,9 +53,10 @@ export default async function CarDetailPage({ params }: { params: Params }) {
   if (!car) notFound();
 
   // Non-AVAILABLE listings are only visible to the owning seller
-  const isOwnerView = car.status !== CarStatus.AVAILABLE
-    ? await getSellerSession().then((s) => s?.sellerId === car.sellerId)
-    : false;
+  const isOwnerView =
+    car.status !== CarStatus.AVAILABLE
+      ? await getSellerSession().then((s) => s?.sellerId === car.sellerId)
+      : false;
 
   if (car.status !== CarStatus.AVAILABLE && !isOwnerView) notFound();
 
@@ -93,15 +94,19 @@ export default async function CarDetailPage({ params }: { params: Params }) {
 
           {/* Owner preview banner */}
           {isOwnerView && (
-            <div className={`mb-6 rounded-lg border px-4 py-3 text-sm font-medium ${
-              car.status === "PENDING"
-                ? "border-amber-200 bg-amber-50 text-amber-800"
-                : car.status === "REJECTED"
-                ? "border-red-200 bg-red-50 text-red-800"
-                : "border-border bg-background-subtle text-foreground-muted"
-            }`}>
-              {car.status === "PENDING" && "Your listing is under review and not yet visible to buyers."}
-              {car.status === "REJECTED" && "Your listing was rejected. Please edit it and resubmit for review."}
+            <div
+              className={`mb-6 rounded-lg border px-4 py-3 text-sm font-medium ${
+                car.status === "PENDING"
+                  ? "border-amber-200 bg-amber-50 text-amber-800"
+                  : car.status === "REJECTED"
+                    ? "border-red-200 bg-red-50 text-red-800"
+                    : "border-border bg-background-subtle text-foreground-muted"
+              }`}
+            >
+              {car.status === "PENDING" &&
+                "Your listing is under review and not yet visible to buyers."}
+              {car.status === "REJECTED" &&
+                "Your listing was rejected. Please edit it and resubmit for review."}
               {car.status === "RESERVED" && "This listing is marked as reserved."}
               {car.status === "SOLD" && "This listing is marked as sold."}
             </div>

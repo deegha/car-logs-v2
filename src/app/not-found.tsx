@@ -9,13 +9,8 @@ export default function NotFound() {
 
       <main className="flex flex-1 items-center justify-center bg-background-subtle px-4 py-16">
         <div className="flex w-full max-w-md flex-col items-center gap-10 text-center">
-
           {/* ── Illustration ─────────────────────────────────────────── */}
-          <svg
-            viewBox="0 0 400 200"
-            className="w-full max-w-sm"
-            aria-hidden="true"
-          >
+          <svg viewBox="0 0 400 200" className="w-full max-w-sm" aria-hidden="true">
             <defs>
               <linearGradient id="nf-sky" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#f0f5ff" />
@@ -38,7 +33,16 @@ export default function NotFound() {
             <rect x="0" y="156" width="400" height="2" fill="#cbd5e1" />
             {/* Centre dashes (stop before barrier) */}
             {[6, 66, 126, 186, 246].map((x) => (
-              <rect key={x} x={x} y="176" width="40" height="4" rx="2" fill="white" opacity="0.75" />
+              <rect
+                key={x}
+                x={x}
+                y="176"
+                width="40"
+                height="4"
+                rx="2"
+                fill="white"
+                opacity="0.75"
+              />
             ))}
 
             {/* ── Barrier ─────────────────────────────────────────── */}
@@ -56,13 +60,42 @@ export default function NotFound() {
             {/* Post */}
             <rect x="361" y="72" width="5" height="83" fill="#94a3b8" />
             {/* Board */}
-            <rect x="334" y="42" width="64" height="38" rx="5" fill="white" stroke="#e2e8f0" strokeWidth="1.5" />
+            <rect
+              x="334"
+              y="42"
+              width="64"
+              height="38"
+              rx="5"
+              fill="white"
+              stroke="#e2e8f0"
+              strokeWidth="1.5"
+            />
             {/* Red band */}
             <rect x="334" y="42" width="64" height="11" rx="5" fill="#ef4444" />
             <rect x="334" y="48" width="64" height="5" fill="#ef4444" />
             {/* Text */}
-            <text x="366" y="64" textAnchor="middle" fill="#0f172a" fontSize="10" fontWeight="800" fontFamily="system-ui,sans-serif">NOT</text>
-            <text x="366" y="76" textAnchor="middle" fill="#0f172a" fontSize="10" fontWeight="800" fontFamily="system-ui,sans-serif">FOUND</text>
+            <text
+              x="366"
+              y="64"
+              textAnchor="middle"
+              fill="#0f172a"
+              fontSize="10"
+              fontWeight="800"
+              fontFamily="system-ui,sans-serif"
+            >
+              NOT
+            </text>
+            <text
+              x="366"
+              y="76"
+              textAnchor="middle"
+              fill="#0f172a"
+              fontSize="10"
+              fontWeight="800"
+              fontFamily="system-ui,sans-serif"
+            >
+              FOUND
+            </text>
 
             {/* ── Car shadow ──────────────────────────────────────── */}
             <ellipse cx="205" cy="160" rx="96" ry="6" fill="rgba(0,0,0,0.07)" />
@@ -86,10 +119,26 @@ export default function NotFound() {
             <rect x="216" y="76" width="6" height="37" fill="#2a4bbf" />
 
             {/* Waistline crease */}
-            <rect x="107" y="136" width="202" height="2.5" rx="1.25" fill="#2a4bbf" opacity="0.45" />
+            <rect
+              x="107"
+              y="136"
+              width="202"
+              height="2.5"
+              rx="1.25"
+              fill="#2a4bbf"
+              opacity="0.45"
+            />
 
             {/* Door line */}
-            <line x1="223" y1="117" x2="223" y2="159" stroke="#2a4bbf" strokeWidth="1.5" opacity="0.45" />
+            <line
+              x1="223"
+              y1="117"
+              x2="223"
+              y2="159"
+              stroke="#2a4bbf"
+              strokeWidth="1.5"
+              opacity="0.45"
+            />
             {/* Door handle */}
             <rect x="196" y="130" width="18" height="4" rx="2" fill="#2a4bbf" opacity="0.55" />
 
@@ -124,11 +173,30 @@ export default function NotFound() {
             <circle cx="284" cy="160" r="5" fill="#94a3b8" />
 
             {/* ── Question mark bubble above car ──────────────────── */}
-            <rect x="228" y="30" width="38" height="30" rx="8" fill="white" stroke="#e2e8f0" strokeWidth="1.5" />
+            <rect
+              x="228"
+              y="30"
+              width="38"
+              height="30"
+              rx="8"
+              fill="white"
+              stroke="#e2e8f0"
+              strokeWidth="1.5"
+            />
             {/* Bubble tail */}
             <polygon points="248,60 242,68 254,60" fill="white" />
             <polygon points="249,61 242,68 255,61" fill="#e2e8f0" />
-            <text x="247" y="51" textAnchor="middle" fill="#3b5bdb" fontSize="18" fontWeight="900" fontFamily="system-ui,sans-serif">?</text>
+            <text
+              x="247"
+              y="51"
+              textAnchor="middle"
+              fill="#3b5bdb"
+              fontSize="18"
+              fontWeight="900"
+              fontFamily="system-ui,sans-serif"
+            >
+              ?
+            </text>
           </svg>
 
           {/* ── Copy ─────────────────────────────────────────────────── */}
@@ -140,8 +208,8 @@ export default function NotFound() {
               Looks like a wrong turn.
             </h1>
             <p className="max-w-sm text-base leading-relaxed text-foreground-muted">
-              This road leads nowhere. The page you&apos;re looking for doesn&apos;t
-              exist, was removed, or the URL might be wrong.
+              This road leads nowhere. The page you&apos;re looking for doesn&apos;t exist, was
+              removed, or the URL might be wrong.
             </p>
           </div>
 
@@ -151,8 +219,18 @@ export default function NotFound() {
               href="/"
               className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-700 active:bg-primary-800"
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
               </svg>
               Back to Homepage
             </Link>
@@ -163,7 +241,6 @@ export default function NotFound() {
               Browse Listings
             </Link>
           </div>
-
         </div>
       </main>
 
