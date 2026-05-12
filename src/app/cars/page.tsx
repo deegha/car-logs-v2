@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CarGrid } from "@/components/cars/CarGrid";
 import { FilterPanel } from "@/components/filters/FilterPanel";
 import { FilterChips } from "@/components/filters/FilterChips";
+import { SearchBar } from "@/components/filters/SearchBar";
 import { db } from "@/lib/db";
 import { CarStatus } from "@/generated/prisma/client";
 import type { Car } from "@/types";
@@ -78,13 +79,19 @@ export default async function CarsPage({
       <Header />
 
       <main className="flex-1 bg-background-subtle">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-            <aside className="w-full rounded-lg border border-border bg-background p-5 lg:w-64 lg:shrink-0">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:py-8 lg:px-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
+            {/* Left column: search + filters on mobile; sidebar on desktop */}
+            <div className="flex flex-col gap-3 lg:w-64 lg:shrink-0">
               <Suspense>
-                <FilterPanel />
+                <SearchBar className="lg:hidden" />
               </Suspense>
-            </aside>
+              <aside className="w-full rounded-lg border border-border bg-background p-5">
+                <Suspense>
+                  <FilterPanel />
+                </Suspense>
+              </aside>
+            </div>
 
             <div className="flex flex-1 flex-col gap-4">
               <Suspense>
