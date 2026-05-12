@@ -124,7 +124,13 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
         body: JSON.stringify({
           ...(sellerMode === "existing"
             ? { sellerId: Number(sellerId) }
-            : { manualContact: { name: contactName, phone: contactPhone, isWhatsApp: contactIsWhatsApp } }),
+            : {
+                manualContact: {
+                  name: contactName,
+                  phone: contactPhone,
+                  isWhatsApp: contactIsWhatsApp,
+                },
+              }),
           title,
           make,
           model,
@@ -176,7 +182,12 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
               type="button"
               onClick={() => {
                 setSellerMode(mode);
-                setErrors((er) => ({ ...er, sellerId: undefined!, contactName: undefined!, contactPhone: undefined! }));
+                setErrors((er) => ({
+                  ...er,
+                  sellerId: undefined!,
+                  contactName: undefined!,
+                  contactPhone: undefined!,
+                }));
               }}
               className={`flex-1 px-4 py-2 font-medium transition-colors ${
                 sellerMode === mode
@@ -218,9 +229,7 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
                 placeholder="e.g. Kamal Perera"
                 className={`field-input ${errors.contactName ? "border-danger" : ""}`}
               />
-              {errors.contactName && (
-                <p className="text-sm text-danger">{errors.contactName}</p>
-              )}
+              {errors.contactName && <p className="text-sm text-danger">{errors.contactName}</p>}
             </div>
 
             <div className="flex flex-col gap-1">
@@ -241,13 +250,13 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
                   placeholder="712345678"
                   maxLength={9}
                   className={`h-9 flex-1 rounded-r-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none ${
-                    errors.contactPhone ? "border-danger focus:border-danger focus:ring-danger/20" : ""
+                    errors.contactPhone
+                      ? "border-danger focus:border-danger focus:ring-danger/20"
+                      : ""
                   }`}
                 />
               </div>
-              {errors.contactPhone && (
-                <p className="text-sm text-danger">{errors.contactPhone}</p>
-              )}
+              {errors.contactPhone && <p className="text-sm text-danger">{errors.contactPhone}</p>}
             </div>
 
             <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background-subtle px-4 py-3 hover:bg-background-subtle/80">

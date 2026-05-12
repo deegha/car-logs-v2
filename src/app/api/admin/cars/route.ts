@@ -125,10 +125,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "Contact name is required" }, { status: 400 });
     }
     if (!/^\d{9}$/.test(manualContact.phone ?? "")) {
-      return Response.json(
-        { error: "Phone must be 9 digits (after +94)" },
-        { status: 400 }
-      );
+      return Response.json({ error: "Phone must be 9 digits (after +94)" }, { status: 400 });
     }
   }
 
