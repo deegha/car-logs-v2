@@ -8,6 +8,7 @@ import { CarCard } from "@/components/cars/CarCard";
 import { db } from "@/lib/db";
 import { CarStatus } from "@/generated/prisma/client";
 import { formatPrice } from "@/lib/utils";
+import { getSellerSession } from "@/lib/auth";
 import type { Car, CarImage } from "@/types";
 import type { Metadata } from "next";
 
@@ -40,16 +41,23 @@ export default async function CarDetailPage({ params }: { params: Params }) {
   }
 
   const car = await db.car.findFirst({
-    where: { slug, status: CarStatus.AVAILABLE },
+    where: { slug },
     include: {
       images: { orderBy: { order: "asc" } },
       seller: {
-        select: { firstName: true, lastName: true, phone: true },
+        select: { id: true, firstName: true, lastName: true, phone: true },
       },
     },
   });
 
   if (!car) notFound();
+
+  // Non-AVAILABLE listings are only visible to the owning seller
+  const isOwnerView = car.status !== CarStatus.AVAILABLE
+    ? await getSellerSession().then((s) => s?.sellerId === car.sellerId)
+    : false;
+
+  if (car.status !== CarStatus.AVAILABLE && !isOwnerView) notFound();
 
   const related = await db.car.findMany({
     where: { status: CarStatus.AVAILABLE, make: car.make, id: { not: car.id } },
@@ -82,6 +90,22 @@ export default async function CarDetailPage({ params }: { params: Params }) {
             <span className="mx-2">›</span>
             <span className="text-foreground">{car.title}</span>
           </nav>
+
+          {/* Owner preview banner */}
+          {isOwnerView && (
+            <div className={`mb-6 rounded-lg border px-4 py-3 text-sm font-medium ${
+              car.status === "PENDING"
+                ? "border-amber-200 bg-amber-50 text-amber-800"
+                : car.status === "REJECTED"
+                ? "border-red-200 bg-red-50 text-red-800"
+                : "border-border bg-background-subtle text-foreground-muted"
+            }`}>
+              {car.status === "PENDING" && "Your listing is under review and not yet visible to buyers."}
+              {car.status === "REJECTED" && "Your listing was rejected. Please edit it and resubmit for review."}
+              {car.status === "RESERVED" && "This listing is marked as reserved."}
+              {car.status === "SOLD" && "This listing is marked as sold."}
+            </div>
+          )}
 
           {/* ── Desktop: original 2-column grid ───────────────────── */}
           <div className="grid gap-8 lg:grid-cols-[3fr_2fr]">
@@ -154,8 +178,8 @@ export default async function CarDetailPage({ params }: { params: Params }) {
                 </div>
               )}
 
-              {/* Contact card */}
-              {car.seller && (
+              {/* Contact card — hidden when the seller is previewing their own listing */}
+              {car.seller && !isOwnerView && (
                 <div className="rounded-lg border border-border bg-background p-4">
                   <h2 className="mb-3 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
                     Contact Seller
@@ -205,8 +229,8 @@ export default async function CarDetailPage({ params }: { params: Params }) {
         </div>
       </main>
 
-      {/* Sticky bottom CTA — mobile only */}
-      {car.seller?.phone && (
+      {/* Sticky bottom CTA — mobile only, hidden for owner preview */}
+      {car.seller?.phone && !isOwnerView && (
         <div
           className="fixed inset-x-0 z-40 bg-background/90 px-4 pt-2 pb-1 shadow-[0_-1px_0_0_rgba(0,0,0,0.08)] backdrop-blur-sm lg:hidden"
           style={{ bottom: "calc(56px + env(safe-area-inset-bottom))" }}

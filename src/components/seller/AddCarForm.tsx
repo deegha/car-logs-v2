@@ -6,6 +6,7 @@ import { formatPrice } from "@/lib/utils";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { Input } from "@/components/ui/Input";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
+import { MileageInput } from "@/components/ui/MileageInput";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
@@ -330,16 +331,16 @@ export function AddCarForm() {
                 error={errors.price}
                 required
               />
-              <Input
-                label="Mileage (km)"
-                type="number"
+              <MileageInput
+                label="Mileage"
                 value={data.mileage}
-                onChange={update("mileage")}
+                onChange={(raw) => {
+                  setData((d) => ({ ...d, mileage: raw }));
+                  setErrors((er) => ({ ...er, mileage: undefined }));
+                }}
                 error={errors.mileage}
                 required
-                min={0}
                 className="col-span-2 sm:col-span-1"
-                placeholder="45000"
               />
             </div>
             <Input

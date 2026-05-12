@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
+import { MileageInput } from "@/components/ui/MileageInput";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
@@ -242,18 +243,15 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
             error={errors.price}
             required
           />
-          <Input
-            label="Mileage (km)"
-            type="number"
+          <MileageInput
+            label="Mileage"
             value={mileage}
-            onChange={(e) => {
-              setMileage(e.target.value);
+            onChange={(raw) => {
+              setMileage(raw);
               setErrors((er) => ({ ...er, mileage: undefined! }));
             }}
             error={errors.mileage}
             required
-            min={0}
-            placeholder="45000"
           />
         </div>
         <Input
