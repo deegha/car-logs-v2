@@ -13,9 +13,8 @@ import type { Car, CarImage } from "@/types";
 export async function CarDetailContent({ slug }: { slug: string }) {
   // Support legacy numeric ID URLs — redirect to the slug URL
   if (/^\d+$/.test(slug)) {
-    const adminSession = await getAdminSession();
     const carById = await db.car.findFirst({
-      where: { id: Number(slug), ...(adminSession ? {} : { status: CarStatus.AVAILABLE }) },
+      where: { id: Number(slug), status: { not: CarStatus.REJECTED } },
       select: { slug: true },
     });
     if (carById?.slug) redirect(`/cars/${carById.slug}`);
@@ -42,13 +41,14 @@ export async function CarDetailContent({ slug }: { slug: string }) {
 
   if (!car) notFound();
 
-  // Non-AVAILABLE listings are visible to the owning seller or any admin
+  // REJECTED listings are fully hidden from the public (treat as 404).
+  // All other statuses (PENDING, AVAILABLE, RESERVED, SOLD) are publicly accessible
+  // so OG metadata is served when sellers share links on social media.
   const [sellerSession, adminSession] = await Promise.all([getSellerSession(), getAdminSession()]);
-  const isOwnerView =
-    car.status !== CarStatus.AVAILABLE ? sellerSession?.sellerId === car.sellerId : false;
+  const isOwnerView = sellerSession?.sellerId === car.sellerId;
   const isAdminView = adminSession !== null;
 
-  if (car.status !== CarStatus.AVAILABLE && !isOwnerView && !isAdminView) notFound();
+  if (car.status === CarStatus.REJECTED && !isOwnerView && !isAdminView) notFound();
 
   const related = await db.car.findMany({
     where: { status: CarStatus.AVAILABLE, make: car.make, id: { not: car.id } },
@@ -80,8 +80,8 @@ export async function CarDetailContent({ slug }: { slug: string }) {
             <span className="text-foreground">{car.title}</span>
           </nav>
 
-          {/* Preview banner */}
-          {(isOwnerView || (isAdminView && car.status !== CarStatus.AVAILABLE)) && (
+          {/* Status banner — shown for any non-AVAILABLE listing */}
+          {car.status !== CarStatus.AVAILABLE && (
             <div
               className={`mb-6 rounded-lg border px-4 py-3 text-sm font-medium ${
                 car.status === "PENDING"
@@ -91,20 +91,18 @@ export async function CarDetailContent({ slug }: { slug: string }) {
                     : "border-border bg-background-subtle text-foreground-muted"
               }`}
             >
-              {isAdminView &&
-                car.status === "PENDING" &&
+              {car.status === "PENDING" && isAdminView &&
                 "Admin preview — this listing is pending review and not yet visible to buyers."}
-              {isAdminView &&
-                car.status === "REJECTED" &&
-                "Admin preview — this listing was rejected."}
-              {!isAdminView &&
-                car.status === "PENDING" &&
+              {car.status === "PENDING" && isOwnerView && !isAdminView &&
                 "Your listing is under review and not yet visible to buyers."}
-              {!isAdminView &&
-                car.status === "REJECTED" &&
+              {car.status === "PENDING" && !isOwnerView && !isAdminView &&
+                "This listing is currently under review and not yet available for sale."}
+              {car.status === "REJECTED" && isOwnerView &&
                 "Your listing was rejected. Please edit it and resubmit for review."}
-              {car.status === "RESERVED" && "This listing is marked as reserved."}
-              {car.status === "SOLD" && "This listing is marked as sold."}
+              {car.status === "REJECTED" && isAdminView && !isOwnerView &&
+                "Admin preview — this listing was rejected."}
+              {car.status === "RESERVED" && "This listing is currently reserved."}
+              {car.status === "SOLD" && "This car has been sold."}
             </div>
           )}
 
@@ -180,8 +178,8 @@ export async function CarDetailContent({ slug }: { slug: string }) {
                 </div>
               )}
 
-              {/* Contact card — hidden when the seller or admin is previewing */}
-              {car.seller && !isOwnerView && !isAdminView && (
+              {/* Contact card — only for live available listings */}
+              {car.seller && car.status === CarStatus.AVAILABLE && !isOwnerView && !isAdminView && (
                 <div className="rounded-lg border border-border bg-background p-4">
                   <h2 className="mb-3 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
                     Contact Seller
@@ -215,8 +213,8 @@ export async function CarDetailContent({ slug }: { slug: string }) {
         </div>
       </main>
 
-      {/* Sticky bottom CTA — mobile only, hidden for owner/admin preview */}
-      {!isOwnerView && !isAdminView && (
+      {/* Sticky bottom CTA — mobile only, available listings only */}
+      {car.status === CarStatus.AVAILABLE && !isOwnerView && !isAdminView && (
         <StickyContactCTA
           phones={car.seller.phones}
           carSlug={car.slug ?? String(car.id)}

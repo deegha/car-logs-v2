@@ -13,11 +13,14 @@ type Params = Promise<{ slug: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
+  // Fetch metadata for any status — OG tags must work even for PENDING listings
+  // so sellers can share their listing URL on social media before it goes live.
   const car = await db.car.findFirst({
-    where: { slug, status: CarStatus.AVAILABLE },
+    where: { slug },
     select: {
       title: true,
       description: true,
+      status: true,
       images: { where: { isPrimary: true }, take: 1, select: { url: true } },
     },
   });
@@ -33,24 +36,28 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     : undefined;
 
   const pageUrl = `${SITE_URL}/cars/${slug}`;
-  const ogImage = car.images[0]?.url ? cloudinaryOgUrl(car.images[0].url) : undefined;
+  const DEFAULT_OG =
+    "https://res.cloudinary.com/duqpgdc9v/image/upload/c_pad,b_white,w_1200,h_630/v1778517784/car-listing/carllisting-blog-images/carlogs.lk-lgo.png";
+  const ogImage = car.images[0]?.url ? cloudinaryOgUrl(car.images[0].url) : DEFAULT_OG;
 
   return {
     title: car.title,
     description: plainDescription,
-    alternates: { canonical: pageUrl },
+    // Only set canonical for live listings — keeps PENDING pages out of search indices
+    ...(car.status === "AVAILABLE" && { alternates: { canonical: pageUrl } }),
+    ...(car.status !== "AVAILABLE" && { robots: { index: false, follow: false } }),
     openGraph: {
       type: "article",
       url: pageUrl,
       title: car.title,
       description: plainDescription,
-      images: ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: car.title }] : undefined,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: car.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: car.title,
       description: plainDescription,
-      images: ogImage ? [ogImage] : undefined,
+      images: [ogImage],
     },
   };
 }
