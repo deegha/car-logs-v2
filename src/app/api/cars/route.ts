@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { getSellerSession } from "@/lib/auth";
 import { CarStatus, FuelType, Transmission } from "@/generated/prisma/client";
 import { generateCarSlug } from "@/lib/utils";
+import { buildSearchWhere } from "@/lib/carSearch";
 
 const PAGE_SIZE = 20;
 
@@ -34,13 +35,7 @@ export async function GET(request: Request) {
         ...(maxPrice && { lte: maxPrice }),
       },
     }),
-    ...(search && {
-      OR: [
-        { title: { contains: search } },
-        { make: { contains: search } },
-        { model: { contains: search } },
-      ],
-    }),
+    ...(search && buildSearchWhere(search)),
   };
 
   const [cars, total] = await Promise.all([

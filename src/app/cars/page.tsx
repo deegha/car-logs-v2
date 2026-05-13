@@ -8,6 +8,7 @@ import { FilterChips } from "@/components/filters/FilterChips";
 import { SearchBar } from "@/components/filters/SearchBar";
 import { db } from "@/lib/db";
 import { CarStatus } from "@/generated/prisma/client";
+import { buildSearchWhere } from "@/lib/carSearch";
 import type { Car } from "@/types";
 import type { Metadata } from "next";
 
@@ -52,13 +53,7 @@ export default async function CarsPage({
         ...(maxPrice && { lte: maxPrice }),
       },
     }),
-    ...(search && {
-      OR: [
-        { title: { contains: search } },
-        { make: { contains: search } },
-        { model: { contains: search } },
-      ],
-    }),
+    ...(search && buildSearchWhere(search)),
   };
 
   const [cars, total] = await Promise.all([

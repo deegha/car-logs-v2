@@ -12,7 +12,7 @@ interface SearchBarProps {
 
 export function SearchBar({
   className,
-  placeholder = "Search by make, model, or title…",
+  placeholder = "Search by make, model, year, or title…",
 }: SearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();

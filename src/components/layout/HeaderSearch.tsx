@@ -29,7 +29,7 @@ export function HeaderSearch() {
         type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Search cars…"
+        placeholder="Make, model, year…"
         className="h-9 w-full rounded-l-md border border-border bg-background-subtle px-3 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
       />
       <button
