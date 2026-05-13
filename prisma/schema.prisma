@@ -81,10 +81,15 @@ model Car {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  @@index([make, model])
+  // Composite indexes leading with status — every public query filters status first
+  @@index([status, createdAt])            // default listing + count (no extra filters)
+  @@index([status, make, createdAt])      // make-filtered listing + related-cars query
+  @@index([status, make, model])          // make+model filter
+  @@index([status, featured, createdAt])  // homepage featured query
+  @@index([status, bodyType])             // bodyType filter
+  // Keep single-column indexes for range-only queries
   @@index([year])
   @@index([price])
-  @@index([status])
   @@index([sellerId])
   @@fulltext([title, make, model])
 }
@@ -98,6 +103,8 @@ model CarImage {
   carId     Int
   car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+
+  @@index([carId, isPrimary]) // listing page: WHERE carId IN (...) AND isPrimary = true
 }
 
 // ─────────────────────────────────────────────
