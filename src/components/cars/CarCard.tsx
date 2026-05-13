@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Badge } from "@/components/ui/Badge";
+import { CarCardImage } from "@/components/cars/CarCardImage";
 import { formatPrice, formatMileage } from "@/lib/utils";
 import { cloudinaryUrl } from "@/lib/cloudinaryUrl";
 import type { Car } from "@/types";
@@ -19,12 +19,10 @@ export function CarCard({ car }: CarCardProps) {
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-background-subtle">
         {coverImage ? (
-          <Image
+          <CarCardImage
             src={cloudinaryUrl(coverImage.url, "w_600,h_450,c_fill,g_auto")}
             alt={coverImage.alt ?? car.title}
-            fill
             sizes="(max-width: 640px) 50vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-foreground-muted">

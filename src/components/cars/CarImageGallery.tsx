@@ -19,7 +19,7 @@ export function CarImageGallery({ images, title, edgeToEdge = false }: CarImageG
   });
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const active = sorted[activeIndex];
   const stripRef = useRef<HTMLDivElement>(null);
 
@@ -71,7 +71,18 @@ export function CarImageGallery({ images, title, edgeToEdge = false }: CarImageG
         />
 
         {/* Loading shimmer */}
-        {isLoading && <div className="absolute inset-0 animate-pulse bg-background-subtle" />}
+        {isLoading && (
+          <div
+            aria-hidden
+            className="absolute inset-0 transition-opacity duration-300"
+            style={{
+              background:
+                "linear-gradient(90deg, var(--brand-border) 25%, var(--brand-background-subtle) 50%, var(--brand-border) 75%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmer 1.4s ease-in-out infinite",
+            }}
+          />
+        )}
 
         {/* Image counter dot indicator */}
         {sorted.length > 1 && (
