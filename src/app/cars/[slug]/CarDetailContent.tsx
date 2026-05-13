@@ -91,15 +91,23 @@ export async function CarDetailContent({ slug }: { slug: string }) {
                     : "border-border bg-background-subtle text-foreground-muted"
               }`}
             >
-              {car.status === "PENDING" && isAdminView &&
+              {car.status === "PENDING" &&
+                isAdminView &&
                 "Admin preview — this listing is pending review and not yet visible to buyers."}
-              {car.status === "PENDING" && isOwnerView && !isAdminView &&
+              {car.status === "PENDING" &&
+                isOwnerView &&
+                !isAdminView &&
                 "Your listing is under review and not yet visible to buyers."}
-              {car.status === "PENDING" && !isOwnerView && !isAdminView &&
+              {car.status === "PENDING" &&
+                !isOwnerView &&
+                !isAdminView &&
                 "This listing is currently under review and not yet available for sale."}
-              {car.status === "REJECTED" && isOwnerView &&
+              {car.status === "REJECTED" &&
+                isOwnerView &&
                 "Your listing was rejected. Please edit it and resubmit for review."}
-              {car.status === "REJECTED" && isAdminView && !isOwnerView &&
+              {car.status === "REJECTED" &&
+                isAdminView &&
+                !isOwnerView &&
                 "Admin preview — this listing was rejected."}
               {car.status === "RESERVED" && "This listing is currently reserved."}
               {car.status === "SOLD" && "This car has been sold."}
