@@ -102,12 +102,12 @@ export default async function AdminListingsPage({
           name="search"
           defaultValue={searchParam}
           placeholder="Search by title, make, model, year…"
-          className="h-9 rounded-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary-500 min-w-48 flex-1"
+          className="h-9 min-w-48 flex-1 rounded-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted focus:ring-2 focus:ring-primary-500 focus:outline-none"
         />
         <select
           name="condition"
           defaultValue={conditionParam}
-          className="h-9 rounded-md border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="h-9 rounded-md border border-border bg-background px-3 text-sm text-foreground focus:ring-2 focus:ring-primary-500 focus:outline-none"
         >
           <option value="">All conditions</option>
           <option value="NEW">Brand New</option>
@@ -123,7 +123,7 @@ export default async function AdminListingsPage({
         {(searchParam || conditionParam) && (
           <Link
             href={filterHref({ search: undefined, condition: undefined })}
-            className="h-9 inline-flex items-center rounded-md border border-border bg-background px-3 text-sm text-foreground hover:bg-background-subtle"
+            className="inline-flex h-9 items-center rounded-md border border-border bg-background px-3 text-sm text-foreground hover:bg-background-subtle"
           >
             Clear
           </Link>

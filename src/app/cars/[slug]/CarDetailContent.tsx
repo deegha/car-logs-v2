@@ -45,9 +45,7 @@ export async function CarDetailContent({ slug }: { slug: string }) {
   // Non-AVAILABLE listings are visible to the owning seller or any admin
   const [sellerSession, adminSession] = await Promise.all([getSellerSession(), getAdminSession()]);
   const isOwnerView =
-    car.status !== CarStatus.AVAILABLE
-      ? sellerSession?.sellerId === car.sellerId
-      : false;
+    car.status !== CarStatus.AVAILABLE ? sellerSession?.sellerId === car.sellerId : false;
   const isAdminView = adminSession !== null;
 
   if (car.status !== CarStatus.AVAILABLE && !isOwnerView && !isAdminView) notFound();
@@ -93,13 +91,17 @@ export async function CarDetailContent({ slug }: { slug: string }) {
                     : "border-border bg-background-subtle text-foreground-muted"
               }`}
             >
-              {isAdminView && car.status === "PENDING" &&
+              {isAdminView &&
+                car.status === "PENDING" &&
                 "Admin preview — this listing is pending review and not yet visible to buyers."}
-              {isAdminView && car.status === "REJECTED" &&
+              {isAdminView &&
+                car.status === "REJECTED" &&
                 "Admin preview — this listing was rejected."}
-              {!isAdminView && car.status === "PENDING" &&
+              {!isAdminView &&
+                car.status === "PENDING" &&
                 "Your listing is under review and not yet visible to buyers."}
-              {!isAdminView && car.status === "REJECTED" &&
+              {!isAdminView &&
+                car.status === "REJECTED" &&
                 "Your listing was rejected. Please edit it and resubmit for review."}
               {car.status === "RESERVED" && "This listing is marked as reserved."}
               {car.status === "SOLD" && "This listing is marked as sold."}
