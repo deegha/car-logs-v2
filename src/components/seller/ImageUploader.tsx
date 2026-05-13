@@ -17,6 +17,7 @@ interface ImageUploaderProps {
   maxImages?: number;
   initialImages?: string[];
   label?: string;
+  addLabel?: string;
 }
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -63,6 +64,7 @@ export function ImageUploader({
   maxImages = 5,
   initialImages,
   label = "Photos",
+  addLabel = "photos",
 }: ImageUploaderProps) {
   const [images, setImages] = useState<ImageEntry[]>(() =>
     (initialImages ?? []).map((url) => ({
@@ -383,8 +385,7 @@ export function ImageUploader({
           zIndex: 9999,
           borderRadius: "10px",
           overflow: "hidden",
-          boxShadow:
-            "0 28px 72px rgba(0,0,0,0.5), 0 10px 28px rgba(0,0,0,0.35)",
+          boxShadow: "0 28px 72px rgba(0,0,0,0.5), 0 10px 28px rgba(0,0,0,0.35)",
           willChange: "transform",
         }}
       >
@@ -431,7 +432,7 @@ export function ImageUploader({
               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
-          <span className="text-sm font-medium">Tap to add photos</span>
+          <span className="text-sm font-medium">Tap to add {addLabel}</span>
           {maxImages > 1 && (
             <span className="text-xs opacity-60">
               Ideal: landscape 4:3 ratio (e.g. 1200 × 900 px) · JPEG, PNG, HEIC
@@ -464,8 +465,7 @@ export function ImageUploader({
               className={cn(
                 "group relative aspect-[4/3] overflow-hidden rounded-lg border bg-background-subtle transition-all duration-200",
                 // Long-press preparing: press-in effect + glow ring
-                preparingIndex === i &&
-                  "scale-95 border-primary-400 ring-2 ring-primary-400/40",
+                preparingIndex === i && "scale-95 border-primary-400 ring-2 ring-primary-400/40",
                 // Active drag source: dimmed placeholder
                 dragIndex === i && "scale-90 opacity-25",
                 // Drop target highlight

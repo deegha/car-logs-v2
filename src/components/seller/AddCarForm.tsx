@@ -104,6 +104,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
   const [emissionUploading, setEmissionUploading] = useState(false);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [imageError, setImageError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState("");
   const [hasJustRegistered, setHasJustRegistered] = useState(false);
@@ -191,7 +192,14 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
       sendGAEvent("event", "listing_step_validation_failed", { step });
       return;
     }
-    if (step === "images" && (uploading || emissionUploading)) return;
+    if (step === "images") {
+      if (uploadedUrls.length === 0) {
+        setImageError("Please add at least one photo to continue.");
+        return;
+      }
+      if (uploading || emissionUploading) return;
+      setImageError("");
+    }
     sendGAEvent("event", "listing_step_complete", {
       step,
       step_number: STEPS.indexOf(step) + 1,
@@ -630,11 +638,17 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
         {step === "images" && (
           <div className="flex flex-col gap-6">
             <ImageUploader
-              onChange={setUploadedUrls}
+              onChange={(urls) => {
+                setUploadedUrls(urls);
+                if (urls.length > 0) setImageError("");
+              }}
               onUploadingChange={setUploading}
               maxImages={5}
               initialImages={uploadedUrls}
             />
+            {imageError && (
+              <p className="text-sm font-medium text-red-500">{imageError}</p>
+            )}
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium text-foreground">
                 Emission Test Certificate{" "}
@@ -647,6 +661,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                 onChange={(urls) => setEmissionTestUrl(urls[0] ?? "")}
                 onUploadingChange={setEmissionUploading}
                 maxImages={1}
+                addLabel="emission test"
                 initialImages={emissionTestUrl ? [emissionTestUrl] : []}
               />
             </div>
