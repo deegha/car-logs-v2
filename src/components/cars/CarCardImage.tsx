@@ -8,9 +8,10 @@ interface CarCardImageProps {
   src: string;
   alt: string;
   sizes: string;
+  priority?: boolean;
 }
 
-export function CarCardImage({ src, alt, sizes }: CarCardImageProps) {
+export function CarCardImage({ src, alt, sizes, priority = false }: CarCardImageProps) {
   const [loaded, setLoaded] = useState(false);
 
   return (
@@ -34,6 +35,7 @@ export function CarCardImage({ src, alt, sizes }: CarCardImageProps) {
         alt={alt}
         fill
         sizes={sizes}
+        priority={priority}
         onLoad={() => setLoaded(true)}
         className={cn(
           "object-cover transition-[opacity,transform] duration-300 group-hover:scale-105",

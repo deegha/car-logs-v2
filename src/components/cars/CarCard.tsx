@@ -7,9 +7,10 @@ import type { Car } from "@/types";
 
 interface CarCardProps {
   car: Car;
+  priority?: boolean;
 }
 
-export function CarCard({ car }: CarCardProps) {
+export function CarCard({ car, priority = false }: CarCardProps) {
   const coverImage = car.images?.find((img) => img.isPrimary) ?? car.images?.[0];
 
   return (
@@ -23,6 +24,7 @@ export function CarCard({ car }: CarCardProps) {
             src={cloudinaryUrl(coverImage.url, "w_600,h_450,c_fill,g_auto")}
             alt={coverImage.alt ?? car.title}
             sizes="(max-width: 640px) 50vw, (max-width: 1200px) 50vw, 33vw"
+            priority={priority}
           />
         ) : (
           <div className="flex h-full items-center justify-center text-foreground-muted">
