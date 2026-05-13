@@ -79,7 +79,7 @@ export default async function CarsPage({
       <Header />
 
       <main className="flex-1 bg-background-subtle">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:py-8 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 lg:py-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
             {/* Left column: search + filters on mobile; sidebar on desktop */}
             <div className="flex flex-col gap-3 lg:w-64 lg:shrink-0">
