@@ -74,8 +74,18 @@ export function ImageUploader({
   );
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  // preparingIndex: item being long-pressed before drag activates
+  const [preparingIndex, setPreparingIndex] = useState<number | null>(null);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const touchDragRef = useRef<number | null>(null);
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Separate refs so the distance check compares against the real start position
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const latestTouchRef = useRef({ x: 0, y: 0 });
+  // Ghost DOM refs — manipulated directly to avoid React re-renders on every touchmove
+  const ghostRef = useRef<HTMLDivElement>(null);
+  const ghostImgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const uploaded = images
@@ -102,7 +112,6 @@ export function ImageUploader({
 
   async function handleGridDrop(e: React.DragEvent) {
     e.preventDefault();
-    // Ignore — reorder drag ended on empty grid area; onDragEnd cleans up state
     if (dragIndex !== null) return;
     if (e.dataTransfer.files.length > 0) await addFiles(Array.from(e.dataTransfer.files));
   }
@@ -110,7 +119,6 @@ export function ImageUploader({
   async function addFiles(files: File[]) {
     const candidates = files.filter((f) => !f.type || f.type.startsWith("image/"));
     if (candidates.length === 0) return;
-
     setImages((prev) => {
       const slots = maxImages - prev.length;
       if (slots <= 0) return prev;
@@ -168,7 +176,8 @@ export function ImageUploader({
     });
   }
 
-  // Drag-to-reorder
+  // ── Desktop drag-to-reorder ──────────────────────────────────────────────
+
   function handleDragStart(i: number) {
     setDragIndex(i);
   }
@@ -201,53 +210,192 @@ export function ImageUploader({
     setDragOverIndex(null);
   }
 
-  function handleTouchStart(i: number) {
-    if (touchDragRef.current !== null) return;
-    touchDragRef.current = i;
-    // currentOver lives in the closure so onMove and onEnd share it without stale state
-    let currentOver: number | null = null;
-    setDragIndex(i);
+  // ── Mobile touch drag — long press → ghost clone follows finger ──────────
 
-    function onMove(e: TouchEvent) {
-      e.preventDefault();
-      const touch = e.touches[0];
-      const el = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (!el) return;
-      const item = (el as Element).closest("[data-img-index]");
-      if (!item) return;
-      const idx = parseInt((item as HTMLElement).dataset.imgIndex ?? "", 10);
-      if (!isNaN(idx) && idx !== touchDragRef.current) {
-        currentOver = idx;
-        setDragOverIndex(idx);
-      }
+  function cancelLongPress() {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
     }
+    setPreparingIndex(null);
+  }
 
-    function onEnd() {
-      document.removeEventListener("touchmove", onMove);
-      document.removeEventListener("touchend", onEnd);
-      document.removeEventListener("touchcancel", onEnd);
-      const from = touchDragRef.current;
-      const to = currentOver;
-      touchDragRef.current = null;
-      if (from !== null && to !== null && from !== to) {
-        setImages((prev) => {
-          const next = [...prev];
-          const [moved] = next.splice(from, 1);
-          next.splice(to, 0, moved);
-          return next;
+  function handleTouchStart(e: React.TouchEvent, i: number) {
+    if (images[i].status !== "done") return;
+
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    latestTouchRef.current = { x: touch.clientX, y: touch.clientY };
+
+    // Capture item geometry at touchstart (the element still at rest here)
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const itemW = rect.width;
+    const itemH = rect.height;
+    const src = images[i].cloudUrl ?? images[i].previewUrl;
+
+    setPreparingIndex(i);
+
+    longPressTimerRef.current = setTimeout(() => {
+      longPressTimerRef.current = null;
+
+      // Haptic pulse
+      navigator.vibrate?.(40);
+
+      touchDragRef.current = i;
+      setPreparingIndex(null);
+      setDragIndex(i);
+
+      // Snapshot grid-item rects once so we can hit-test without elementFromPoint
+      // (avoids having to hide the ghost to see through it)
+      const itemEls = document.querySelectorAll("[data-img-index]");
+      const rects = Array.from(itemEls).map((el) => el.getBoundingClientRect());
+
+      // ── Show ghost ───────────────────────────────────────────────────────
+      const ghost = ghostRef.current;
+      const ghostImg = ghostImgRef.current;
+      if (ghost && ghostImg) {
+        ghostImg.src = src ?? "";
+        ghost.style.width = itemW + "px";
+        ghost.style.height = itemH + "px";
+
+        const { x, y } = latestTouchRef.current;
+        const tx = x - itemW / 2;
+        const ty = y - itemH / 2;
+
+        // Start small + transparent, then spring into "lifted" state
+        ghost.style.display = "block";
+        ghost.style.opacity = "0";
+        ghost.style.transform = `translate(${tx}px,${ty}px) rotate(0deg) scale(0.88)`;
+        ghost.style.transition =
+          "transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.15s ease";
+
+        requestAnimationFrame(() => {
+          ghost.style.opacity = "1";
+          ghost.style.transform = `translate(${tx}px,${ty}px) rotate(4deg) scale(1.1)`;
+          // After the entry spring settles, remove transform transition so
+          // the ghost tracks the finger with zero lag
+          setTimeout(() => {
+            if (ghost) ghost.style.transition = "opacity 0.18s ease";
+          }, 290);
         });
       }
-      setDragIndex(null);
-      setDragOverIndex(null);
-    }
 
-    document.addEventListener("touchmove", onMove, { passive: false });
-    document.addEventListener("touchend", onEnd);
-    document.addEventListener("touchcancel", onEnd);
+      let currentOver: number | null = null;
+      // Track last known position so the dismiss animation lands correctly
+      let lastX = latestTouchRef.current.x;
+      let lastY = latestTouchRef.current.y;
+
+      function onMove(ev: TouchEvent) {
+        ev.preventDefault(); // blocks scroll + image-selection default
+        const t = ev.touches[0];
+        lastX = t.clientX;
+        lastY = t.clientY;
+
+        // Move ghost directly on the DOM (no React re-render → 60 fps)
+        if (ghost) {
+          ghost.style.transform = `translate(${t.clientX - itemW / 2}px,${t.clientY - itemH / 2}px) rotate(4deg) scale(1.1)`;
+        }
+
+        // Find which grid slot is under the finger using cached rects
+        let found: number | null = null;
+        for (let idx = 0; idx < rects.length; idx++) {
+          const r = rects[idx];
+          if (
+            t.clientX >= r.left &&
+            t.clientX <= r.right &&
+            t.clientY >= r.top &&
+            t.clientY <= r.bottom
+          ) {
+            if (idx !== touchDragRef.current) found = idx;
+            break;
+          }
+        }
+        if (found !== currentOver) {
+          currentOver = found;
+          setDragOverIndex(found);
+        }
+      }
+
+      function onEnd() {
+        document.removeEventListener("touchmove", onMove);
+        document.removeEventListener("touchend", onEnd);
+        document.removeEventListener("touchcancel", onEnd);
+
+        // Dismiss ghost: shrink + fade to where the finger lifted
+        if (ghost) {
+          ghost.style.transition = "transform 0.18s ease, opacity 0.18s ease";
+          ghost.style.opacity = "0";
+          ghost.style.transform = `translate(${lastX - itemW / 2}px,${lastY - itemH / 2}px) rotate(0deg) scale(0.82)`;
+          setTimeout(() => {
+            if (ghost) ghost.style.display = "none";
+          }, 190);
+        }
+
+        const from = touchDragRef.current;
+        const to = currentOver;
+        touchDragRef.current = null;
+        if (from !== null && to !== null && from !== to) {
+          setImages((prev) => {
+            const next = [...prev];
+            const [moved] = next.splice(from, 1);
+            next.splice(to, 0, moved);
+            return next;
+          });
+        }
+        setDragIndex(null);
+        setDragOverIndex(null);
+      }
+
+      document.addEventListener("touchmove", onMove, { passive: false });
+      document.addEventListener("touchend", onEnd);
+      document.addEventListener("touchcancel", onEnd);
+    }, 300);
+  }
+
+  function handleTouchMoveBeforeDrag(e: React.TouchEvent) {
+    // If drag already active the document listener handles everything
+    if (touchDragRef.current !== null) return;
+    const t = e.touches[0];
+    // Compare against start (not latestTouch) to measure total displacement
+    const dx = t.clientX - touchStartRef.current.x;
+    const dy = t.clientY - touchStartRef.current.y;
+    latestTouchRef.current = { x: t.clientX, y: t.clientY };
+    // >10 px movement → user is scrolling, cancel the long press
+    if (dx * dx + dy * dy > 100) cancelLongPress();
+  }
+
+  function handleTouchEndBeforeDrag() {
+    // Short tap before 300 ms → cancel (document onEnd handles full drag release)
+    cancelLongPress();
   }
 
   return (
     <div className="flex flex-col gap-3">
+      {/* Floating ghost clone — always in DOM, shown only during touch drag */}
+      <div
+        ref={ghostRef}
+        style={{
+          display: "none",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          pointerEvents: "none",
+          zIndex: 9999,
+          borderRadius: "10px",
+          overflow: "hidden",
+          boxShadow:
+            "0 28px 72px rgba(0,0,0,0.5), 0 10px 28px rgba(0,0,0,0.35)",
+          willChange: "transform",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          ref={ghostImgRef}
+          alt=""
+          style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      </div>
+
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div>
@@ -308,15 +456,22 @@ export function ImageUploader({
               onDragOver={(e) => handleDragOverItem(e, i)}
               onDrop={(e) => handleDropItem(e, i)}
               onDragEnd={handleDragEnd}
-              onTouchStart={img.status === "done" ? () => handleTouchStart(i) : undefined}
+              onTouchStart={(e) => handleTouchStart(e, i)}
+              onTouchMove={handleTouchMoveBeforeDrag}
+              onTouchEnd={handleTouchEndBeforeDrag}
               onContextMenu={(e) => e.preventDefault()}
               style={{ WebkitTouchCallout: "none", userSelect: "none" }}
               className={cn(
-                "group relative aspect-[4/3] overflow-hidden rounded-lg border bg-background-subtle transition-all duration-150",
-                dragIndex === i && "scale-95 opacity-40",
+                "group relative aspect-[4/3] overflow-hidden rounded-lg border bg-background-subtle transition-all duration-200",
+                // Long-press preparing: press-in effect + glow ring
+                preparingIndex === i &&
+                  "scale-95 border-primary-400 ring-2 ring-primary-400/40",
+                // Active drag source: dimmed placeholder
+                dragIndex === i && "scale-90 opacity-25",
+                // Drop target highlight
                 dragOverIndex === i && dragIndex !== i
-                  ? "border-primary-500 ring-2 ring-primary-400/40"
-                  : "border-border"
+                  ? "scale-[1.04] border-primary-500 ring-2 ring-primary-400/50"
+                  : preparingIndex !== i && dragIndex !== i && "border-border"
               )}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -390,9 +545,9 @@ export function ImageUploader({
                       {i + 1}
                     </span>
                   )}
-                  {/* Drag handle — appears on hover, cursor signals draggability */}
                   {maxImages > 1 && (
-                    <span className="cursor-grab rounded bg-black/35 p-0.5 opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing">
+                    // Always visible on mobile (no hover); hidden until hover on desktop
+                    <span className="cursor-grab rounded bg-black/40 p-1 opacity-70 transition-opacity active:cursor-grabbing sm:opacity-0 sm:group-hover:opacity-100">
                       <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 16 16">
                         <circle cx="5" cy="3" r="1.2" />
                         <circle cx="11" cy="3" r="1.2" />
@@ -457,10 +612,10 @@ export function ImageUploader({
         </div>
       )}
 
-      {/* Reorder hint — only once 2+ photos are ready */}
+      {/* Reorder hint */}
       {doneCount >= 2 && maxImages > 1 && (
         <p className="text-xs text-foreground-muted/60">
-          Drag to reorder · the first photo is shown as the cover on listings
+          Hold &amp; drag to reorder · first photo is the cover
         </p>
       )}
 
