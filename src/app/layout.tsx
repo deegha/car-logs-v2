@@ -21,10 +21,10 @@ const OG_IMAGE =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "carlogs.lk — Quality Used Cars",
+    default: "carlogs.lk — Buy & Sell Cars",
     template: "%s | carlogs.lk",
   },
-  description: "Browse our curated selection of quality pre-owned vehicles.",
+  description: "Browse new, used and reconditioned cars from trusted sellers across Sri Lanka.",
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
@@ -53,8 +53,8 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "carlogs.lk",
     locale: "en_US",
-    title: "carlogs.lk — Quality Used Cars",
-    description: "Browse our curated selection of quality pre-owned vehicles.",
+    title: "carlogs.lk — Buy & Sell Cars",
+    description: "Browse new, used and reconditioned cars from trusted sellers across Sri Lanka.",
     images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "carlogs.lk" }],
   },
   twitter: {

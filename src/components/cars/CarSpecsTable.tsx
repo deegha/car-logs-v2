@@ -5,6 +5,12 @@ interface CarSpecsTableProps {
   car: Car;
 }
 
+const conditionLabels: Record<string, string> = {
+  NEW: "Brand New",
+  USED: "Used",
+  RECONDITIONED: "Reconditioned",
+};
+
 const fuelLabels: Record<string, string> = {
   PETROL: "Petrol",
   DIESEL: "Diesel",
@@ -21,6 +27,7 @@ const transmissionLabels: Record<string, string> = {
 
 export function CarSpecsTable({ car }: CarSpecsTableProps) {
   const rows = [
+    { label: "Condition", value: conditionLabels[car.condition] ?? car.condition },
     { label: "Make", value: car.make },
     { label: "Model", value: car.model },
     { label: "Year", value: String(car.year) },

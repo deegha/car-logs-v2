@@ -9,7 +9,7 @@ export function Footer() {
           <div>
             <CarlogsLogo textClassName="text-lg font-bold text-foreground" />
             <p className="mt-1 max-w-xs text-sm text-foreground-muted">
-              Connecting buyers and sellers of quality pre-owned vehicles across Sri Lanka.
+              Connecting buyers and sellers of new, used and reconditioned cars across Sri Lanka.
             </p>
           </div>
 

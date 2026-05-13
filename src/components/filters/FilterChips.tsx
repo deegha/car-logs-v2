@@ -6,11 +6,18 @@ const LABELS: Record<string, string> = {
   search: "Search",
   make: "Make",
   model: "Model",
+  condition: "Condition",
   bodyType: "Body Type",
   minYear: "Min Year",
   maxYear: "Max Year",
   minPrice: "Min Price",
   maxPrice: "Max Price",
+};
+
+const CONDITION_LABELS: Record<string, string> = {
+  NEW: "Brand New",
+  USED: "Used",
+  RECONDITIONED: "Reconditioned",
 };
 
 const FILTER_KEYS = Object.keys(LABELS);
@@ -42,7 +49,11 @@ export function FilterChips() {
           className="flex items-center gap-1 rounded-full border border-border bg-background-subtle px-3 py-1 text-sm text-foreground"
         >
           <span className="text-foreground-muted">{LABELS[key]}:</span>
-          <span className="font-medium">{searchParams.get(key)}</span>
+          <span className="font-medium">
+            {key === "condition"
+              ? (CONDITION_LABELS[searchParams.get(key)!] ?? searchParams.get(key))
+              : searchParams.get(key)}
+          </span>
           <button
             onClick={() => removeFilter(key)}
             className="ml-1 rounded-full p-0.5 hover:bg-border"

@@ -28,6 +28,12 @@ interface EditCarFormProps {
   isAdmin?: boolean;
 }
 
+const CONDITION_OPTIONS = [
+  { value: "NEW", label: "Brand New (< 1,000 km)" },
+  { value: "USED", label: "Used" },
+  { value: "RECONDITIONED", label: "Reconditioned" },
+];
+
 const FUEL_OPTIONS = [
   { value: "PETROL", label: "Petrol" },
   { value: "DIESEL", label: "Diesel" },
@@ -66,6 +72,7 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
   const [price, setPrice] = useState(String(Number(car.price)));
   const [mileage, setMileage] = useState(String(car.mileage));
   const [color, setColor] = useState(car.color ?? "");
+  const [condition, setCondition] = useState<string>(car.condition ?? "USED");
   const [fuelType, setFuelType] = useState(car.fuelType);
   const [transmission, setTransmission] = useState(car.transmission);
   const [bodyType, setBodyType] = useState(car.bodyType ?? "");
@@ -126,6 +133,7 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
           price: Number(price),
           mileage: Number(mileage),
           color: color || null,
+          condition,
           fuelType,
           transmission,
           bodyType: bodyType || null,
@@ -306,6 +314,14 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
         <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
           Specs
         </h2>
+        <Select
+          label="Condition"
+          value={condition}
+          onChange={(e) => setCondition(e.target.value)}
+          options={CONDITION_OPTIONS}
+          placeholder="Select condition"
+          required
+        />
         <div className="grid grid-cols-2 gap-4">
           <Select
             label="Fuel Type"

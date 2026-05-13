@@ -1,6 +1,6 @@
-import type { CarStatus, FuelType, Transmission, SellerStatus } from "@/generated/prisma/enums";
+import type { CarStatus, FuelType, Transmission, SellerStatus, CarCondition } from "@/generated/prisma/enums";
 
-export type { CarStatus, FuelType, Transmission, SellerStatus };
+export type { CarStatus, FuelType, Transmission, SellerStatus, CarCondition };
 
 export interface CarImage {
   id: number;
@@ -30,6 +30,7 @@ export interface Car {
   province: string | null;
   district: string | null;
   town: string | null;
+  condition: CarCondition;
   isNegotiable: boolean;
   emissionTestUrl: string | null;
   status: CarStatus;
@@ -72,6 +73,7 @@ export interface CarFilters {
   search?: string;
   make?: string;
   model?: string;
+  condition?: string;
   minYear?: string;
   maxYear?: string;
   minPrice?: string;

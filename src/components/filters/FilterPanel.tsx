@@ -16,6 +16,7 @@ export function FilterPanel() {
 
   const [make, setMake] = useState(searchParams.get("make") ?? "");
   const [model, setModel] = useState(searchParams.get("model") ?? "");
+  const [condition, setCondition] = useState(searchParams.get("condition") ?? "");
   const [bodyType, setBodyType] = useState(searchParams.get("bodyType") ?? "");
   const [minYear, setMinYear] = useState(searchParams.get("minYear") ?? "");
   const [maxYear, setMaxYear] = useState(searchParams.get("maxYear") ?? "");
@@ -29,6 +30,7 @@ export function FilterPanel() {
     sendGAEvent("event", "filter_reset");
     setMake("");
     setModel("");
+    setCondition("");
     setBodyType("");
     setMinYear("");
     setMaxYear("");
@@ -48,6 +50,7 @@ export function FilterPanel() {
         sendGAEvent("event", "filter_applied", {
           make: make || undefined,
           model: model || undefined,
+          condition: condition || undefined,
           body_type: bodyType || undefined,
           min_year: minYear || undefined,
           max_year: maxYear || undefined,
@@ -60,6 +63,7 @@ export function FilterPanel() {
       {currentSearch && <input type="hidden" name="search" value={currentSearch} />}
       {make && <input type="hidden" name="make" value={make} />}
       {model && <input type="hidden" name="model" value={model} />}
+      {condition && <input type="hidden" name="condition" value={condition} />}
       {bodyType && <input type="hidden" name="bodyType" value={bodyType} />}
       {minYear && <input type="hidden" name="minYear" value={minYear} />}
       {maxYear && <input type="hidden" name="maxYear" value={maxYear} />}
@@ -107,6 +111,19 @@ export function FilterPanel() {
             placeholder={make ? "Any model" : "Select a make first"}
             disabled={!make}
           />
+        </FilterGroup>
+
+        <FilterGroup label="Condition">
+          <select
+            value={condition}
+            onChange={(e) => setCondition(e.target.value)}
+            className="field-input w-full"
+          >
+            <option value="">All conditions</option>
+            <option value="NEW">Brand New</option>
+            <option value="USED">Used</option>
+            <option value="RECONDITIONED">Reconditioned</option>
+          </select>
         </FilterGroup>
 
         <FilterGroup label="Body Type">

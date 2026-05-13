@@ -27,6 +27,12 @@ const STEP_LABELS: Record<Step, string> = {
   review: "Review",
 };
 
+const CONDITION_OPTIONS = [
+  { value: "NEW", label: "Brand New (< 1,000 km)" },
+  { value: "USED", label: "Used" },
+  { value: "RECONDITIONED", label: "Reconditioned" },
+];
+
 const FUEL_OPTIONS = [
   { value: "PETROL", label: "Petrol" },
   { value: "DIESEL", label: "Diesel" },
@@ -55,6 +61,7 @@ interface FormData {
   price: string;
   mileage: string;
   color: string;
+  condition: string;
   fuelType: string;
   transmission: string;
   bodyType: string;
@@ -73,6 +80,7 @@ const EMPTY: FormData = {
   price: "",
   mileage: "",
   color: "",
+  condition: "USED",
   fuelType: "",
   transmission: "",
   bodyType: "",
@@ -364,6 +372,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
           price: Number(data.price),
           mileage: Number(data.mileage),
           color: data.color || null,
+          condition: data.condition || "USED",
           fuelType: data.fuelType,
           transmission: data.transmission,
           bodyType: data.bodyType || null,
@@ -592,6 +601,14 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
 
         {step === "specs" && (
           <>
+            <Select
+              label="Condition"
+              value={data.condition}
+              onChange={update("condition")}
+              options={CONDITION_OPTIONS}
+              placeholder="Select condition"
+              required
+            />
             <Select
               label="Fuel Type"
               value={data.fuelType}
@@ -927,6 +944,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
               <ReviewRow label="Title" value={data.title} />
               <ReviewRow label="Make / Model" value={`${data.make} ${data.model}`} />
               <ReviewRow label="Year" value={data.year} />
+              <ReviewRow label="Condition" value={CONDITION_OPTIONS.find((o) => o.value === data.condition)?.label ?? data.condition} />
               <ReviewRow label="Price" value={formatPrice(Number(data.price))} />
               <ReviewRow label="Mileage" value={`${Number(data.mileage).toLocaleString()} km`} />
               <ReviewRow label="Fuel" value={data.fuelType} />

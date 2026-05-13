@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { getSellerSession } from "@/lib/auth";
-import { CarStatus, FuelType, Transmission } from "@/generated/prisma/client";
+import { CarStatus, CarCondition, FuelType, Transmission } from "@/generated/prisma/client";
 import { generateCarSlug } from "@/lib/utils";
 
 type Params = Promise<{ id: string }>;
@@ -47,6 +47,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     province,
     district,
     town,
+    condition,
     isNegotiable,
     emissionTestUrl,
     images,
@@ -66,6 +67,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     province?: string | null;
     district?: string | null;
     town?: string | null;
+    condition?: CarCondition;
     isNegotiable?: boolean;
     emissionTestUrl?: string | null;
     images?: { url: string; alt?: string; isPrimary?: boolean; order?: number }[];
@@ -96,6 +98,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       ...(province !== undefined && { province }),
       ...(district !== undefined && { district }),
       ...(town !== undefined && { town }),
+      ...(condition !== undefined && { condition }),
       ...(isNegotiable !== undefined && { isNegotiable }),
       ...(emissionTestUrl !== undefined && { emissionTestUrl }),
       ...(images !== undefined && {

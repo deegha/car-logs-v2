@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { getSellerSession } from "@/lib/auth";
-import { CarStatus, FuelType, Transmission } from "@/generated/prisma/client";
+import { CarStatus, CarCondition, FuelType, Transmission } from "@/generated/prisma/client";
 import { generateCarSlug } from "@/lib/utils";
 import { buildSearchWhere } from "@/lib/carSearch";
 
@@ -13,6 +13,7 @@ export async function GET(request: Request) {
   const search = url.searchParams.get("search") ?? "";
   const make = url.searchParams.get("make") ?? "";
   const model = url.searchParams.get("model") ?? "";
+  const conditionParam = url.searchParams.get("condition") ?? "";
   const minYear = Number(url.searchParams.get("minYear")) || undefined;
   const maxYear = Number(url.searchParams.get("maxYear")) || undefined;
   const minPrice = Number(url.searchParams.get("minPrice")) || undefined;
@@ -23,6 +24,10 @@ export async function GET(request: Request) {
     status: CarStatus.AVAILABLE,
     ...(make && { make }),
     ...(model && { model }),
+    ...(conditionParam &&
+      Object.values(CarCondition).includes(conditionParam as CarCondition) && {
+        condition: conditionParam as CarCondition,
+      }),
     ...((minYear || maxYear) && {
       year: {
         ...(minYear && { gte: minYear }),
@@ -83,6 +88,7 @@ export async function POST(request: Request) {
     province,
     district,
     town,
+    condition,
     isNegotiable,
     emissionTestUrl,
     images,
@@ -102,6 +108,7 @@ export async function POST(request: Request) {
     province?: string;
     district?: string;
     town?: string;
+    condition?: CarCondition;
     isNegotiable?: boolean;
     emissionTestUrl?: string;
     images?: { url: string; alt?: string; isPrimary?: boolean; order?: number }[];
@@ -141,6 +148,7 @@ export async function POST(request: Request) {
       province: province ?? null,
       district: district ?? null,
       town: town ?? null,
+      condition: condition ?? CarCondition.USED,
       isNegotiable: isNegotiable ?? false,
       emissionTestUrl: emissionTestUrl ?? null,
       sellerId: session.sellerId,

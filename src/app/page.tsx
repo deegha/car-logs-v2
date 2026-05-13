@@ -37,10 +37,10 @@ export default async function HomePage() {
       <section className="bg-background-subtle px-4 py-10 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
-            Find Your Perfect <span className="text-primary-600">Used Car</span>
+            Find Your Perfect <span className="text-primary-600">Car</span>
           </h1>
           <p className="mx-auto mt-3 max-w-md text-base text-foreground-muted sm:mt-4 sm:text-lg">
-            Quality pre-owned vehicles from trusted sellers. No hidden fees.
+            New, used &amp; reconditioned cars from trusted sellers. No hidden fees.
           </p>
 
           <form

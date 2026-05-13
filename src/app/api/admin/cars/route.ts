@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { getAdminSession, hashPassword } from "@/lib/auth";
-import { CarStatus, FuelType, Transmission } from "@/generated/prisma/client";
+import { CarStatus, CarCondition, FuelType, Transmission } from "@/generated/prisma/client";
 import { generateCarSlug } from "@/lib/utils";
 
 const PAGE_SIZE = 30;
@@ -69,6 +69,7 @@ export async function POST(request: Request) {
     province,
     district,
     town,
+    condition,
     isNegotiable,
     emissionTestUrl,
     status = CarStatus.AVAILABLE,
@@ -91,6 +92,7 @@ export async function POST(request: Request) {
     province?: string;
     district?: string;
     town?: string;
+    condition?: CarCondition;
     isNegotiable?: boolean;
     emissionTestUrl?: string;
     status?: CarStatus;
@@ -178,6 +180,7 @@ export async function POST(request: Request) {
       province: province ?? null,
       district: district ?? null,
       town: town ?? null,
+      condition: condition ?? CarCondition.USED,
       isNegotiable: isNegotiable ?? false,
       emissionTestUrl: emissionTestUrl ?? null,
       status,

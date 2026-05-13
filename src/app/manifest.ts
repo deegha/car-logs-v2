@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "carlogs.lk",
     short_name: "carlogs.lk",
-    description: "Browse quality pre-owned vehicles across Sri Lanka.",
+    description: "Buy and sell new, used and reconditioned cars across Sri Lanka.",
     start_url: "/",
     display: "standalone",
     theme_color: "#ffffff",

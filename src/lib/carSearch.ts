@@ -19,9 +19,7 @@ export function parseSearch(q: string): { yearToken: number | null; terms: strin
     const y = parseInt(match[1], 10);
     if (y >= 1950 && y <= CURRENT_YEAR + 1) {
       yearToken = y;
-      rest =
-        trimmed.slice(0, match.index) +
-        trimmed.slice((match.index ?? 0) + match[0].length);
+      rest = trimmed.slice(0, match.index) + trimmed.slice((match.index ?? 0) + match[0].length);
     }
   }
 

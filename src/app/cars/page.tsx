@@ -7,14 +7,14 @@ import { FilterPanel } from "@/components/filters/FilterPanel";
 import { FilterChips } from "@/components/filters/FilterChips";
 import { SearchBar } from "@/components/filters/SearchBar";
 import { db } from "@/lib/db";
-import { CarStatus } from "@/generated/prisma/client";
+import { CarStatus, CarCondition } from "@/generated/prisma/client";
 import { buildSearchWhere } from "@/lib/carSearch";
 import type { Car } from "@/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Browse Cars",
-  description: "Search and filter quality pre-owned vehicles.",
+  description: "Search and filter new, used and reconditioned cars.",
 };
 
 const PAGE_SIZE = 20;
@@ -30,6 +30,7 @@ export default async function CarsPage({
   const make = String(params.make ?? "");
   const model = String(params.model ?? "");
   const bodyType = String(params.bodyType ?? "");
+  const conditionParam = String(params.condition ?? "");
   const minYear = Number(params.minYear) || undefined;
   const maxYear = Number(params.maxYear) || undefined;
   const minPrice = Number(params.minPrice) || undefined;
@@ -41,6 +42,10 @@ export default async function CarsPage({
     ...(make && { make }),
     ...(model && { model }),
     ...(bodyType && { bodyType }),
+    ...(conditionParam &&
+      Object.values(CarCondition).includes(conditionParam as CarCondition) && {
+        condition: conditionParam as CarCondition,
+      }),
     ...((minYear || maxYear) && {
       year: {
         ...(minYear && { gte: minYear }),

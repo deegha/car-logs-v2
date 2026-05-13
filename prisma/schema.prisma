@@ -71,6 +71,7 @@ model Car {
   province         String?      @db.VarChar(100)
   district         String?      @db.VarChar(100)
   town             String?      @db.VarChar(100)
+  condition        CarCondition @default(USED)
   isNegotiable     Boolean      @default(false)
   emissionTestUrl  String?      @db.VarChar(500)
   status           CarStatus    @default(PENDING)
@@ -87,6 +88,7 @@ model Car {
   @@index([status, make, model])          // make+model filter
   @@index([status, featured, createdAt])  // homepage featured query
   @@index([status, bodyType])             // bodyType filter
+  @@index([status, condition])            // condition filter
   // Keep single-column indexes for range-only queries
   @@index([year])
   @@index([price])
@@ -136,4 +138,10 @@ enum Transmission {
   AUTOMATIC
   MANUAL
   CVT
+}
+
+enum CarCondition {
+  NEW
+  USED
+  RECONDITIONED
 }
