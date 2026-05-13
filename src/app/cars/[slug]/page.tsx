@@ -5,6 +5,8 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { CarDetailContent } from "./CarDetailContent";
 import { db } from "@/lib/db";
 import { CarStatus } from "@/generated/prisma/client";
+import { cloudinaryOgUrl } from "@/lib/cloudinaryUrl";
+import { SITE_URL } from "@/config/app";
 import type { Metadata } from "next";
 
 type Params = Promise<{ slug: string }>;
@@ -13,12 +15,39 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { slug } = await params;
   const car = await db.car.findFirst({
     where: { slug, status: CarStatus.AVAILABLE },
-    select: { title: true, description: true },
+    select: {
+      title: true,
+      description: true,
+      images: { where: { isPrimary: true }, take: 1, select: { url: true } },
+    },
   });
   if (!car) return {};
+
+  // Strip HTML tags from rich-text description for plain-text meta fields
+  const plainDescription = car.description
+    ? car.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 200)
+    : undefined;
+
+  const pageUrl = `${SITE_URL}/cars/${slug}`;
+  const ogImage = car.images[0]?.url ? cloudinaryOgUrl(car.images[0].url) : undefined;
+
   return {
     title: car.title,
-    description: car.description ?? undefined,
+    description: plainDescription,
+    alternates: { canonical: pageUrl },
+    openGraph: {
+      type: "article",
+      url: pageUrl,
+      title: car.title,
+      description: plainDescription,
+      images: ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: car.title }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: car.title,
+      description: plainDescription,
+      images: ogImage ? [ogImage] : undefined,
+    },
   };
 }
 

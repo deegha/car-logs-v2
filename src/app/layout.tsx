@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { SITE_URL } from "@/config/app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +19,7 @@ const OG_IMAGE =
   "https://res.cloudinary.com/duqpgdc9v/image/upload/c_pad,b_white,w_1200,h_630/v1778517784/car-listing/carllisting-blog-images/carlogs.lk-lgo.png";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "carlogs.lk — Quality Used Cars",
     template: "%s | carlogs.lk",
@@ -47,11 +49,17 @@ export const metadata: Metadata = {
     "msapplication-config": "/browserconfig.xml",
   },
   openGraph: {
+    type: "website",
+    url: SITE_URL,
     siteName: "carlogs.lk",
+    locale: "en_US",
+    title: "carlogs.lk — Quality Used Cars",
+    description: "Browse our curated selection of quality pre-owned vehicles.",
     images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "carlogs.lk" }],
   },
   twitter: {
     card: "summary_large_image",
+    site: "@carlogs_lk",
     images: [OG_IMAGE],
   },
 };
