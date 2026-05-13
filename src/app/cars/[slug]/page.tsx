@@ -25,7 +25,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
   // Strip HTML tags from rich-text description for plain-text meta fields
   const plainDescription = car.description
-    ? car.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 200)
+    ? car.description
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 200)
     : undefined;
 
   const pageUrl = `${SITE_URL}/cars/${slug}`;
