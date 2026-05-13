@@ -75,27 +75,7 @@ export function ImageUploader({
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
   const touchDragRef = useRef<number | null>(null);
-
-  // Non-passive touchmove so we can preventDefault (stops page scroll during touch drag)
-  useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
-    const onTouchMove = (e: TouchEvent) => {
-      if (touchDragRef.current === null) return;
-      e.preventDefault();
-      const touch = e.touches[0];
-      const el = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (!el) return;
-      const item = (el as Element).closest("[data-img-index]");
-      if (!item) return;
-      const idx = parseInt((item as HTMLElement).dataset.imgIndex ?? "", 10);
-      if (!isNaN(idx) && idx !== touchDragRef.current) setDragOverIndex(idx);
-    };
-    grid.addEventListener("touchmove", onTouchMove, { passive: false });
-    return () => grid.removeEventListener("touchmove", onTouchMove);
-  }, []);
 
   useEffect(() => {
     const uploaded = images
@@ -222,24 +202,48 @@ export function ImageUploader({
   }
 
   function handleTouchStart(i: number) {
+    if (touchDragRef.current !== null) return;
     touchDragRef.current = i;
+    // currentOver lives in the closure so onMove and onEnd share it without stale state
+    let currentOver: number | null = null;
     setDragIndex(i);
-  }
 
-  function handleTouchEnd() {
-    const from = touchDragRef.current;
-    const to = dragOverIndex;
-    touchDragRef.current = null;
-    if (from !== null && to !== null && from !== to) {
-      setImages((prev) => {
-        const next = [...prev];
-        const [moved] = next.splice(from, 1);
-        next.splice(to, 0, moved);
-        return next;
-      });
+    function onMove(e: TouchEvent) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (!el) return;
+      const item = (el as Element).closest("[data-img-index]");
+      if (!item) return;
+      const idx = parseInt((item as HTMLElement).dataset.imgIndex ?? "", 10);
+      if (!isNaN(idx) && idx !== touchDragRef.current) {
+        currentOver = idx;
+        setDragOverIndex(idx);
+      }
     }
-    setDragIndex(null);
-    setDragOverIndex(null);
+
+    function onEnd() {
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onEnd);
+      document.removeEventListener("touchcancel", onEnd);
+      const from = touchDragRef.current;
+      const to = currentOver;
+      touchDragRef.current = null;
+      if (from !== null && to !== null && from !== to) {
+        setImages((prev) => {
+          const next = [...prev];
+          const [moved] = next.splice(from, 1);
+          next.splice(to, 0, moved);
+          return next;
+        });
+      }
+      setDragIndex(null);
+      setDragOverIndex(null);
+    }
+
+    document.addEventListener("touchmove", onMove, { passive: false });
+    document.addEventListener("touchend", onEnd);
+    document.addEventListener("touchcancel", onEnd);
   }
 
   return (
@@ -291,7 +295,6 @@ export function ImageUploader({
       {/* Grid — aspect-[4/3] matches the CarCard display ratio so the preview is accurate */}
       {images.length > 0 && (
         <div
-          ref={gridRef}
           className="grid grid-cols-3 gap-2"
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleGridDrop}
@@ -306,7 +309,6 @@ export function ImageUploader({
               onDrop={(e) => handleDropItem(e, i)}
               onDragEnd={handleDragEnd}
               onTouchStart={img.status === "done" ? () => handleTouchStart(i) : undefined}
-              onTouchEnd={img.status === "done" ? handleTouchEnd : undefined}
               onContextMenu={(e) => e.preventDefault()}
               style={{ WebkitTouchCallout: "none", userSelect: "none" }}
               className={cn(
