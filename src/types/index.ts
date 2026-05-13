@@ -1,4 +1,10 @@
-import type { CarStatus, FuelType, Transmission, SellerStatus, CarCondition } from "@/generated/prisma/enums";
+import type {
+  CarStatus,
+  FuelType,
+  Transmission,
+  SellerStatus,
+  CarCondition,
+} from "@/generated/prisma/enums";
 
 export type { CarStatus, FuelType, Transmission, SellerStatus, CarCondition };
 

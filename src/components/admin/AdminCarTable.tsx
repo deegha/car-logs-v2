@@ -124,6 +124,12 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
                       </>
                     )}
                     <Link
+                      href={`/admin/dashboard/listings/${car.id}`}
+                      className="inline-flex h-8 items-center rounded-sm px-3 text-sm font-medium text-foreground hover:bg-background-subtle"
+                    >
+                      Review
+                    </Link>
+                    <Link
                       href={`/admin/dashboard/listings/${car.id}/edit`}
                       className="inline-flex h-8 items-center rounded-sm px-3 text-sm font-medium text-foreground hover:bg-background-subtle"
                     >

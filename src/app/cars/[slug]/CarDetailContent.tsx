@@ -7,14 +7,15 @@ import { ContactButtons, StickyContactCTA } from "@/components/cars/ContactButto
 import { db } from "@/lib/db";
 import { CarStatus } from "@/generated/prisma/client";
 import { formatPrice } from "@/lib/utils";
-import { getSellerSession } from "@/lib/auth";
+import { getSellerSession, getAdminSession } from "@/lib/auth";
 import type { Car, CarImage } from "@/types";
 
 export async function CarDetailContent({ slug }: { slug: string }) {
   // Support legacy numeric ID URLs — redirect to the slug URL
   if (/^\d+$/.test(slug)) {
+    const adminSession = await getAdminSession();
     const carById = await db.car.findFirst({
-      where: { id: Number(slug), status: CarStatus.AVAILABLE },
+      where: { id: Number(slug), ...(adminSession ? {} : { status: CarStatus.AVAILABLE }) },
       select: { slug: true },
     });
     if (carById?.slug) redirect(`/cars/${carById.slug}`);
@@ -41,13 +42,15 @@ export async function CarDetailContent({ slug }: { slug: string }) {
 
   if (!car) notFound();
 
-  // Non-AVAILABLE listings are only visible to the owning seller
+  // Non-AVAILABLE listings are visible to the owning seller or any admin
+  const [sellerSession, adminSession] = await Promise.all([getSellerSession(), getAdminSession()]);
   const isOwnerView =
     car.status !== CarStatus.AVAILABLE
-      ? await getSellerSession().then((s) => s?.sellerId === car.sellerId)
+      ? sellerSession?.sellerId === car.sellerId
       : false;
+  const isAdminView = adminSession !== null;
 
-  if (car.status !== CarStatus.AVAILABLE && !isOwnerView) notFound();
+  if (car.status !== CarStatus.AVAILABLE && !isOwnerView && !isAdminView) notFound();
 
   const related = await db.car.findMany({
     where: { status: CarStatus.AVAILABLE, make: car.make, id: { not: car.id } },
@@ -79,8 +82,8 @@ export async function CarDetailContent({ slug }: { slug: string }) {
             <span className="text-foreground">{car.title}</span>
           </nav>
 
-          {/* Owner preview banner */}
-          {isOwnerView && (
+          {/* Preview banner */}
+          {(isOwnerView || (isAdminView && car.status !== CarStatus.AVAILABLE)) && (
             <div
               className={`mb-6 rounded-lg border px-4 py-3 text-sm font-medium ${
                 car.status === "PENDING"
@@ -90,9 +93,13 @@ export async function CarDetailContent({ slug }: { slug: string }) {
                     : "border-border bg-background-subtle text-foreground-muted"
               }`}
             >
-              {car.status === "PENDING" &&
+              {isAdminView && car.status === "PENDING" &&
+                "Admin preview — this listing is pending review and not yet visible to buyers."}
+              {isAdminView && car.status === "REJECTED" &&
+                "Admin preview — this listing was rejected."}
+              {!isAdminView && car.status === "PENDING" &&
                 "Your listing is under review and not yet visible to buyers."}
-              {car.status === "REJECTED" &&
+              {!isAdminView && car.status === "REJECTED" &&
                 "Your listing was rejected. Please edit it and resubmit for review."}
               {car.status === "RESERVED" && "This listing is marked as reserved."}
               {car.status === "SOLD" && "This listing is marked as sold."}
@@ -171,8 +178,8 @@ export async function CarDetailContent({ slug }: { slug: string }) {
                 </div>
               )}
 
-              {/* Contact card — hidden when the seller is previewing their own listing */}
-              {car.seller && !isOwnerView && (
+              {/* Contact card — hidden when the seller or admin is previewing */}
+              {car.seller && !isOwnerView && !isAdminView && (
                 <div className="rounded-lg border border-border bg-background p-4">
                   <h2 className="mb-3 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
                     Contact Seller
@@ -206,8 +213,8 @@ export async function CarDetailContent({ slug }: { slug: string }) {
         </div>
       </main>
 
-      {/* Sticky bottom CTA — mobile only, hidden for owner preview */}
-      {!isOwnerView && (
+      {/* Sticky bottom CTA — mobile only, hidden for owner/admin preview */}
+      {!isOwnerView && !isAdminView && (
         <StickyContactCTA
           phones={car.seller.phones}
           carSlug={car.slug ?? String(car.id)}

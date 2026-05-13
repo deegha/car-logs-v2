@@ -944,7 +944,12 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
               <ReviewRow label="Title" value={data.title} />
               <ReviewRow label="Make / Model" value={`${data.make} ${data.model}`} />
               <ReviewRow label="Year" value={data.year} />
-              <ReviewRow label="Condition" value={CONDITION_OPTIONS.find((o) => o.value === data.condition)?.label ?? data.condition} />
+              <ReviewRow
+                label="Condition"
+                value={
+                  CONDITION_OPTIONS.find((o) => o.value === data.condition)?.label ?? data.condition
+                }
+              />
               <ReviewRow label="Price" value={formatPrice(Number(data.price))} />
               <ReviewRow label="Mileage" value={`${Number(data.mileage).toLocaleString()} km`} />
               <ReviewRow label="Fuel" value={data.fuelType} />
