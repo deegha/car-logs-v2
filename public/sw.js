@@ -52,7 +52,12 @@ self.addEventListener("fetch", (e) => {
 
   // Network First — HTML navigation
   if (request.mode === "navigate") {
-    e.respondWith(fetch(request).catch(() => caches.match(request)));
+    e.respondWith(
+      fetch(request).catch(async () => {
+        const cached = await caches.match(request);
+        return cached ?? Response.error();
+      })
+    );
     return;
   }
 

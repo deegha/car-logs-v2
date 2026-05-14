@@ -5,6 +5,8 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { getSellerSession } from "@/lib/auth";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Sign In",
 };

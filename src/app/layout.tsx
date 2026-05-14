@@ -64,7 +64,6 @@ export const metadata: Metadata = {
     site: "@carlogs_lk",
     images: [OG_IMAGE],
   },
-  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
