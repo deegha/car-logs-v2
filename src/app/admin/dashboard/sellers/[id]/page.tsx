@@ -38,7 +38,14 @@ export default async function AdminUserDetailPage({ params }: { params: Params }
       createdAt: true,
       updatedAt: true,
       phones: {
-        select: { id: true, number: true, isPrimary: true, isWhatsApp: true, sellerId: true, createdAt: true },
+        select: {
+          id: true,
+          number: true,
+          isPrimary: true,
+          isWhatsApp: true,
+          sellerId: true,
+          createdAt: true,
+        },
         orderBy: { createdAt: "asc" },
       },
       cars: {
@@ -62,8 +69,7 @@ export default async function AdminUserDetailPage({ params }: { params: Params }
 
   if (!seller) notFound();
 
-  const primaryPhone =
-    seller.phones.find((p) => p.isPrimary) ?? seller.phones[0] ?? null;
+  const primaryPhone = seller.phones.find((p) => p.isPrimary) ?? seller.phones[0] ?? null;
 
   return (
     <div>
@@ -176,9 +182,7 @@ export default async function AdminUserDetailPage({ params }: { params: Params }
                   <td className="px-4 py-3 font-semibold text-primary-600">
                     {formatPrice(Number(car.price))}
                   </td>
-                  <td className="px-4 py-3 text-foreground-muted">
-                    {formatMileage(car.mileage)}
-                  </td>
+                  <td className="px-4 py-3 text-foreground-muted">{formatMileage(car.mileage)}</td>
                   <td className="px-4 py-3">
                     <StatusBadge status={car.status} />
                   </td>

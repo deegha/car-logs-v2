@@ -251,25 +251,19 @@ export function AdminUserActions({ seller: initial }: AdminUserActionsProps) {
       {editOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-lg">
-            <h2 className="mb-5 text-lg font-semibold text-foreground">
-              Edit User
-            </h2>
+            <h2 className="mb-5 text-lg font-semibold text-foreground">Edit User</h2>
 
             <div className="flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   label="First Name"
                   value={editForm.firstName}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, firstName: e.target.value }))
-                  }
+                  onChange={(e) => setEditForm((f) => ({ ...f, firstName: e.target.value }))}
                 />
                 <Input
                   label="Last Name"
                   value={editForm.lastName}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, lastName: e.target.value }))
-                  }
+                  onChange={(e) => setEditForm((f) => ({ ...f, lastName: e.target.value }))}
                 />
               </div>
 
@@ -277,27 +271,19 @@ export function AdminUserActions({ seller: initial }: AdminUserActionsProps) {
                 label="Email"
                 type="email"
                 value={editForm.email}
-                onChange={(e) =>
-                  setEditForm((f) => ({ ...f, email: e.target.value }))
-                }
+                onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))}
               />
 
               <div>
-                <p className="mb-2 text-sm font-medium text-foreground">
-                  Phone Numbers
-                </p>
+                <p className="mb-2 text-sm font-medium text-foreground">Phone Numbers</p>
                 <div className="flex flex-col gap-2">
                   {editForm.phones.map((phone, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <span className="shrink-0 text-sm text-foreground-muted">
-                        +94
-                      </span>
+                      <span className="shrink-0 text-sm text-foreground-muted">+94</span>
                       <input
                         type="text"
                         value={phone.number}
-                        onChange={(e) =>
-                          updatePhone(i, { number: e.target.value })
-                        }
+                        onChange={(e) => updatePhone(i, { number: e.target.value })}
                         placeholder="771234567"
                         className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
                       />
@@ -314,9 +300,7 @@ export function AdminUserActions({ seller: initial }: AdminUserActionsProps) {
                         <input
                           type="checkbox"
                           checked={phone.isWhatsApp}
-                          onChange={(e) =>
-                            updatePhone(i, { isWhatsApp: e.target.checked })
-                          }
+                          onChange={(e) => updatePhone(i, { isWhatsApp: e.target.checked })}
                           className="accent-primary-600"
                         />
                         WhatsApp
@@ -342,18 +326,12 @@ export function AdminUserActions({ seller: initial }: AdminUserActionsProps) {
               </div>
 
               {editError && (
-                <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">
-                  {editError}
-                </p>
+                <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">{editError}</p>
               )}
             </div>
 
             <div className="mt-6 flex justify-end gap-3">
-              <Button
-                variant="secondary"
-                onClick={() => setEditOpen(false)}
-                disabled={saving}
-              >
+              <Button variant="secondary" onClick={() => setEditOpen(false)} disabled={saving}>
                 Cancel
               </Button>
               <Button onClick={saveEdit} disabled={saving}>

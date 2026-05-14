@@ -39,13 +39,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const {
-    status,
-    firstName,
-    lastName,
-    email,
-    phones,
-  } = body as {
+  const { status, firstName, lastName, email, phones } = body as {
     status?: SellerStatus;
     firstName?: string;
     lastName?: string;

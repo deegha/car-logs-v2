@@ -25,9 +25,7 @@ export default async function AdminSellersPage({
     : null;
 
   const nameWhere = (search: string) =>
-    search
-      ? { OR: [{ firstName: { contains: search } }, { lastName: { contains: search } }] }
-      : {};
+    search ? { OR: [{ firstName: { contains: search } }, { lastName: { contains: search } }] } : {};
 
   const where = {
     ...(status && { status }),

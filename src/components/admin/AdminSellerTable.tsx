@@ -78,8 +78,7 @@ export function AdminSellerTable({
   }
 
   function formatPhone(seller: Seller) {
-    const primary =
-      seller.phones?.find((p) => p.isPrimary) ?? seller.phones?.[0];
+    const primary = seller.phones?.find((p) => p.isPrimary) ?? seller.phones?.[0];
     return primary ? `+94 ${primary.number}` : "—";
   }
 
@@ -129,9 +128,7 @@ export function AdminSellerTable({
   }
 
   function removePhone(index: number) {
-    setEditForm((f) =>
-      f ? { ...f, phones: f.phones.filter((_, i) => i !== index) } : f
-    );
+    setEditForm((f) => (f ? { ...f, phones: f.phones.filter((_, i) => i !== index) } : f));
   }
 
   function addPhone() {
@@ -139,10 +136,7 @@ export function AdminSellerTable({
       f
         ? {
             ...f,
-            phones: [
-              ...f.phones,
-              { number: "", isPrimary: false, isWhatsApp: false },
-            ],
+            phones: [...f.phones, { number: "", isPrimary: false, isWhatsApp: false }],
           }
         : f
     );
@@ -210,9 +204,7 @@ export function AdminSellerTable({
         });
         if (res.ok) {
           const { seller: updated } = (await res.json()) as { seller: Seller };
-          setSellers((prev) =>
-            prev.map((s) => (s.id === seller.id ? updated : s))
-          );
+          setSellers((prev) => prev.map((s) => (s.id === seller.id ? updated : s)));
         }
       }
     } finally {
@@ -222,9 +214,7 @@ export function AdminSellerTable({
   }
 
   if (sellers.length === 0) {
-    return (
-      <p className="py-8 text-center text-foreground-muted">No users found.</p>
-    );
+    return <p className="py-8 text-center text-foreground-muted">No users found.</p>;
   }
 
   return (
@@ -277,86 +267,71 @@ export function AdminSellerTable({
               const href = `/admin/dashboard/sellers/${seller.id}`;
               const cellLink = "block px-4 py-3 group-hover:bg-background-subtle";
               return (
-              <tr
-                key={seller.id}
-                className="group border-b border-border last:border-0"
-              >
-                <td className="p-0">
-                  <Link href={href} className={`${cellLink} font-medium text-foreground`}>
-                    {seller.firstName} {seller.lastName}
-                  </Link>
-                </td>
-                <td className="p-0">
-                  <Link href={href} className={`${cellLink} text-foreground-muted`}>
-                    {seller.email}
-                  </Link>
-                </td>
-                <td className="p-0">
-                  <Link href={href} className={`${cellLink} text-foreground-muted`}>
-                    {formatPhone(seller)}
-                  </Link>
-                </td>
-                <td className="p-0">
-                  <Link href={href} className={`${cellLink} flex items-center`}>
-                    <Badge
-                      variant={seller.status === "ACTIVE" ? "success" : "danger"}
-                    >
-                      {seller.status === "ACTIVE" ? "Active" : "Suspended"}
-                    </Badge>
-                  </Link>
-                </td>
-                <td className="p-0">
-                  <Link href={href} className={`${cellLink} text-foreground-muted`}>
-                    {formatDate(seller.createdAt)}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 group-hover:bg-background-subtle">
-                  <div className="flex justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEdit(seller)}
-                    >
-                      Edit
-                    </Button>
-                    {seller.status === "ACTIVE" ? (
+                <tr key={seller.id} className="group border-b border-border last:border-0">
+                  <td className="p-0">
+                    <Link href={href} className={`${cellLink} font-medium text-foreground`}>
+                      {seller.firstName} {seller.lastName}
+                    </Link>
+                  </td>
+                  <td className="p-0">
+                    <Link href={href} className={`${cellLink} text-foreground-muted`}>
+                      {seller.email}
+                    </Link>
+                  </td>
+                  <td className="p-0">
+                    <Link href={href} className={`${cellLink} text-foreground-muted`}>
+                      {formatPhone(seller)}
+                    </Link>
+                  </td>
+                  <td className="p-0">
+                    <Link href={href} className={`${cellLink} flex items-center`}>
+                      <Badge variant={seller.status === "ACTIVE" ? "success" : "danger"}>
+                        {seller.status === "ACTIVE" ? "Active" : "Suspended"}
+                      </Badge>
+                    </Link>
+                  </td>
+                  <td className="p-0">
+                    <Link href={href} className={`${cellLink} text-foreground-muted`}>
+                      {formatDate(seller.createdAt)}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 group-hover:bg-background-subtle">
+                    <div className="flex justify-end gap-1">
+                      <Button variant="ghost" size="sm" onClick={() => openEdit(seller)}>
+                        Edit
+                      </Button>
+                      {seller.status === "ACTIVE" ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-amber-600"
+                          onClick={() => setConfirmAction({ action: "suspend", seller })}
+                        >
+                          Suspend
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-green-600"
+                          onClick={() => setConfirmAction({ action: "activate", seller })}
+                        >
+                          Activate
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-amber-600"
-                        onClick={() =>
-                          setConfirmAction({ action: "suspend", seller })
-                        }
+                        className="text-danger"
+                        onClick={() => setConfirmAction({ action: "delete", seller })}
                       >
-                        Suspend
+                        Delete
                       </Button>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-green-600"
-                        onClick={() =>
-                          setConfirmAction({ action: "activate", seller })
-                        }
-                      >
-                        Activate
-                      </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-danger"
-                      onClick={() =>
-                        setConfirmAction({ action: "delete", seller })
-                      }
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -452,9 +427,7 @@ export function AdminSellerTable({
       {editSeller && editForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-lg">
-            <h2 className="mb-5 text-lg font-semibold text-foreground">
-              Edit User
-            </h2>
+            <h2 className="mb-5 text-lg font-semibold text-foreground">Edit User</h2>
 
             <div className="flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
@@ -462,19 +435,13 @@ export function AdminSellerTable({
                   label="First Name"
                   value={editForm.firstName}
                   onChange={(e) =>
-                    setEditForm((f) =>
-                      f ? { ...f, firstName: e.target.value } : f
-                    )
+                    setEditForm((f) => (f ? { ...f, firstName: e.target.value } : f))
                   }
                 />
                 <Input
                   label="Last Name"
                   value={editForm.lastName}
-                  onChange={(e) =>
-                    setEditForm((f) =>
-                      f ? { ...f, lastName: e.target.value } : f
-                    )
-                  }
+                  onChange={(e) => setEditForm((f) => (f ? { ...f, lastName: e.target.value } : f))}
                 />
               </div>
 
@@ -482,29 +449,19 @@ export function AdminSellerTable({
                 label="Email"
                 type="email"
                 value={editForm.email}
-                onChange={(e) =>
-                  setEditForm((f) =>
-                    f ? { ...f, email: e.target.value } : f
-                  )
-                }
+                onChange={(e) => setEditForm((f) => (f ? { ...f, email: e.target.value } : f))}
               />
 
               <div>
-                <p className="mb-2 text-sm font-medium text-foreground">
-                  Phone Numbers
-                </p>
+                <p className="mb-2 text-sm font-medium text-foreground">Phone Numbers</p>
                 <div className="flex flex-col gap-2">
                   {editForm.phones.map((phone, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <span className="shrink-0 text-sm text-foreground-muted">
-                        +94
-                      </span>
+                      <span className="shrink-0 text-sm text-foreground-muted">+94</span>
                       <input
                         type="text"
                         value={phone.number}
-                        onChange={(e) =>
-                          updatePhone(i, { number: e.target.value })
-                        }
+                        onChange={(e) => updatePhone(i, { number: e.target.value })}
                         placeholder="771234567"
                         className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
                       />
@@ -521,9 +478,7 @@ export function AdminSellerTable({
                         <input
                           type="checkbox"
                           checked={phone.isWhatsApp}
-                          onChange={(e) =>
-                            updatePhone(i, { isWhatsApp: e.target.checked })
-                          }
+                          onChange={(e) => updatePhone(i, { isWhatsApp: e.target.checked })}
                           className="accent-primary-600"
                         />
                         WhatsApp
@@ -549,9 +504,7 @@ export function AdminSellerTable({
               </div>
 
               {editError && (
-                <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">
-                  {editError}
-                </p>
+                <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-danger">{editError}</p>
               )}
             </div>
 
