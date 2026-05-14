@@ -186,8 +186,8 @@ export async function CarDetailContent({ slug }: { slug: string }) {
                 </div>
               )}
 
-              {/* Contact card — only for live available listings */}
-              {car.seller && car.status === CarStatus.AVAILABLE && !isOwnerView && !isAdminView && (
+              {/* Contact card — all available listings, including owner/admin preview */}
+              {car.seller && car.status === CarStatus.AVAILABLE && (
                 <div className="rounded-lg border border-border bg-background p-4">
                   <h2 className="mb-3 text-sm font-semibold tracking-wider text-foreground-muted uppercase">
                     Contact Seller
@@ -221,8 +221,8 @@ export async function CarDetailContent({ slug }: { slug: string }) {
         </div>
       </main>
 
-      {/* Sticky bottom CTA — mobile only, available listings only */}
-      {car.status === CarStatus.AVAILABLE && !isOwnerView && !isAdminView && (
+      {/* Sticky bottom CTA — mobile only, buyers only (not owner/admin) */}
+      {car.status === CarStatus.AVAILABLE && !isOwnerView && !isAdminView && car.seller && (
         <StickyContactCTA
           phones={car.seller.phones}
           carSlug={car.slug ?? String(car.id)}
