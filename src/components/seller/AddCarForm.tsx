@@ -53,6 +53,8 @@ const YEAR_OPTIONS = Array.from({ length: currentYear - 1989 }, (_, i) => {
   return { value: y, label: y };
 });
 
+const DRAFT_KEY = "carlogs_add_listing_draft";
+
 interface FormData {
   title: string;
   make: string;
@@ -116,6 +118,8 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState("");
   const [hasJustRegistered, setHasJustRegistered] = useState(false);
+  const [draftLoaded, setDraftLoaded] = useState(false);
+  const [draftRestored, setDraftRestored] = useState(false);
   const showContactDetails = isLoggedIn || hasJustRegistered;
   const [seller, setSeller] = useState<SellerInfo | null>(null);
   const [newPhone, setNewPhone] = useState("");
@@ -135,6 +139,49 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
       step_number: STEPS.indexOf(step) + 1,
     });
   }, [step]);
+
+  // Restore draft from localStorage on mount
+  useEffect(() => {
+    async function loadDraft() {
+      await Promise.resolve(); // defer setState calls out of the synchronous effect body
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (raw) {
+          const draft = JSON.parse(raw) as {
+            data?: FormData;
+            isNegotiable?: boolean;
+            uploadedUrls?: string[];
+            emissionTestUrl?: string;
+            step?: Step;
+          };
+          const hasData =
+            draft.data?.title || draft.data?.make || (draft.uploadedUrls ?? []).length > 0;
+          if (hasData) {
+            if (draft.data) setData(draft.data);
+            if (typeof draft.isNegotiable === "boolean") setIsNegotiable(draft.isNegotiable);
+            if (Array.isArray(draft.uploadedUrls)) setUploadedUrls(draft.uploadedUrls);
+            if (draft.emissionTestUrl) setEmissionTestUrl(draft.emissionTestUrl);
+            if (draft.step && STEPS.includes(draft.step)) setStep(draft.step);
+            setDraftRestored(true);
+          }
+        }
+      } catch {}
+      setDraftLoaded(true);
+    }
+    void loadDraft();
+  }, []);
+
+  // Persist draft to localStorage whenever form state changes.
+  // Gated on draftLoaded so we never overwrite the draft before it's been read.
+  useEffect(() => {
+    if (!draftLoaded) return;
+    try {
+      localStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({ data, isNegotiable, uploadedUrls, emissionTestUrl, step })
+      );
+    } catch {}
+  }, [data, isNegotiable, uploadedUrls, emissionTestUrl, step, draftLoaded]);
 
   function update(key: keyof FormData) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -399,6 +446,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
         price: data.price,
         photo_count: uploadedUrls.length,
       });
+      try { localStorage.removeItem(DRAFT_KEY); } catch {}
       router.push(`/seller/dashboard?submitted=1`);
     } catch {
       setApiError("Something went wrong. Please try again.");
@@ -467,6 +515,34 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
           </div>
         ))}
       </div>
+
+      {/* Draft restored banner */}
+      {draftRestored && (
+        <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+          <div className="flex items-center gap-2 text-xs text-amber-800">
+            <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            Draft restored from your last session
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              try { localStorage.removeItem(DRAFT_KEY); } catch {}
+              setData(EMPTY);
+              setIsNegotiable(false);
+              setUploadedUrls([]);
+              setEmissionTestUrl("");
+              setStep("details");
+              setErrors({});
+              setDraftRestored(false);
+            }}
+            className="ml-4 shrink-0 text-xs font-medium text-amber-700 hover:text-amber-900"
+          >
+            Discard
+          </button>
+        </div>
+      )}
 
       {/* Step content */}
       <div className="flex flex-col gap-4">
@@ -557,44 +633,68 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                 </p>
               </div>
             </label>
-            <div className="grid grid-cols-3 gap-3 sm:gap-4">
-              <AutoComplete
-                label="Province"
-                value={data.province}
-                onChange={updateProvince}
-                options={PROVINCES}
-                error={errors.province}
-                required
-                placeholder="e.g. Western Province"
-              />
-              <AutoComplete
-                label="District"
-                value={data.district}
-                onChange={updateDistrict}
-                options={getDistricts(data.province)}
-                error={errors.district}
-                required
-                placeholder={
-                  PROVINCES.includes(data.province)
-                    ? `e.g. ${getDistricts(data.province)[0] ?? "District"}`
-                    : "Select province first"
-                }
-                disabled={!PROVINCES.includes(data.province)}
-              />
-              <AutoComplete
-                label="Town"
-                value={data.town}
-                onChange={updateTown}
-                options={getTowns(data.province, data.district)}
-                error={errors.town}
-                required
-                placeholder={
-                  getDistricts(data.province).includes(data.district)
-                    ? `e.g. ${getTowns(data.province, data.district)[0] ?? "Town"}`
-                    : "Select district first"
-                }
-                disabled={!getDistricts(data.province).includes(data.district)}
-              />
+            <div className="flex flex-col gap-3 rounded-lg border border-border bg-background-subtle/50 p-3 sm:p-4">
+              <div className="flex items-center gap-2">
+                <svg
+                  className="h-4 w-4 shrink-0 text-foreground-muted"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+                  />
+                </svg>
+                <span className="text-sm font-medium text-foreground">Location</span>
+                <span className="text-xs text-foreground-muted">(helps buyers find your car)</span>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+                <AutoComplete
+                  label="Province"
+                  value={data.province}
+                  onChange={updateProvince}
+                  options={PROVINCES}
+                  error={errors.province}
+                  required
+                  placeholder="e.g. Western Province"
+                />
+                <AutoComplete
+                  label="District"
+                  value={data.district}
+                  onChange={updateDistrict}
+                  options={getDistricts(data.province)}
+                  error={errors.district}
+                  required
+                  placeholder={
+                    PROVINCES.includes(data.province)
+                      ? `e.g. ${getDistricts(data.province)[0] ?? "District"}`
+                      : "Select province first"
+                  }
+                  disabled={!PROVINCES.includes(data.province)}
+                />
+                <AutoComplete
+                  label="Town"
+                  value={data.town}
+                  onChange={updateTown}
+                  options={getTowns(data.province, data.district)}
+                  error={errors.town}
+                  required
+                  placeholder={
+                    getDistricts(data.province).includes(data.district)
+                      ? `e.g. ${getTowns(data.province, data.district)[0] ?? "Town"}`
+                      : "Select district first"
+                  }
+                  disabled={!getDistricts(data.province).includes(data.district)}
+                />
+              </div>
             </div>
           </>
         )}
