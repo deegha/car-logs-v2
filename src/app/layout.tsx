@@ -89,7 +89,6 @@ export default function RootLayout({
         <div className="h-[calc(56px+env(safe-area-inset-bottom))] md:hidden" aria-hidden />
       </body>
       <GoogleAnalytics gaId="G-CTQN7XQWY1" />
-      
     </html>
   );
 }
