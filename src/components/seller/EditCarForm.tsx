@@ -378,7 +378,7 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
         <ImageUploader
           onChange={setUploadedUrls}
           onUploadingChange={setUploading}
-          maxImages={5}
+          maxImages={10}
           initialImages={initialImageUrls}
         />
 

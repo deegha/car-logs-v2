@@ -61,7 +61,7 @@ async function compress(file: File): Promise<File> {
 export function ImageUploader({
   onChange,
   onUploadingChange,
-  maxImages = 5,
+  maxImages = 10,
   initialImages,
   label = "Photos",
   addLabel = "photos",

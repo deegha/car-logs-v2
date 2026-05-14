@@ -660,7 +660,7 @@ export function AddCarForm({ isLoggedIn = false }: AddCarFormProps) {
                 if (urls.length > 0) setImageError("");
               }}
               onUploadingChange={setUploading}
-              maxImages={5}
+              maxImages={10}
               initialImages={uploadedUrls}
             />
             {imageError && <p className="text-sm font-medium text-red-500">{imageError}</p>}

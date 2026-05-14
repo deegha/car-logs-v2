@@ -476,7 +476,7 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
         <h2 className="text-sm font-semibold tracking-wider text-foreground-muted uppercase">
           Photos
         </h2>
-        <ImageUploader onChange={setUploadedUrls} onUploadingChange={setUploading} maxImages={5} />
+        <ImageUploader onChange={setUploadedUrls} onUploadingChange={setUploading} maxImages={10} />
         <div className="flex flex-col gap-2 border-t border-border pt-4">
           <p className="text-sm font-medium text-foreground">
             Emission Test Certificate{" "}
