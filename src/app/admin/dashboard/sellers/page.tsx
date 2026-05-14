@@ -93,7 +93,11 @@ export default async function AdminSellersPage({
       </form>
 
       <AdminSellerTable
-        initialSellers={sellers as unknown as Seller[]}
+        initialSellers={sellers.map((s) => ({
+          ...s,
+          createdAt: s.createdAt.toISOString(),
+          updatedAt: s.updatedAt.toISOString(),
+        })) as unknown as Seller[]}
         total={total}
         page={page}
         pages={pages}

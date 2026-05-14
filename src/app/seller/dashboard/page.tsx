@@ -43,6 +43,8 @@ export default async function SellerDashboardPage({
     }),
   ]);
 
+  console.log(cars, "carscars")
+
   const submitted = params.submitted === "1";
 
   return (
@@ -79,7 +81,23 @@ export default async function SellerDashboardPage({
         <SellerPhoneManager initialPhones={(seller?.phones ?? []) as SellerPhone[]} />
       </div>
 
-      <SellerCarTable initialCars={cars.map((c) => ({ ...c, price: Number(c.price) })) as Car[]} />
+     {cars.length > 0 && (
+<SellerCarTable
+        key={cars.length}
+        initialCars={
+          cars.map((c) => ({
+            ...c,
+            price: Number(c.price),
+            createdAt: c.createdAt.toISOString(),
+            updatedAt: c.updatedAt.toISOString(),
+            images: c.images.map((img) => ({
+              ...img,
+              createdAt: img.createdAt.toISOString(),
+            })),
+          })) as Car[]
+        }
+      />
+     )} 
     </div>
   );
 }

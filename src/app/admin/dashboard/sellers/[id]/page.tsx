@@ -141,7 +141,18 @@ export default async function AdminUserDetailPage({ params }: { params: Params }
           </div>
 
           {/* Actions */}
-          <AdminUserActions seller={seller} />
+          <AdminUserActions seller={{
+            id: seller.id,
+            firstName: seller.firstName,
+            lastName: seller.lastName,
+            email: seller.email,
+            status: seller.status,
+            createdAt: seller.createdAt,
+            updatedAt: seller.updatedAt,
+            phones: seller.phones.map(({ id, number, isPrimary, isWhatsApp, sellerId, createdAt }) => ({
+              id, number, isPrimary, isWhatsApp, sellerId, createdAt,
+            })),
+          }} />
         </div>
       </div>
 

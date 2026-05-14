@@ -33,8 +33,8 @@ export function LoginForm({ redirectTo = "/seller/dashboard" }: LoginFormProps) 
         setError(data.error ?? "Login failed");
         return;
       }
-      router.push(redirectTo);
       router.refresh();
+      router.push(redirectTo);
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
