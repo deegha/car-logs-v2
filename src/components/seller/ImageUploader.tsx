@@ -149,7 +149,23 @@ export function ImageUploader({
       const fd = new FormData();
       fd.append("file", compressed);
       const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const data = (await res.json()) as { url?: string; error?: string };
+
+      // If nginx rejects the request before it reaches Next.js (e.g. 413 too large),
+      // the response body is HTML, not JSON — parse carefully.
+      let data: { url?: string; error?: string } = {};
+      try {
+        data = (await res.json()) as { url?: string; error?: string };
+      } catch {
+        const msg =
+          res.status === 413
+            ? "File too large — try a smaller image"
+            : `Upload failed (${res.status})`;
+        setImages((prev) =>
+          prev.map((img) => (img.id === id ? { ...img, status: "error", error: msg } : img))
+        );
+        return;
+      }
+
       if (!res.ok) {
         setImages((prev) =>
           prev.map((img) =>
@@ -164,7 +180,7 @@ export function ImageUploader({
     } catch {
       setImages((prev) =>
         prev.map((img) =>
-          img.id === id ? { ...img, status: "error", error: "Network error" } : img
+          img.id === id ? { ...img, status: "error", error: "Network error — check your connection" } : img
         )
       );
     }

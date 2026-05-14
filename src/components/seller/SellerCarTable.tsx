@@ -41,7 +41,53 @@ export function SellerCarTable({ initialCars }: SellerCarTableProps) {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-lg border border-border">
+      {/* ── Mobile card list ───────────────────────────────────────── */}
+      <div className="flex flex-col divide-y divide-border rounded-lg border border-border md:hidden">
+        {cars.map((car) => (
+          <div key={car.id} className="flex flex-col gap-3 p-4">
+            {/* Title row + status */}
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <Link
+                  href={`/cars/${car.slug ?? car.id}`}
+                  className="font-semibold text-foreground hover:text-primary-600"
+                >
+                  {car.title}
+                </Link>
+                <p className="mt-0.5 text-xs text-foreground-muted">
+                  {car.year} · {car.make} {car.model}
+                </p>
+              </div>
+              <StatusBadge status={car.status} />
+            </div>
+
+            {/* Price + mileage */}
+            <div className="flex items-center gap-4 text-sm">
+              <span className="font-bold text-primary-600">{formatPrice(car.price)}</span>
+              <span className="text-foreground-muted">{formatMileage(car.mileage)}</span>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2">
+              <Link
+                href={`/seller/listings/${car.id}/edit`}
+                className="flex-1 rounded-md border border-border bg-background py-2 text-center text-sm font-medium text-foreground hover:bg-background-subtle"
+              >
+                Edit
+              </Link>
+              <button
+                onClick={() => setPendingDelete({ id: car.id, title: car.title })}
+                className="flex-1 rounded-md border border-red-200 bg-red-50 py-2 text-center text-sm font-medium text-danger hover:bg-red-100"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Desktop table ───────────────────────────────────────────── */}
+      <div className="hidden overflow-x-auto rounded-lg border border-border md:block">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-background-subtle text-left text-xs font-semibold tracking-wider text-foreground-muted uppercase">
