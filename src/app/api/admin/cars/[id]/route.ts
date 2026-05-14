@@ -147,6 +147,16 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     include: { images: true, seller: { select: { id: true, firstName: true, lastName: true } } },
   });
 
+  if (status === CarStatus.AVAILABLE && existing.status !== CarStatus.AVAILABLE) {
+    const { sendPushToSeller } = await import("@/lib/webPush");
+    await sendPushToSeller(existing.sellerId, {
+      title: "Your listing is live! 🎉",
+      body: `${existing.title} has been approved and is now visible to buyers.`,
+      tag: `listing-approved-${carId}`,
+      data: { url: `/cars/${existing.slug ?? String(carId)}` },
+    });
+  }
+
   return Response.json({ car });
 }
 

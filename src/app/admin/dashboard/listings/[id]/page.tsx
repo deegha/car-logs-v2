@@ -69,6 +69,19 @@ async function approveAction(carId: number) {
   "use server";
   const { db } = await import("@/lib/db");
   await db.car.update({ where: { id: carId }, data: { status: "AVAILABLE" } });
+  const updatedCar = await db.car.findUnique({
+    where: { id: carId },
+    select: { title: true, slug: true, sellerId: true },
+  });
+  if (updatedCar) {
+    const { sendPushToSeller } = await import("@/lib/webPush");
+    await sendPushToSeller(updatedCar.sellerId, {
+      title: "Your listing is live! 🎉",
+      body: `${updatedCar.title} has been approved and is now visible to buyers.`,
+      tag: `listing-approved-${carId}`,
+      data: { url: `/cars/${updatedCar.slug ?? String(carId)}` },
+    });
+  }
   const { revalidatePath } = await import("next/cache");
   revalidatePath(`/admin/dashboard/listings/${carId}`);
   revalidatePath("/admin/dashboard/listings");

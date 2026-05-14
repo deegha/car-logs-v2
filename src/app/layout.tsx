@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
 import { SITE_URL } from "@/config/app";
 
 const geistSans = Geist({
@@ -62,6 +63,7 @@ export const metadata: Metadata = {
     site: "@carlogs_lk",
     images: [OG_IMAGE],
   },
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
@@ -82,6 +84,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col bg-background text-foreground">
         {children}
         <MobileNav />
+        <ServiceWorkerRegistration />
         {/* spacer so content isn't hidden behind the mobile nav */}
         <div className="h-[calc(56px+env(safe-area-inset-bottom))] md:hidden" aria-hidden />
       </body>

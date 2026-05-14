@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SellerCarTable } from "@/components/seller/SellerCarTable";
 import { SellerPhoneManager } from "@/components/seller/SellerPhoneManager";
+import { PushNotificationButton } from "@/components/pwa/PushNotificationButton";
 import { db } from "@/lib/db";
 import { getSellerSession } from "@/lib/auth";
 import type { Car, SellerPhone } from "@/types";
@@ -59,6 +60,9 @@ export default async function SellerDashboardPage({
             Welcome, {seller?.firstName ?? "Seller"}
           </h1>
           <p className="mt-1 text-sm text-foreground-muted">Manage your car listings below</p>
+          <div className="mt-2">
+            <PushNotificationButton />
+          </div>
         </div>
         <Link
           href="/sell"
