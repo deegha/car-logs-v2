@@ -180,7 +180,9 @@ export function ImageUploader({
     } catch {
       setImages((prev) =>
         prev.map((img) =>
-          img.id === id ? { ...img, status: "error", error: "Network error — check your connection" } : img
+          img.id === id
+            ? { ...img, status: "error", error: "Network error — check your connection" }
+            : img
         )
       );
     }
