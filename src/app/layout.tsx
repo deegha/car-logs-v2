@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import "./globals.css";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
@@ -89,6 +90,7 @@ export default function RootLayout({
         <div className="h-[calc(56px+env(safe-area-inset-bottom))] md:hidden" aria-hidden />
       </body>
       <GoogleAnalytics gaId="G-CTQN7XQWY1" />
+      <Script src="https://t.contentsquare.net/uxa/8cd09751ebecf.js" strategy="afterInteractive" />
     </html>
   );
 }
