@@ -18,7 +18,8 @@ const SELLER_SELECT = {
 export async function PATCH(request: Request, { params }: { params: Params }) {
   const caller = await getAdminWithRole();
   if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  if (caller.role !== AdminRole.SUPER_ADMIN) return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (caller.role !== AdminRole.SUPER_ADMIN)
+    return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const sellerId = Number(id);
@@ -114,7 +115,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 export async function DELETE(_request: Request, { params }: { params: Params }) {
   const caller = await getAdminWithRole();
   if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  if (caller.role !== AdminRole.SUPER_ADMIN) return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (caller.role !== AdminRole.SUPER_ADMIN)
+    return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const sellerId = Number(id);

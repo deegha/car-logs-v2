@@ -1,6 +1,12 @@
 import { db } from "@/lib/db";
 import { getAdminWithRole, hashPassword } from "@/lib/auth";
-import { AdminRole, CarStatus, CarCondition, FuelType, Transmission } from "@/generated/prisma/client";
+import {
+  AdminRole,
+  CarStatus,
+  CarCondition,
+  FuelType,
+  Transmission,
+} from "@/generated/prisma/client";
 import { generateCarSlug } from "@/lib/utils";
 
 const PAGE_SIZE = 30;

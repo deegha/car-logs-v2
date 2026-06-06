@@ -1,6 +1,12 @@
 import { db } from "@/lib/db";
 import { getAdminWithRole } from "@/lib/auth";
-import { AdminRole, CarStatus, CarCondition, FuelType, Transmission } from "@/generated/prisma/client";
+import {
+  AdminRole,
+  CarStatus,
+  CarCondition,
+  FuelType,
+  Transmission,
+} from "@/generated/prisma/client";
 import { generateCarSlug } from "@/lib/utils";
 
 type Params = Promise<{ id: string }>;
@@ -81,7 +87,28 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 
   // EDITOR can only change status — no content edits or featured toggling
   if (caller.role === AdminRole.EDITOR) {
-    const contentFields = [title, make, model, year, price, mileage, color, fuelType, transmission, bodyType, engineSize, description, province, district, town, condition, isNegotiable, emissionTestUrl, images, featured];
+    const contentFields = [
+      title,
+      make,
+      model,
+      year,
+      price,
+      mileage,
+      color,
+      fuelType,
+      transmission,
+      bodyType,
+      engineSize,
+      description,
+      province,
+      district,
+      town,
+      condition,
+      isNegotiable,
+      emissionTestUrl,
+      images,
+      featured,
+    ];
     if (contentFields.some((v) => v !== undefined)) {
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -171,7 +198,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 export async function DELETE(_req: Request, { params }: { params: Params }) {
   const caller = await getAdminWithRole();
   if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  if (caller.role === AdminRole.EDITOR) return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (caller.role === AdminRole.EDITOR)
+    return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const carId = Number(id);

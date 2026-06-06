@@ -51,7 +51,10 @@ export function AdminManagement({ initialAdmins, currentAdminId }: Props) {
         body: JSON.stringify(body),
       });
       const json = await res.json();
-      if (!res.ok) { setError(json.error ?? "Failed to create admin"); return; }
+      if (!res.ok) {
+        setError(json.error ?? "Failed to create admin");
+        return;
+      }
       setAdmins((prev) => [...prev, { ...json.admin, createdAt: new Date(json.admin.createdAt) }]);
       setModal(null);
     } finally {
@@ -77,9 +80,16 @@ export function AdminManagement({ initialAdmins, currentAdminId }: Props) {
         body: JSON.stringify(body),
       });
       const json = await res.json();
-      if (!res.ok) { setError(json.error ?? "Failed to update admin"); return; }
+      if (!res.ok) {
+        setError(json.error ?? "Failed to update admin");
+        return;
+      }
       setAdmins((prev) =>
-        prev.map((a) => (a.id === modal.admin.id ? { ...a, ...json.admin, createdAt: new Date(json.admin.createdAt) } : a))
+        prev.map((a) =>
+          a.id === modal.admin.id
+            ? { ...a, ...json.admin, createdAt: new Date(json.admin.createdAt) }
+            : a
+        )
       );
       setModal(null);
     } finally {
@@ -110,8 +120,16 @@ export function AdminManagement({ initialAdmins, currentAdminId }: Props) {
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-foreground-muted">{admins.length} admin{admins.length !== 1 ? "s" : ""}</p>
-        <Button size="sm" onClick={() => { setError(null); setModal({ type: "add" }); }}>
+        <p className="text-sm text-foreground-muted">
+          {admins.length} admin{admins.length !== 1 ? "s" : ""}
+        </p>
+        <Button
+          size="sm"
+          onClick={() => {
+            setError(null);
+            setModal({ type: "add" });
+          }}
+        >
           + Add Admin
         </Button>
       </div>
@@ -128,7 +146,10 @@ export function AdminManagement({ initialAdmins, currentAdminId }: Props) {
           </thead>
           <tbody>
             {admins.map((a) => (
-              <tr key={a.id} className="border-b border-border last:border-0 hover:bg-background-subtle">
+              <tr
+                key={a.id}
+                className="border-b border-border last:border-0 hover:bg-background-subtle"
+              >
                 <td className="px-4 py-3 font-medium text-foreground">
                   {a.email}
                   {a.id === currentAdminId && (
@@ -147,7 +168,10 @@ export function AdminManagement({ initialAdmins, currentAdminId }: Props) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => { setError(null); setModal({ type: "edit", admin: a }); }}
+                        onClick={() => {
+                          setError(null);
+                          setModal({ type: "edit", admin: a });
+                        }}
                       >
                         Edit
                       </Button>
@@ -179,14 +203,25 @@ export function AdminManagement({ initialAdmins, currentAdminId }: Props) {
               <input name="email" type="email" required autoFocus className={inputCls} />
             </Field>
             <Field label="Password">
-              <input name="password" type="password" required minLength={8} className={inputCls} placeholder="Min 8 characters" />
+              <input
+                name="password"
+                type="password"
+                required
+                minLength={8}
+                className={inputCls}
+                placeholder="Min 8 characters"
+              />
             </Field>
             <Field label="Role">
               <RoleSelect name="role" defaultValue="EDITOR" />
             </Field>
             <div className="flex justify-end gap-3 pt-2">
-              <Button variant="secondary" type="button" onClick={closeModal} disabled={saving}>Cancel</Button>
-              <Button type="submit" disabled={saving}>{saving ? "Creating…" : "Create Admin"}</Button>
+              <Button variant="secondary" type="button" onClick={closeModal} disabled={saving}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? "Creating…" : "Create Admin"}
+              </Button>
             </div>
           </form>
         </Modal>
@@ -201,11 +236,21 @@ export function AdminManagement({ initialAdmins, currentAdminId }: Props) {
               <RoleSelect name="role" defaultValue={modal.admin.role} />
             </Field>
             <Field label="New Password" hint="Leave blank to keep unchanged">
-              <input name="password" type="password" minLength={8} className={inputCls} placeholder="Min 8 characters (optional)" />
+              <input
+                name="password"
+                type="password"
+                minLength={8}
+                className={inputCls}
+                placeholder="Min 8 characters (optional)"
+              />
             </Field>
             <div className="flex justify-end gap-3 pt-2">
-              <Button variant="secondary" type="button" onClick={closeModal} disabled={saving}>Cancel</Button>
-              <Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save Changes"}</Button>
+              <Button variant="secondary" type="button" onClick={closeModal} disabled={saving}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? "Saving…" : "Save Changes"}
+              </Button>
             </div>
           </form>
         </Modal>
@@ -217,10 +262,18 @@ export function AdminManagement({ initialAdmins, currentAdminId }: Props) {
           <p className="mb-1 text-sm text-foreground">
             Remove <span className="font-semibold">{modal.admin.email}</span>?
           </p>
-          <p className="mb-6 text-sm text-danger">This cannot be undone. They will lose all admin access.</p>
+          <p className="mb-6 text-sm text-danger">
+            This cannot be undone. They will lose all admin access.
+          </p>
           <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={closeModal} disabled={saving}>Cancel</Button>
-            <Button onClick={handleDelete} disabled={saving} className="bg-danger text-white hover:bg-red-700">
+            <Button variant="secondary" onClick={closeModal} disabled={saving}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDelete}
+              disabled={saving}
+              className="bg-danger text-white hover:bg-red-700"
+            >
               {saving ? "Removing…" : "Remove"}
             </Button>
           </div>
@@ -235,7 +288,15 @@ export function AdminManagement({ initialAdmins, currentAdminId }: Props) {
 const inputCls =
   "h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground placeholder:text-foreground-muted focus:ring-2 focus:ring-primary-500 focus:outline-none";
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-sm font-medium text-foreground">{label}</label>
@@ -249,7 +310,9 @@ function RoleSelect({ name, defaultValue }: { name: string; defaultValue: AdminR
   return (
     <select name={name} defaultValue={defaultValue} className={inputCls}>
       {(Object.keys(ROLE_LABELS) as AdminRole[]).map((r) => (
-        <option key={r} value={r}>{ROLE_LABELS[r]} — {ROLE_DESCRIPTIONS[r]}</option>
+        <option key={r} value={r}>
+          {ROLE_LABELS[r]} — {ROLE_DESCRIPTIONS[r]}
+        </option>
       ))}
     </select>
   );
@@ -262,20 +325,40 @@ function RoleBadge({ role }: { role: AdminRole }) {
     EDITOR: "bg-green-50 text-green-700 border-green-200",
   };
   return (
-    <span className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold ${colors[role]}`}>
+    <span
+      className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold ${colors[role]}`}
+    >
       {ROLE_LABELS[role]}
     </span>
   );
 }
 
-function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+function Modal({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-md rounded-xl border border-border bg-background p-6 shadow-lg">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">{title}</h2>
-          <button onClick={onClose} className="text-foreground-muted hover:text-foreground" aria-label="Close">
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <button
+            onClick={onClose}
+            className="text-foreground-muted hover:text-foreground"
+            aria-label="Close"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>

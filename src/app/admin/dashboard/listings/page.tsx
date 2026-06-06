@@ -134,7 +134,10 @@ export default async function AdminListingsPage({
         )}
       </form>
 
-      <AdminCarTable initialCars={cars.map((c) => ({ ...c, price: Number(c.price) })) as Car[]} role={adminRole} />
+      <AdminCarTable
+        initialCars={cars.map((c) => ({ ...c, price: Number(c.price) })) as Car[]}
+        role={adminRole}
+      />
     </div>
   );
 }

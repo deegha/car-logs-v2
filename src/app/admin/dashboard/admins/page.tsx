@@ -30,7 +30,11 @@ export default async function AdminsPage() {
         {(["SUPER_ADMIN", "MANAGER", "EDITOR"] as const).map((role) => {
           const count = admins.filter((a) => a.role === role).length;
           const labels = { SUPER_ADMIN: "Super Admins", MANAGER: "Managers", EDITOR: "Editors" };
-          const colors = { SUPER_ADMIN: "text-primary-600", MANAGER: "text-blue-600", EDITOR: "text-green-600" };
+          const colors = {
+            SUPER_ADMIN: "text-primary-600",
+            MANAGER: "text-blue-600",
+            EDITOR: "text-green-600",
+          };
           return (
             <div key={role} className="rounded-lg border border-border bg-background p-4">
               <p className="text-sm text-foreground-muted">{labels[role]}</p>
@@ -41,7 +45,9 @@ export default async function AdminsPage() {
       </div>
 
       <AdminManagement
-        initialAdmins={admins.map((a) => ({ ...a, createdAt: a.createdAt.toISOString() })) as Admin[]}
+        initialAdmins={
+          admins.map((a) => ({ ...a, createdAt: a.createdAt.toISOString() })) as Admin[]
+        }
         currentAdminId={caller.adminId}
       />
     </div>

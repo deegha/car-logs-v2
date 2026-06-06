@@ -7,7 +7,8 @@ const PAGE_SIZE = 30;
 export async function GET(request: Request) {
   const caller = await getAdminWithRole();
   if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  if (caller.role !== AdminRole.SUPER_ADMIN) return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (caller.role !== AdminRole.SUPER_ADMIN)
+    return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const url = new URL(request.url);
   const status = url.searchParams.get("status") as SellerStatus | null;

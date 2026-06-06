@@ -7,7 +7,11 @@ import type { AdminRole } from "@/types";
 
 const ALL_LINKS = [
   { href: "/admin/dashboard", label: "Overview", roles: ["SUPER_ADMIN", "MANAGER", "EDITOR"] },
-  { href: "/admin/dashboard/listings", label: "Listings", roles: ["SUPER_ADMIN", "MANAGER", "EDITOR"] },
+  {
+    href: "/admin/dashboard/listings",
+    label: "Listings",
+    roles: ["SUPER_ADMIN", "MANAGER", "EDITOR"],
+  },
   { href: "/admin/dashboard/sellers", label: "Users", roles: ["SUPER_ADMIN"] },
   { href: "/admin/dashboard/admins", label: "Admins", roles: ["SUPER_ADMIN"] },
 ];

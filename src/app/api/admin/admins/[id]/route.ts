@@ -7,7 +7,8 @@ type Params = Promise<{ id: string }>;
 export async function PATCH(request: Request, { params }: { params: Params }) {
   const caller = await getAdminWithRole();
   if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  if (caller.role !== AdminRole.SUPER_ADMIN) return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (caller.role !== AdminRole.SUPER_ADMIN)
+    return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const targetId = Number(id);
@@ -54,7 +55,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 export async function DELETE(_req: Request, { params }: { params: Params }) {
   const caller = await getAdminWithRole();
   if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  if (caller.role !== AdminRole.SUPER_ADMIN) return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (caller.role !== AdminRole.SUPER_ADMIN)
+    return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const targetId = Number(id);

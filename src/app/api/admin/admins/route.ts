@@ -5,7 +5,8 @@ import { AdminRole } from "@/generated/prisma/client";
 export async function GET() {
   const caller = await getAdminWithRole();
   if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  if (caller.role !== AdminRole.SUPER_ADMIN) return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (caller.role !== AdminRole.SUPER_ADMIN)
+    return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const admins = await db.admin.findMany({
     orderBy: { createdAt: "asc" },
@@ -17,7 +18,8 @@ export async function GET() {
 export async function POST(request: Request) {
   const caller = await getAdminWithRole();
   if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  if (caller.role !== AdminRole.SUPER_ADMIN) return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (caller.role !== AdminRole.SUPER_ADMIN)
+    return Response.json({ error: "Forbidden" }, { status: 403 });
 
   let body: unknown;
   try {
