@@ -57,4 +57,4 @@ EXPOSE 3000
 ENV PORT=3000
 
 # Exec form CMD to handle lifecycle signals properly
-CMD ["sh", "-c", "npx prisma db push --accept-data-loss && npm run db:seed && node server.js"]
+CMD ["sh", "-c", "sleep 10 && ./node_modules/.bin/prisma db push --accept-data-loss && npm run db:seed && node server.js"]
