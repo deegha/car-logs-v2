@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@next/third-parties": "^16.2.6",
+    "@openreplay/tracker": "^18.0.13",
     "@prisma/adapter-mariadb": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@tiptap/extension-underline": "^3.23.1",

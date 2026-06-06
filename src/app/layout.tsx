@@ -5,6 +5,7 @@ import Script from "next/script";
 import "./globals.css";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
+import { OpenReplay } from "@/components/analytics/OpenReplay";
 import { SITE_URL } from "@/config/app";
 
 const geistSans = Geist({
@@ -85,6 +86,7 @@ export default function RootLayout({
         {children}
         <MobileNav />
         <ServiceWorkerRegistration />
+        <OpenReplay />
         {/* spacer so content isn't hidden behind the mobile nav */}
         <div className="h-[calc(56px+env(safe-area-inset-bottom))] md:hidden" aria-hidden />
       </body>
