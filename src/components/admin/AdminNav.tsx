@@ -3,16 +3,19 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import type { AdminRole } from "@/types";
 
-const links = [
-  { href: "/admin/dashboard", label: "Overview" },
-  { href: "/admin/dashboard/listings", label: "Listings" },
-  { href: "/admin/dashboard/sellers", label: "Users" },
+const ALL_LINKS = [
+  { href: "/admin/dashboard", label: "Overview", roles: ["SUPER_ADMIN", "MANAGER", "EDITOR"] },
+  { href: "/admin/dashboard/listings", label: "Listings", roles: ["SUPER_ADMIN", "MANAGER", "EDITOR"] },
+  { href: "/admin/dashboard/sellers", label: "Users", roles: ["SUPER_ADMIN"] },
+  { href: "/admin/dashboard/admins", label: "Admins", roles: ["SUPER_ADMIN"] },
 ];
 
-export function AdminNav() {
+export function AdminNav({ role }: { role: AdminRole }) {
   const pathname = usePathname();
   const router = useRouter();
+  const links = ALL_LINKS.filter((l) => l.roles.includes(role));
 
   async function handleLogout() {
     await fetch("/api/admin/auth/logout", { method: "DELETE" });

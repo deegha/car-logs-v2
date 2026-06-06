@@ -56,10 +56,11 @@ model SellerPhone {
 // ─────────────────────────────────────────────
 
 model Admin {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique @db.VarChar(255)
-  passwordHash String   @db.VarChar(255)
-  createdAt    DateTime @default(now())
+  id           Int       @id @default(autoincrement())
+  email        String    @unique @db.VarChar(255)
+  passwordHash String    @db.VarChar(255)
+  role         AdminRole @default(SUPER_ADMIN)
+  createdAt    DateTime  @default(now())
 }
 
 // ─────────────────────────────────────────────
@@ -157,4 +158,10 @@ enum CarCondition {
   NEW
   USED
   RECONDITIONED
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  MANAGER
+  EDITOR
 }

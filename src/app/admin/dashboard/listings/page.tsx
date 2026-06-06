@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AdminCarTable } from "@/components/admin/AdminCarTable";
 import { db } from "@/lib/db";
+import { getAdminWithRole } from "@/lib/auth";
 import { CarStatus, CarCondition } from "@/generated/prisma/client";
 import { buildSearchWhere } from "@/lib/carSearch";
 import type { Car } from "@/types";
@@ -24,6 +25,9 @@ export default async function AdminListingsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const admin = await getAdminWithRole();
+  const adminRole = admin?.role ?? "EDITOR";
+
   const params = await searchParams;
   const statusParam = String(params.status ?? "");
   const conditionParam = String(params.condition ?? "");
@@ -130,7 +134,7 @@ export default async function AdminListingsPage({
         )}
       </form>
 
-      <AdminCarTable initialCars={cars.map((c) => ({ ...c, price: Number(c.price) })) as Car[]} />
+      <AdminCarTable initialCars={cars.map((c) => ({ ...c, price: Number(c.price) })) as Car[]} role={adminRole} />
     </div>
   );
 }

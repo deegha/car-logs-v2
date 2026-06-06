@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
-import { getAdminSession } from "@/lib/auth";
-import { CarStatus, CarCondition, FuelType, Transmission } from "@/generated/prisma/client";
+import { getAdminWithRole } from "@/lib/auth";
+import { AdminRole, CarStatus, CarCondition, FuelType, Transmission } from "@/generated/prisma/client";
 import { generateCarSlug } from "@/lib/utils";
 
 type Params = Promise<{ id: string }>;
@@ -8,10 +8,8 @@ type Params = Promise<{ id: string }>;
 // ── PATCH /api/admin/cars/[id] — approve / reject / feature / edit ─
 
 export async function PATCH(request: Request, { params }: { params: Params }) {
-  const session = await getAdminSession();
-  if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const caller = await getAdminWithRole();
+  if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
   const carId = Number(id);
@@ -79,6 +77,14 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 
   if (status !== undefined && !Object.values(CarStatus).includes(status)) {
     return Response.json({ error: "Invalid status" }, { status: 400 });
+  }
+
+  // EDITOR can only change status — no content edits or featured toggling
+  if (caller.role === AdminRole.EDITOR) {
+    const contentFields = [title, make, model, year, price, mileage, color, fuelType, transmission, bodyType, engineSize, description, province, district, town, condition, isNegotiable, emissionTestUrl, images, featured];
+    if (contentFields.some((v) => v !== undefined)) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
   }
 
   const hasContentChange = [
@@ -163,10 +169,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 // ── DELETE /api/admin/cars/[id] — hard delete ──────────────────────
 
 export async function DELETE(_req: Request, { params }: { params: Params }) {
-  const session = await getAdminSession();
-  if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const caller = await getAdminWithRole();
+  if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (caller.role === AdminRole.EDITOR) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const carId = Number(id);

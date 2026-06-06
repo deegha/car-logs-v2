@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
-import { getAdminSession } from "@/lib/auth";
+import { getAdminWithRole } from "@/lib/auth";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { CarlogsLogo } from "@/components/layout/CarlogsLogo";
 import type { ReactNode } from "react";
 
 export default async function AdminDashboardLayout({ children }: { children: ReactNode }) {
-  const session = await getAdminSession();
-  if (!session) {
+  const admin = await getAdminWithRole();
+  if (!admin) {
     redirect("/admin/login");
   }
 
@@ -17,7 +17,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
           <CarlogsLogo textClassName="text-base font-bold text-foreground" />
           <p className="mt-1 text-xs text-foreground-muted">Admin Panel</p>
         </div>
-        <AdminNav />
+        <AdminNav role={admin.role} />
       </aside>
       <main className="flex-1 overflow-auto p-6">{children}</main>
     </div>

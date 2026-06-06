@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@/lib/db";
-import { getAdminSession } from "@/lib/auth";
+import { getAdminWithRole } from "@/lib/auth";
+import { AdminRole } from "@/generated/prisma/client";
 import { formatPrice, formatMileage } from "@/lib/utils";
 import type { Metadata } from "next";
 import type { CarStatus } from "@/types";
@@ -101,8 +102,9 @@ export default async function AdminListingReviewPage({ params }: Props) {
   const carId = Number(id);
   if (isNaN(carId)) notFound();
 
-  const session = await getAdminSession();
-  if (!session) notFound();
+  const admin = await getAdminWithRole();
+  if (!admin) notFound();
+  const canEdit = admin.role !== AdminRole.EDITOR;
 
   const car = await db.car.findUnique({
     where: { id: carId },
@@ -172,12 +174,14 @@ export default async function AdminListingReviewPage({ params }: Props) {
                 </form>
               </>
             )}
-            <Link
-              href={`/admin/dashboard/listings/${car.id}/edit`}
-              className="rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-background-subtle"
-            >
-              Edit
-            </Link>
+            {canEdit && (
+              <Link
+                href={`/admin/dashboard/listings/${car.id}/edit`}
+                className="rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-background-subtle"
+              >
+                Edit
+              </Link>
+            )}
             <Link
               href={`/cars/${car.slug ?? car.id}?adminPreview=1`}
               target="_blank"

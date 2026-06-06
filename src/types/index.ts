@@ -4,9 +4,17 @@ import type {
   Transmission,
   SellerStatus,
   CarCondition,
+  AdminRole,
 } from "@/generated/prisma/enums";
 
-export type { CarStatus, FuelType, Transmission, SellerStatus, CarCondition };
+export type { CarStatus, FuelType, Transmission, SellerStatus, CarCondition, AdminRole };
+
+export interface Admin {
+  id: number;
+  email: string;
+  role: AdminRole;
+  createdAt: string | Date;
+}
 
 export interface CarImage {
   id: number;

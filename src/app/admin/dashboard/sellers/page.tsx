@@ -1,6 +1,8 @@
+import { redirect } from "next/navigation";
 import { AdminSellerTable } from "@/components/admin/AdminSellerTable";
 import { db } from "@/lib/db";
-import { SellerStatus } from "@/generated/prisma/client";
+import { getAdminWithRole } from "@/lib/auth";
+import { AdminRole, SellerStatus } from "@/generated/prisma/client";
 import type { Seller } from "@/types";
 import type { Metadata } from "next";
 
@@ -15,6 +17,9 @@ export default async function AdminSellersPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const admin = await getAdminWithRole();
+  if (!admin || admin.role !== AdminRole.SUPER_ADMIN) redirect("/admin/dashboard");
+
   const params = await searchParams;
   const searchParam = String(params.search ?? "").trim();
   const statusParam = String(params.status ?? "");

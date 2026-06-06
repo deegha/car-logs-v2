@@ -5,13 +5,15 @@ import { useState } from "react";
 import { StatusBadge } from "@/components/cars/StatusBadge";
 import { Button } from "@/components/ui/Button";
 import { formatPrice, formatMileage } from "@/lib/utils";
-import type { Car, CarStatus } from "@/types";
+import type { Car, CarStatus, AdminRole } from "@/types";
 
 interface AdminCarTableProps {
   initialCars: Car[];
+  role: AdminRole;
 }
 
-export function AdminCarTable({ initialCars }: AdminCarTableProps) {
+export function AdminCarTable({ initialCars, role }: AdminCarTableProps) {
+  const isEditor = role === "EDITOR";
   const [cars, setCars] = useState(initialCars);
   const [pendingDelete, setPendingDelete] = useState<{ id: number; title: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -58,7 +60,7 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
               <th className="px-4 py-3">Price</th>
               <th className="px-4 py-3">Mileage</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Featured</th>
+              {!isEditor && <th className="px-4 py-3">Featured</th>}
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -86,15 +88,17 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
                 <td className="px-4 py-3">
                   <StatusBadge status={car.status} />
                 </td>
-                <td className="px-4 py-3">
-                  <button
-                    onClick={() => patch(car.id, "featured", { featured: !car.featured })}
-                    disabled={patchingId === `${car.id}-featured`}
-                    className={`text-xs font-medium transition-opacity disabled:opacity-40 ${car.featured ? "text-accent-600" : "text-foreground-muted"}`}
-                  >
-                    {patchingId === `${car.id}-featured` ? "…" : car.featured ? "Yes" : "No"}
-                  </button>
-                </td>
+                {!isEditor && (
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => patch(car.id, "featured", { featured: !car.featured })}
+                      disabled={patchingId === `${car.id}-featured`}
+                      className={`text-xs font-medium transition-opacity disabled:opacity-40 ${car.featured ? "text-accent-600" : "text-foreground-muted"}`}
+                    >
+                      {patchingId === `${car.id}-featured` ? "…" : car.featured ? "Yes" : "No"}
+                    </button>
+                  </td>
+                )}
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-1">
                     {car.status === "PENDING" && (
@@ -129,20 +133,24 @@ export function AdminCarTable({ initialCars }: AdminCarTableProps) {
                     >
                       Review
                     </Link>
-                    <Link
-                      href={`/admin/dashboard/listings/${car.id}/edit`}
-                      className="inline-flex h-8 items-center rounded-sm px-3 text-sm font-medium text-foreground hover:bg-background-subtle"
-                    >
-                      Edit
-                    </Link>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setPendingDelete({ id: car.id, title: car.title })}
-                      className="text-danger"
-                    >
-                      Delete
-                    </Button>
+                    {!isEditor && (
+                      <>
+                        <Link
+                          href={`/admin/dashboard/listings/${car.id}/edit`}
+                          className="inline-flex h-8 items-center rounded-sm px-3 text-sm font-medium text-foreground hover:bg-background-subtle"
+                        >
+                          Edit
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setPendingDelete({ id: car.id, title: car.title })}
+                          className="text-danger"
+                        >
+                          Delete
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </td>
               </tr>

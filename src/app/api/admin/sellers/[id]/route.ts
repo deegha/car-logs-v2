@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
-import { getAdminSession } from "@/lib/auth";
-import { SellerStatus, CarStatus } from "@/generated/prisma/client";
+import { getAdminWithRole } from "@/lib/auth";
+import { AdminRole, SellerStatus, CarStatus } from "@/generated/prisma/client";
 
 type Params = Promise<{ id: string }>;
 
@@ -16,10 +16,9 @@ const SELLER_SELECT = {
 } as const;
 
 export async function PATCH(request: Request, { params }: { params: Params }) {
-  const session = await getAdminSession();
-  if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const caller = await getAdminWithRole();
+  if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (caller.role !== AdminRole.SUPER_ADMIN) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const sellerId = Number(id);
@@ -113,10 +112,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 }
 
 export async function DELETE(_request: Request, { params }: { params: Params }) {
-  const session = await getAdminSession();
-  if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const caller = await getAdminWithRole();
+  if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (caller.role !== AdminRole.SUPER_ADMIN) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const sellerId = Number(id);

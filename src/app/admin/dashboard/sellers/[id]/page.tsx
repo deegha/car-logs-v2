@@ -1,7 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { getAdminSession } from "@/lib/auth";
+import { getAdminWithRole } from "@/lib/auth";
+import { AdminRole } from "@/generated/prisma/client";
 import { Badge } from "@/components/ui/Badge";
 import { StatusBadge } from "@/components/cars/StatusBadge";
 import { AdminUserActions } from "@/components/admin/AdminUserActions";
@@ -20,8 +21,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 export default async function AdminUserDetailPage({ params }: { params: Params }) {
-  const session = await getAdminSession();
-  if (!session) notFound();
+  const admin = await getAdminWithRole();
+  if (!admin) notFound();
+  if (admin.role !== AdminRole.SUPER_ADMIN) redirect("/admin/dashboard");
 
   const { id } = await params;
   const sellerId = Number(id);

@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import type { AdminRole } from "@/generated/prisma/client";
 
 function jwtSecret() {
   const s = process.env.JWT_SECRET;
@@ -86,4 +87,16 @@ export async function getAdminSession(): Promise<{ adminId: number } | null> {
   } catch {
     return null;
   }
+}
+
+export async function getAdminWithRole(): Promise<{ adminId: number; role: AdminRole } | null> {
+  const session = await getAdminSession();
+  if (!session) return null;
+  const { db } = await import("@/lib/db");
+  const admin = await db.admin.findUnique({
+    where: { id: session.adminId },
+    select: { role: true },
+  });
+  if (!admin) return null;
+  return { adminId: session.adminId, role: admin.role };
 }

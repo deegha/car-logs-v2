@@ -1,15 +1,13 @@
 import { db } from "@/lib/db";
-import { getAdminSession, hashPassword } from "@/lib/auth";
-import { CarStatus, CarCondition, FuelType, Transmission } from "@/generated/prisma/client";
+import { getAdminWithRole, hashPassword } from "@/lib/auth";
+import { AdminRole, CarStatus, CarCondition, FuelType, Transmission } from "@/generated/prisma/client";
 import { generateCarSlug } from "@/lib/utils";
 
 const PAGE_SIZE = 30;
 
 export async function GET(request: Request) {
-  const session = await getAdminSession();
-  if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const caller = await getAdminWithRole();
+  if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const url = new URL(request.url);
   const status = url.searchParams.get("status") as CarStatus | null;
@@ -39,10 +37,8 @@ export async function GET(request: Request) {
 // ── POST /api/admin/cars — admin creates a listing on behalf of a seller ──
 
 export async function POST(request: Request) {
-  const session = await getAdminSession();
-  if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const caller = await getAdminWithRole();
+  if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   let body: unknown;
   try {

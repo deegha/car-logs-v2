@@ -1,14 +1,13 @@
 import { db } from "@/lib/db";
-import { getAdminSession } from "@/lib/auth";
-import { SellerStatus } from "@/generated/prisma/client";
+import { getAdminWithRole } from "@/lib/auth";
+import { AdminRole, SellerStatus } from "@/generated/prisma/client";
 
 const PAGE_SIZE = 30;
 
 export async function GET(request: Request) {
-  const session = await getAdminSession();
-  if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const caller = await getAdminWithRole();
+  if (!caller) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  if (caller.role !== AdminRole.SUPER_ADMIN) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const url = new URL(request.url);
   const status = url.searchParams.get("status") as SellerStatus | null;

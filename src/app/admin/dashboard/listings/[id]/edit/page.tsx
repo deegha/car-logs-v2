@@ -1,7 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { EditCarForm } from "@/components/seller/EditCarForm";
 import { db } from "@/lib/db";
-import { getAdminSession } from "@/lib/auth";
+import { getAdminWithRole } from "@/lib/auth";
+import { AdminRole } from "@/generated/prisma/client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Edit Listing — Admin" };
@@ -13,8 +14,9 @@ export default async function AdminEditCarPage({ params }: Props) {
   const carId = Number(id);
   if (isNaN(carId)) notFound();
 
-  const session = await getAdminSession();
-  if (!session) notFound();
+  const admin = await getAdminWithRole();
+  if (!admin) notFound();
+  if (admin.role === AdminRole.EDITOR) redirect(`/admin/dashboard/listings/${carId}`);
 
   const car = await db.car.findUnique({
     where: { id: carId },
