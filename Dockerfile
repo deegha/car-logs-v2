@@ -1,23 +1,60 @@
-FROM node:20
-
+# ==========================================
+# Stage 1: Base image with shared package managers
+# ==========================================
+FROM node:20-alpine AS base
 WORKDIR /app
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine 
+# to understand why libc6-compat might be needed for Next.js/Prisma.
+RUN apk add --no-cache libc6-compat
 
-# 1) Install dependencies
+# ==========================================
+# Stage 2: Install dependencies
+# ==========================================
+FROM base AS deps
 COPY package*.json ./
-RUN npm install
+# 1. We skip husky/git hooks during Docker builds
+# 2. We use a cache mount so npm doesn't redownload packages if package.json hasn't changed
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --ignore-scripts
 
-# 2) Copy source and prisma schema
+# ==========================================
+# Stage 3: Build the application
+# ==========================================
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# 3) Generate Prisma client
+# Generate Prisma Client
 RUN npx prisma generate
 
-# 4) Build Next.js app
-# DATABASE_URL is needed at build time so db.ts can be imported without throwing.
-# The real value is injected at runtime via .env — this dummy value is never used for queries.
+# Build Next.js
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN DATABASE_URL=mysql://build:build@localhost/build npm run build
 
-EXPOSE 3000
+# ==========================================
+# Stage 4: Production Runner (Ultra-lightweight)
+# ==========================================
+FROM base AS runner
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# 5) Push schema, seed, start app at runtime
-CMD ["sh", "-c", "npx prisma db push --accept-data-loss && npm run db:seed && npm start"]
+# Create a non-root user for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy only what is strictly necessary to run the app
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/prisma ./prisma
+
+# Next.js automatically leverages output tracing to reduce image size
+# Note: To use standalone output, ensure `output: 'standalone'` is in your next.config.js
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+ENV PORT=3000
+
+# Exec form CMD to handle lifecycle signals properly
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss && npm run db:seed && node server.js"]
