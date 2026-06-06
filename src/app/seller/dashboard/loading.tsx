@@ -28,7 +28,10 @@ export default function SellerDashboardLoading() {
           <Skeleton className="h-4 w-24" />
         </div>
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 border-b border-border px-4 py-4 last:border-0">
+          <div
+            key={i}
+            className="flex items-center gap-4 border-b border-border px-4 py-4 last:border-0"
+          >
             <Skeleton className="h-14 w-20 shrink-0 rounded-md" />
             <div className="flex flex-1 flex-col gap-2">
               <Skeleton className="h-4 w-3/5" />

@@ -161,8 +161,18 @@ export default function HomePage() {
           className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-background p-4 active:bg-background-subtle"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-primary-600">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
           <span className="text-sm font-semibold text-foreground">Browse Cars</span>
@@ -172,7 +182,13 @@ export default function HomePage() {
           className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-background p-4 active:bg-background-subtle"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-primary-600">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-5 w-5"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
           </div>

@@ -104,11 +104,7 @@ function CarsResultsSkeleton() {
 
 // ── Page — filter sidebar renders immediately ─────────────────────
 
-export default function CarsPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
+export default function CarsPage({ searchParams }: { searchParams: SearchParams }) {
   return (
     <div className="flex min-h-full flex-col">
       <Header />
