@@ -7,7 +7,6 @@ export function OpenReplay() {
     import("@openreplay/tracker").then(async ({ default: Tracker }) => {
       const tracker = new Tracker({
         projectKey: "WfC0OafCQ2vm2ifv7YSo",
-        ingestPoint: "https://api.openreplay.com/ingest",
       });
       await tracker.start();
 
