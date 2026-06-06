@@ -1,39 +1,124 @@
 export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CarCard } from "@/components/cars/CarCard";
+import { CarCardSkeleton } from "@/components/cars/CarCardSkeleton";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { db } from "@/lib/db";
 import { CarStatus } from "@/generated/prisma/client";
 import type { Car } from "@/types";
 
-export default async function HomePage() {
-  const [featured, availableCount] = await Promise.all([
-    db.car.findMany({
-      where: { status: CarStatus.AVAILABLE, featured: true },
-      take: 6,
-      orderBy: { createdAt: "desc" },
-      include: { images: { where: { isPrimary: true }, take: 1 } },
-    }),
-    db.car.count({ where: { status: CarStatus.AVAILABLE } }),
-  ]);
+// ── Async streaming components ────────────────────────────────────
 
-  let displayCars = featured;
-  if (displayCars.length === 0) {
-    displayCars = await db.car.findMany({
-      where: { status: CarStatus.AVAILABLE },
-      take: 6,
-      orderBy: { createdAt: "desc" },
-      include: { images: { where: { isPrimary: true }, take: 1 } },
-    });
-  }
+async function StatsBar() {
+  const availableCount = await db.car.count({ where: { status: CarStatus.AVAILABLE } });
+  return (
+    <div className="border-y border-border bg-background">
+      <div className="mx-auto grid max-w-7xl grid-cols-3 divide-x divide-border px-4 py-5 text-center sm:px-6 sm:py-6">
+        {[
+          { value: availableCount.toLocaleString(), label: "Cars Available" },
+          { value: "1,800+", label: "Happy Buyers" },
+          { value: "98%", label: "Satisfaction" },
+        ].map((stat) => (
+          <div key={stat.label} className="px-2 sm:px-4">
+            <p className="text-xl font-bold text-primary-600 sm:text-2xl">{stat.value}</p>
+            <p className="mt-0.5 text-xs text-foreground-muted sm:mt-1 sm:text-sm">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
+function StatsBarSkeleton() {
+  return (
+    <div className="border-y border-border bg-background">
+      <div className="mx-auto grid max-w-7xl grid-cols-3 divide-x divide-border px-4 py-5 text-center sm:px-6 sm:py-6">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="flex flex-col items-center gap-2 px-2 sm:px-4">
+            <Skeleton className="h-7 w-16 sm:h-8 sm:w-20" />
+            <Skeleton className="h-3 w-20 sm:h-4" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function FeaturedListings() {
+  const featured = await db.car.findMany({
+    where: { status: CarStatus.AVAILABLE, featured: true },
+    take: 6,
+    orderBy: { createdAt: "desc" },
+    include: { images: { where: { isPrimary: true }, take: 1 } },
+  });
+
+  const displayCars =
+    featured.length > 0
+      ? featured
+      : await db.car.findMany({
+          where: { status: CarStatus.AVAILABLE },
+          take: 6,
+          orderBy: { createdAt: "desc" },
+          include: { images: { where: { isPrimary: true }, take: 1 } },
+        });
+
+  return (
+    <>
+      <div className="mb-4 flex items-center justify-between sm:mb-6">
+        <h2 className="text-lg font-semibold text-foreground sm:text-2xl">
+          {featured.length > 0 ? "Featured Listings" : "Latest Listings"}
+        </h2>
+        <Link href="/cars" className="text-sm font-medium text-primary-600 hover:underline">
+          View all →
+        </Link>
+      </div>
+
+      {displayCars.length > 0 ? (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+          {(displayCars as unknown as Car[]).map((car) => (
+            <CarCard key={car.id} car={car} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-border py-16 text-center text-foreground-muted">
+          <p>No listings yet. Be the first to list a car!</p>
+          <Link href="/sell" className="mt-4 inline-block text-primary-600 hover:underline">
+            List your car →
+          </Link>
+        </div>
+      )}
+    </>
+  );
+}
+
+function FeaturedListingsSkeleton() {
+  return (
+    <>
+      <div className="mb-4 flex items-center justify-between sm:mb-6">
+        <Skeleton className="h-6 w-40 sm:h-8" />
+        <Skeleton className="h-4 w-16" />
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <CarCardSkeleton key={i} />
+        ))}
+      </div>
+    </>
+  );
+}
+
+// ── Page — static shell renders immediately ───────────────────────
+
+export default function HomePage() {
   return (
     <div className="flex min-h-full flex-col">
       <Header />
 
-      {/* Hero */}
+      {/* Hero — no data needed, renders immediately */}
       <section className="bg-background-subtle px-4 py-10 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
@@ -64,43 +149,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <div className="border-y border-border bg-background">
-        <div className="mx-auto grid max-w-7xl grid-cols-3 divide-x divide-border px-4 py-5 text-center sm:px-6 sm:py-6">
-          {[
-            { value: availableCount.toLocaleString(), label: "Cars Available" },
-            { value: "1,800+", label: "Happy Buyers" },
-            { value: "98%", label: "Satisfaction" },
-          ].map((stat) => (
-            <div key={stat.label} className="px-2 sm:px-4">
-              <p className="text-xl font-bold text-primary-600 sm:text-2xl">{stat.value}</p>
-              <p className="mt-0.5 text-xs text-foreground-muted sm:mt-1 sm:text-sm">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Stats — streams in while DB query runs */}
+      <Suspense fallback={<StatsBarSkeleton />}>
+        <StatsBar />
+      </Suspense>
 
-      {/* Quick action cards — mobile only */}
+      {/* Quick action cards — static, renders immediately */}
       <div className="grid grid-cols-2 gap-3 bg-background-subtle px-4 pt-5 sm:hidden">
         <Link
           href="/cars"
           className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-background p-4 active:bg-background-subtle"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-primary-600">
-            <svg
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
           <span className="text-sm font-semibold text-foreground">Browse Cars</span>
@@ -110,13 +172,7 @@ export default async function HomePage() {
           className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-background p-4 active:bg-background-subtle"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-primary-600">
-            <svg
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-              className="h-5 w-5"
-            >
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
           </div>
@@ -124,32 +180,12 @@ export default async function HomePage() {
         </Link>
       </div>
 
-      {/* Listings */}
+      {/* Listings — streams in while DB query runs */}
       <section className="flex-1 bg-background-subtle px-4 py-5 sm:px-6 sm:py-14">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-4 flex items-center justify-between sm:mb-6">
-            <h2 className="text-lg font-semibold text-foreground sm:text-2xl">
-              {featured.length > 0 ? "Featured Listings" : "Latest Listings"}
-            </h2>
-            <Link href="/cars" className="text-sm font-medium text-primary-600 hover:underline">
-              View all →
-            </Link>
-          </div>
-
-          {displayCars.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
-              {(displayCars as unknown as Car[]).map((car) => (
-                <CarCard key={car.id} car={car} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-border py-16 text-center text-foreground-muted">
-              <p>No listings yet. Be the first to list a car!</p>
-              <Link href="/sell" className="mt-4 inline-block text-primary-600 hover:underline">
-                List your car →
-              </Link>
-            </div>
-          )}
+          <Suspense fallback={<FeaturedListingsSkeleton />}>
+            <FeaturedListings />
+          </Suspense>
         </div>
       </section>
 

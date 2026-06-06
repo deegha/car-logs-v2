@@ -3,9 +3,11 @@ import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CarGrid } from "@/components/cars/CarGrid";
+import { CarCardSkeleton } from "@/components/cars/CarCardSkeleton";
 import { FilterPanel } from "@/components/filters/FilterPanel";
 import { FilterChips } from "@/components/filters/FilterChips";
 import { SearchBar } from "@/components/filters/SearchBar";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { db } from "@/lib/db";
 import { CarStatus, CarCondition } from "@/generated/prisma/client";
 import { buildSearchWhere } from "@/lib/carSearch";
@@ -19,12 +21,12 @@ export const metadata: Metadata = {
 
 const PAGE_SIZE = 20;
 
-export default async function CarsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const params = await searchParams;
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+// ── Async streaming component for results ─────────────────────────
+
+async function CarsResults({ searchParamsPromise }: { searchParamsPromise: SearchParams }) {
+  const params = await searchParamsPromise;
 
   const search = String(params.search ?? "");
   const make = String(params.make ?? "");
@@ -75,13 +77,46 @@ export default async function CarsPage({
   const pages = Math.ceil(total / PAGE_SIZE);
 
   return (
+    <>
+      <p className="text-sm text-foreground-muted">
+        {total.toLocaleString()} {total === 1 ? "listing" : "listings"} found
+      </p>
+
+      <CarGrid cars={cars as unknown as Car[]} />
+
+      {pages > 1 && <Pagination page={page} pages={pages} searchParams={params} />}
+    </>
+  );
+}
+
+function CarsResultsSkeleton() {
+  return (
+    <>
+      <Skeleton className="h-4 w-32" />
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <CarCardSkeleton key={i} />
+        ))}
+      </div>
+    </>
+  );
+}
+
+// ── Page — filter sidebar renders immediately ─────────────────────
+
+export default function CarsPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  return (
     <div className="flex min-h-full flex-col">
       <Header />
 
       <main className="flex-1 bg-background-subtle">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 lg:py-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
-            {/* Left column: search + filters on mobile; sidebar on desktop */}
+            {/* Filter sidebar — renders immediately */}
             <div className="flex flex-col gap-3 lg:w-64 lg:shrink-0">
               <Suspense>
                 <SearchBar className="lg:hidden" />
@@ -98,13 +133,10 @@ export default async function CarsPage({
                 <FilterChips />
               </Suspense>
 
-              <p className="text-sm text-foreground-muted">
-                {total.toLocaleString()} {total === 1 ? "listing" : "listings"} found
-              </p>
-
-              <CarGrid cars={cars as unknown as Car[]} />
-
-              {pages > 1 && <Pagination page={page} pages={pages} searchParams={params} />}
+              {/* Results — streams in while DB query runs */}
+              <Suspense fallback={<CarsResultsSkeleton />}>
+                <CarsResults searchParamsPromise={searchParams} />
+              </Suspense>
             </div>
           </div>
         </div>
@@ -114,6 +146,8 @@ export default async function CarsPage({
     </div>
   );
 }
+
+// ── Pagination (unchanged) ────────────────────────────────────────
 
 function Pagination({
   page,
