@@ -4,6 +4,7 @@ import { CarImageGallery } from "@/components/cars/CarImageGallery";
 import { CarSpecsTable } from "@/components/cars/CarSpecsTable";
 import { CarCard } from "@/components/cars/CarCard";
 import { ContactButtons, StickyContactCTA } from "@/components/cars/ContactButtons";
+import { LoanCalculatorModal } from "@/components/cars/LoanCalculatorModal";
 import { db } from "@/lib/db";
 import { CarStatus } from "@/generated/prisma/client";
 import { formatPrice } from "@/lib/utils";
@@ -185,6 +186,9 @@ export async function CarDetailContent({ slug }: { slug: string }) {
                   />
                 </div>
               )}
+
+              {/* Loan / Lease calculator */}
+              <LoanCalculatorModal carPrice={Number(car.price)} />
 
               {/* Contact card — all available listings, including owner/admin preview */}
               {car.seller && car.status === CarStatus.AVAILABLE && (

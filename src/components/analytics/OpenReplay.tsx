@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 export function OpenReplay() {
   useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hostname === "localhost") return;
     import("@openreplay/tracker").then(async ({ default: Tracker }) => {
       const tracker = new Tracker({
         projectKey: "WfC0OafCQ2vm2ifv7YSo",
