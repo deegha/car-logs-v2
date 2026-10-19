@@ -134,7 +134,9 @@ export default async function AdminListingsPage({
         )}
       </form>
 
+      {/* key remounts client table when filters change so useState(initialCars) is not stale */}
       <AdminCarTable
+        key={`${statusParam}|${conditionParam}|${searchParam}`}
         initialCars={
           cars.map((c) => ({ ...c, price: c.price === null ? null : Number(c.price) })) as Car[]
         }
