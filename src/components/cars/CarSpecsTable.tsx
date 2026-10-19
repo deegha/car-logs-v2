@@ -32,7 +32,7 @@ export function CarSpecsTable({ car }: CarSpecsTableProps) {
     { label: "Model", value: car.model },
     { label: "Year", value: String(car.year) },
     { label: "Price", value: formatPrice(car.price) },
-    { label: "Mileage", value: formatMileage(car.mileage) },
+    car.mileage !== null ? { label: "Mileage", value: formatMileage(car.mileage) } : null,
     { label: "Fuel Type", value: fuelLabels[car.fuelType] ?? car.fuelType },
     { label: "Transmission", value: transmissionLabels[car.transmission] ?? car.transmission },
     car.bodyType ? { label: "Body Type", value: car.bodyType } : null,

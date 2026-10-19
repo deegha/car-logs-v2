@@ -119,8 +119,8 @@ export async function POST(request: Request) {
     !make ||
     !model ||
     !year ||
-    price === undefined ||
-    mileage === undefined ||
+    price == null ||
+    mileage == null ||
     !fuelType ||
     !transmission
   ) {

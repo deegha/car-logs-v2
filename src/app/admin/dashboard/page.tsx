@@ -89,7 +89,7 @@ export default async function AdminDashboardPage() {
                       </p>
                     </td>
                     <td className="px-4 py-3 font-semibold text-primary-600">
-                      {formatPrice(Number(car.price))}
+                      {formatPrice(car.price === null ? null : Number(car.price))}
                     </td>
                     <td className="px-4 py-3 text-foreground-muted">
                       {new Date(car.createdAt).toLocaleDateString("en-AU")}

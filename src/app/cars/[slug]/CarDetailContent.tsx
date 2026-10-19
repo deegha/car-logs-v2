@@ -136,7 +136,7 @@ export async function CarDetailContent({ slug }: { slug: string }) {
                 <h1 className="text-2xl font-bold text-foreground">{car.title}</h1>
                 <div className="mt-2 flex flex-wrap items-center gap-3">
                   <p className="text-3xl font-bold text-primary-600">
-                    {formatPrice(Number(car.price))}
+                    {formatPrice(car.price === null ? null : Number(car.price))}
                   </p>
                   {car.isNegotiable && (
                     <span className="rounded-full border border-green-300 bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
@@ -188,7 +188,7 @@ export async function CarDetailContent({ slug }: { slug: string }) {
               )}
 
               {/* Loan / Lease calculator */}
-              <LoanCalculatorModal carPrice={Number(car.price)} />
+              {car.price !== null && <LoanCalculatorModal carPrice={Number(car.price)} />}
 
               {/* Contact card — all available listings, including owner/admin preview */}
               {car.seller && car.status === CarStatus.AVAILABLE && (

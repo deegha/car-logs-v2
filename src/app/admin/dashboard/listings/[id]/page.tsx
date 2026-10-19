@@ -353,7 +353,7 @@ export default async function AdminListingReviewPage({ params }: Props) {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-2xl font-bold text-primary-600">
-                    {formatPrice(Number(car.price))}
+                    {formatPrice(car.price === null ? null : Number(car.price))}
                   </p>
                   {car.isNegotiable && (
                     <span className="mt-1 inline-block rounded-full border border-green-300 bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">

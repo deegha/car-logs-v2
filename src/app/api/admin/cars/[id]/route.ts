@@ -64,8 +64,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     make?: string;
     model?: string;
     year?: number;
-    price?: number;
-    mileage?: number;
+    price?: number | null;
+    mileage?: number | null;
     color?: string | null;
     fuelType?: FuelType;
     transmission?: Transmission;
@@ -83,6 +83,14 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 
   if (status !== undefined && !Object.values(CarStatus).includes(status)) {
     return Response.json({ error: "Invalid status" }, { status: 400 });
+  }
+
+  // Admins may clear price/mileage (null); when present they must be valid
+  if (price != null && !(Number.isFinite(price) && price > 0)) {
+    return Response.json({ error: "price must be a positive number" }, { status: 400 });
+  }
+  if (mileage != null && !(Number.isInteger(mileage) && mileage >= 0)) {
+    return Response.json({ error: "mileage must be a non-negative integer" }, { status: 400 });
   }
 
   // EDITOR can only change status — no content edits or featured toggling

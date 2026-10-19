@@ -33,8 +33,8 @@ export interface Car {
   make: string;
   model: string;
   year: number;
-  price: string | number;
-  mileage: number;
+  price: string | number | null;
+  mileage: number | null;
   color: string | null;
   fuelType: FuelType;
   transmission: Transmission;
