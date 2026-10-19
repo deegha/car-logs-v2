@@ -189,13 +189,17 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
   });
 
   if (status === CarStatus.AVAILABLE && existing.status !== CarStatus.AVAILABLE) {
-    const { sendPushToSeller } = await import("@/lib/webPush");
-    await sendPushToSeller(existing.sellerId, {
-      title: "Your listing is live! 🎉",
-      body: `${existing.title} has been approved and is now visible to buyers.`,
-      tag: `listing-approved-${carId}`,
-      data: { url: `/cars/${existing.slug ?? String(carId)}` },
-    });
+    try {
+      const { sendPushToSeller } = await import("@/lib/webPush");
+      await sendPushToSeller(existing.sellerId, {
+        title: "Your listing is live! 🎉",
+        body: `${existing.title} has been approved and is now visible to buyers.`,
+        tag: `listing-approved-${carId}`,
+        data: { url: `/cars/${existing.slug ?? String(carId)}` },
+      });
+    } catch (err) {
+      console.error("[PATCH /api/admin/cars] push notification failed (non-fatal):", err);
+    }
   }
 
   return Response.json({ car });

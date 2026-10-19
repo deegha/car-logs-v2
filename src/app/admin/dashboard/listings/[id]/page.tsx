@@ -74,18 +74,31 @@ async function approveAction(carId: number) {
     where: { id: carId },
     select: { title: true, slug: true, sellerId: true },
   });
+  // Push is best-effort: never let notification failures break the approve
+  // flow. Previously, missing/invalid VAPID keys made setVapidDetails throw
+  // after the DB update, which surfaced as the App Router error boundary
+  // ("Something went wrong" / Server Components render) while status was
+  // already AVAILABLE — "Try again" then loaded the healthy page.
   if (updatedCar) {
-    const { sendPushToSeller } = await import("@/lib/webPush");
-    await sendPushToSeller(updatedCar.sellerId, {
-      title: "Your listing is live! 🎉",
-      body: `${updatedCar.title} has been approved and is now visible to buyers.`,
-      tag: `listing-approved-${carId}`,
-      data: { url: `/cars/${updatedCar.slug ?? String(carId)}` },
-    });
+    try {
+      const { sendPushToSeller } = await import("@/lib/webPush");
+      await sendPushToSeller(updatedCar.sellerId, {
+        title: "Your listing is live! 🎉",
+        body: `${updatedCar.title} has been approved and is now visible to buyers.`,
+        tag: `listing-approved-${carId}`,
+        data: { url: `/cars/${updatedCar.slug ?? String(carId)}` },
+      });
+    } catch (err) {
+      console.error("[approveAction] push notification failed (non-fatal):", err);
+    }
   }
   const { revalidatePath } = await import("next/cache");
   revalidatePath(`/admin/dashboard/listings/${carId}`);
   revalidatePath("/admin/dashboard/listings");
+  // Hard navigation so the post-action UI always reflects AVAILABLE without
+  // relying solely on the soft RSC refresh after the server action.
+  const { redirect } = await import("next/navigation");
+  redirect(`/admin/dashboard/listings/${carId}`);
 }
 
 async function rejectAction(carId: number) {
@@ -95,6 +108,8 @@ async function rejectAction(carId: number) {
   const { revalidatePath } = await import("next/cache");
   revalidatePath(`/admin/dashboard/listings/${carId}`);
   revalidatePath("/admin/dashboard/listings");
+  const { redirect } = await import("next/navigation");
+  redirect(`/admin/dashboard/listings/${carId}`);
 }
 
 export default async function AdminListingReviewPage({ params }: Props) {
