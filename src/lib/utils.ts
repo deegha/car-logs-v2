@@ -12,7 +12,9 @@ export function generateCarSlug(make: string, model: string, year: number, id: n
   return `${base}-${id}`;
 }
 
-export function formatPrice(price: number | string): string {
+export function formatPrice(price: number | string | null | undefined): string {
+  // Admin-imported (e.g. Facebook) listings may not have a price yet
+  if (price === null || price === undefined || price === "") return "Price on request";
   return new Intl.NumberFormat(currency.locale, {
     style: "currency",
     currency: currency.code,
@@ -20,6 +22,8 @@ export function formatPrice(price: number | string): string {
   }).format(Number(price));
 }
 
-export function formatMileage(km: number): string {
+export function formatMileage(km: number | null | undefined): string {
+  // Admin-imported listings may not have mileage yet
+  if (km === null || km === undefined) return "—";
   return new Intl.NumberFormat("en-AU").format(km) + " km";
 }

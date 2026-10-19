@@ -65,7 +65,7 @@ export function CarCard({ car, priority = false }: CarCardProps) {
 
         <div className="flex flex-wrap gap-1">
           <Badge variant="secondary">{car.year}</Badge>
-          <Badge variant="secondary">{formatMileage(car.mileage)}</Badge>
+          {car.mileage !== null && <Badge variant="secondary">{formatMileage(car.mileage)}</Badge>}
         </div>
       </div>
     </Link>

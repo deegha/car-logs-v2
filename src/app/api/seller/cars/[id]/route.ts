@@ -73,6 +73,12 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     images?: { url: string; alt?: string; isPrimary?: boolean; order?: number }[];
   };
 
+  // Price and mileage remain required for seller listings (the DB columns are
+  // nullable only so admins can save imported listings without them)
+  if (price === null || mileage === null) {
+    return Response.json({ error: "price and mileage are required" }, { status: 400 });
+  }
+
   const slugMake = make ?? car.make;
   const slugModel = model ?? car.model;
   const slugYear = year ?? car.year;

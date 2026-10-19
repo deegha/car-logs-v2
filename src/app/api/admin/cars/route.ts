@@ -83,8 +83,8 @@ export async function POST(request: Request) {
     make?: string;
     model?: string;
     year?: number;
-    price?: number;
-    mileage?: number;
+    price?: number | null;
+    mileage?: number | null;
     color?: string;
     fuelType?: FuelType;
     transmission?: Transmission;
@@ -108,20 +108,20 @@ export async function POST(request: Request) {
     );
   }
 
-  if (
-    !title ||
-    !make ||
-    !model ||
-    !year ||
-    price === undefined ||
-    mileage === undefined ||
-    !fuelType ||
-    !transmission
-  ) {
+  if (!title || !make || !model || !year || !fuelType || !transmission) {
     return Response.json(
-      { error: "title, make, model, year, price, mileage, fuelType and transmission are required" },
+      { error: "title, make, model, year, fuelType and transmission are required" },
       { status: 400 }
     );
+  }
+
+  // Price and mileage are optional for admin-created listings (e.g. Facebook imports
+  // saved as Pending often omit them). Missing values are stored as NULL, not 0.
+  if (price != null && !(Number.isFinite(price) && price > 0)) {
+    return Response.json({ error: "price must be a positive number" }, { status: 400 });
+  }
+  if (mileage != null && !(Number.isInteger(mileage) && mileage >= 0)) {
+    return Response.json({ error: "mileage must be a non-negative integer" }, { status: 400 });
   }
 
   if (manualContact) {
@@ -171,8 +171,8 @@ export async function POST(request: Request) {
       make,
       model,
       year,
-      price,
-      mileage,
+      price: price ?? null,
+      mileage: mileage ?? null,
       color: color ?? null,
       fuelType,
       transmission,

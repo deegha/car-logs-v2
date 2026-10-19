@@ -87,7 +87,7 @@ export default async function SellerDashboardPage({
           initialCars={
             cars.map((c) => ({
               ...c,
-              price: Number(c.price),
+              price: c.price === null ? null : Number(c.price),
               createdAt: c.createdAt.toISOString(),
               updatedAt: c.updatedAt.toISOString(),
               images: c.images.map((img) => ({

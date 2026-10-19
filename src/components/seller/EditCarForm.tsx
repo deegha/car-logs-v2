@@ -69,8 +69,8 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
   const [make, setMake] = useState(car.make);
   const [model, setModel] = useState(car.model);
   const [year, setYear] = useState(String(car.year));
-  const [price, setPrice] = useState(String(Number(car.price)));
-  const [mileage, setMileage] = useState(String(car.mileage));
+  const [price, setPrice] = useState(car.price === null ? "" : String(Number(car.price)));
+  const [mileage, setMileage] = useState(car.mileage === null ? "" : String(car.mileage));
   const [color, setColor] = useState(car.color ?? "");
   const [condition, setCondition] = useState<string>(car.condition ?? "USED");
   const [fuelType, setFuelType] = useState(car.fuelType);
@@ -107,8 +107,12 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
     if (!make.trim()) errs.make = "Required";
     if (!model.trim()) errs.model = "Required";
     if (!year) errs.year = "Required";
-    if (!price || Number(price) <= 0) errs.price = "Enter a valid price";
-    if (!mileage || Number(mileage) < 0) errs.mileage = "Enter valid mileage";
+    // Price and mileage stay required for sellers; admins may leave them empty
+    // (e.g. Facebook imports that omit them).
+    if (isAdmin ? price && Number(price) <= 0 : !price || Number(price) <= 0)
+      errs.price = "Enter a valid price";
+    if (isAdmin ? mileage && Number(mileage) < 0 : !mileage || Number(mileage) < 0)
+      errs.mileage = "Enter valid mileage";
     if (!fuelType) errs.fuelType = "Required";
     if (!transmission) errs.transmission = "Required";
     setErrors(errs);
@@ -130,8 +134,8 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
           make,
           model,
           year: Number(year),
-          price: Number(price),
-          mileage: Number(mileage),
+          price: price ? Number(price) : null,
+          mileage: mileage ? Number(mileage) : null,
           color: color || null,
           condition,
           fuelType,
@@ -243,7 +247,7 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
               setErrors((er) => ({ ...er, price: undefined! }));
             }}
             error={errors.price}
-            required
+            required={!isAdmin}
           />
           <MileageInput
             label="Mileage"
@@ -253,7 +257,7 @@ export function EditCarForm({ car, apiEndpoint, cancelHref, isAdmin = false }: E
               setErrors((er) => ({ ...er, mileage: undefined! }));
             }}
             error={errors.mileage}
-            required
+            required={!isAdmin}
           />
         </div>
         <Input

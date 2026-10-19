@@ -29,7 +29,7 @@ export default async function SellerEditCarPage({ params }: Props) {
         <p className="mt-1 text-sm text-foreground-muted">{car.title}</p>
       </div>
       <EditCarForm
-        car={{ ...car, price: Number(car.price) }}
+        car={{ ...car, price: car.price === null ? null : Number(car.price) }}
         apiEndpoint={`/api/seller/cars/${carId}`}
         cancelHref="/seller/dashboard"
       />

@@ -103,8 +103,10 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
     if (!make.trim()) errs.make = "Required";
     if (!model.trim()) errs.model = "Required";
     if (!year) errs.year = "Required";
-    if (!price || Number(price) <= 0) errs.price = "Enter a valid price";
-    if (!mileage || Number(mileage) < 0) errs.mileage = "Enter valid mileage";
+    // Price and mileage are optional for admin-created listings (e.g. Facebook imports
+    // saved as Pending often omit them). Validate only when a value is entered.
+    if (price && Number(price) <= 0) errs.price = "Enter a valid price";
+    if (mileage && Number(mileage) < 0) errs.mileage = "Enter valid mileage";
     if (!fuelType) errs.fuelType = "Required";
     if (!transmission) errs.transmission = "Required";
     setErrors(errs);
@@ -135,8 +137,8 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
           make,
           model,
           year: Number(year),
-          price: Number(price),
-          mileage: Number(mileage),
+          price: price ? Number(price) : null,
+          mileage: mileage ? Number(mileage) : null,
           color: color || null,
           fuelType,
           transmission,
@@ -350,7 +352,6 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
               setErrors((er) => ({ ...er, price: undefined! }));
             }}
             error={errors.price}
-            required
           />
           <MileageInput
             label="Mileage"
@@ -360,7 +361,6 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
               setErrors((er) => ({ ...er, mileage: undefined! }));
             }}
             error={errors.mileage}
-            required
           />
         </div>
         <Input
@@ -494,7 +494,7 @@ export function AdminAddCarForm({ sellers }: AdminAddCarFormProps) {
       </section>
 
       {/* Summary & submit */}
-      {price && year && make && model && (
+      {year && make && model && (
         <p className="text-sm text-foreground-muted">
           Listing:{" "}
           <span className="font-medium text-foreground">
